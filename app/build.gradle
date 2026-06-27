@@ -1,0 +1,115 @@
+plugins {
+    id 'com.android.application'
+}
+
+// Load keystore properties from file
+def keystorePropertiesFile = rootProject.file('keystore.properties')
+def keystoreProperties = new Properties()
+
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+android {
+    namespace 'com.labs.k4n3co'
+    compileSdk 34
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    defaultConfig {
+        applicationId "com.labs.k4n3co"
+        minSdk 26
+        targetSdk 34
+        versionCode 983
+        versionName "5.9.3"
+        
+        // Read WEBHOOK_URL from local.properties
+        def localProperties = new Properties()
+        def localPropertiesFile = rootProject.file('local.properties')
+        if (localPropertiesFile.exists()) {
+            localProperties.load(new FileInputStream(localPropertiesFile))
+        }
+        
+        def webhookUrl = localProperties['WEBHOOK_URL'] ?: ""
+        buildConfigField "String", "WEBHOOK_URL", "\"${webhookUrl}\""
+    }
+
+    signingConfigs {
+        release {
+            if (keystorePropertiesFile.exists()) {
+                storeFile rootProject.file(keystoreProperties['storeFile'] ?: 'k4n3co-keystore.jks')
+                storePassword keystoreProperties['storePassword'] ?: 'k4n3co123'
+                keyAlias keystoreProperties['keyAlias'] ?: 'k4n3co-key'
+                keyPassword keystoreProperties['keyPassword'] ?: 'k4n3co123'
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (keystorePropertiesFile.exists() && !project.hasProperty("disableSigning")) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    lint {
+        abortOnError false
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.11.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'org.nanohttpd:nanohttpd:2.3.1'
+}
+
+// Fix for "The processing instruction target matching '[xX][mM][lL]' is not allowed"
+// This ensures the XML declaration is always the first line in resource files.
+tasks.register("fixXmlDeclarations") {
+    doLast {
+        fileTree("src/main/res").matching {
+            include "**/*.xml"
+        }.forEach { file ->
+            def content = file.getText("UTF-8")
+            if (content.contains("<?xml")) {
+                def lines = content.readLines()
+                int xmlIndex = lines.findIndexOf { it.trim().startsWith("<?xml") }
+                if (xmlIndex > 0) {
+                    println "Fixing XML declaration in ${file.path}"
+                    def xmlLine = lines.get(xmlIndex)
+                    def remaining = new ArrayList(lines)
+                    remaining.remove(xmlIndex)
+                    file.setText(xmlLine + "\n" + remaining.join("\n"), "UTF-8")
+                }
+            }
+        }
+    }
+}
+
+project.afterEvaluate {
+    if (tasks.findByName("preBuild")) {
+        tasks.named("preBuild").configure {
+            dependsOn("fixXmlDeclarations")
+        }
+    }
+}
+
+
+
+
+
+
