@@ -150,10 +150,6 @@ public class MainActivity extends AppCompatActivity {
                     Manifest.permission.READ_MEDIA_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                 permissionsNeeded.add(Manifest.permission.READ_MEDIA_AUDIO);
             }
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                permissionsNeeded.add(Manifest.permission.POST_NOTIFICATIONS);
-            }
         } else {
             // Android 12 and below
             if (ContextCompat.checkSelfPermission(this,
