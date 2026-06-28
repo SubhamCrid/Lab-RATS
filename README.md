@@ -18,15 +18,15 @@
 
 ## 🚀 The Fun Stuff
 -   **Live GPS Location Data**:
--   -   **One Click** Opens up **Google Maps** in Browser at the **exact current location** of the **Target Device**.
+   -   **One Click** Opens up **Google Maps** in Browser at the **exact current location** of the **Target Device**.
 -   **View MMS/Picture Messages**: *(Game Changer!...You're Welcome in Advance...)*
--   -   **Browse** & **Download ANY MMS/Picture Messages** that were **Sent** or **Received** by **Target Device**. *(Unless deleted off device)*
+   -   **Browse** & **Download ANY MMS/Picture Messages** that were **Sent** or **Received** by **Target Device**. *(Unless deleted off device)*
 -   **View SMS/Text Messages & Send SMS/Text Messages**:
--   -   **Browse** & **Copy ANY SMS/Text Messages** that were **Sent** or **Received** by **Target Device**. *(Unless deleted off device)*
--   -   **Send Text Messages From Target Phone** to **ANY Number**.
+   -   **Browse** & **Copy ANY SMS/Text Messages** that were **Sent** or **Received** by **Target Device**. *(Unless deleted off device)*
+   -   **Send Text Messages From Target Phone** to **ANY Number**.
 -   **Live Screen Capture, Stream, & Record**: *(Work In Progress. All other features are working as of 06/28/2026)*
--   -   Take **Live Screenshots**. *(WIP)*
--   -   Capture **Live Screen** Recordings. *(WIP)*
+    -   Take **Live Screenshots**. *(WIP)*
+    -   Capture **Live Screen** Recordings. *(WIP)*
     -   View **User Screen Activity** in **Real-Time**. *(WIP)*
 -   **Live Camera Streaming**: View **real-time camera feed** from both **front and back cameras** directly in your **browser**.
 -   **Background Video Recording**: **Record high-quality video** in the background **without** user knowledge.
