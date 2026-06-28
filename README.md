@@ -17,7 +17,8 @@
   - Forces "**Legacy Mode**" to **bypass** adaptive icons on newer Androids.
 
 ## 🚀 The Fun Stuff
-
+-   **Live GPS Location Data**:
+-   -   **One Click** Opens up **Google Maps** in Browser at the **exact current location** of the **Target Device**.
 -   **View MMS/Picture Messages**: *(Game Changer!...You're Welcome in Advance...)*
 -   -   **Browse** & **Download ANY MMS/Picture Messages** that were **Sent** or **Received** by **Target Device**. *(Unless deleted off device)*
 -   **View SMS/Text Messages & Send SMS/Text Messages**:
@@ -29,7 +30,7 @@
     -   View **User Screen Activity** in **Real-Time**. *(WIP)*
 -   **Live Camera Streaming**: View **real-time camera feed** from both **front and back cameras** directly in your **browser**.
 -   **Background Video Recording**: **Record high-quality video** in the background **without** user knowledge.
--   **Photo Capture**: Take **instant photos** from **any** available camera.
+-   **Photo Capture & Flashlight Blink**: Take **instant photos** from **any** available camera. Also a **button**was **added** to make the **Flashlight blink remotely for fun**.
 -   **Audio Management**: 
     -   **Live Microphone** Recording.
     -   **Automatic Call** Recording *(Incoming/Outgoing)*.
