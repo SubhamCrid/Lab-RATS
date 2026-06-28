@@ -113,7 +113,7 @@ public class HttpServerService extends Service {
                 : "Server running on port 8080";
 
         return new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("🛡️ Lab-RATS Active")
+                .setContentTitle("🛡️ LAB-RATS Active")
                 .setContentText(contentText)
                 .setSmallIcon(android.R.drawable.ic_dialog_info)
                 .setContentIntent(pendingIntent)

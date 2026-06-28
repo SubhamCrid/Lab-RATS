@@ -1,5 +1,4 @@
 ![K4N3CO Logo](https://raw.githubusercontent.com/K4N3CO-LABS/Lab-RATS/main/app/src/main/res/drawable/app_logo.png)
-
 ## About
 
 **Lab-RATS** is a **Powerful** and **lightweight Android Remote Administration Tool** *(RAT)* developed by **K4N3CO.LABS**. This tool allows for **remote monitoring and management** of Android devices through a user friendly **web-based interface** and **works** on the **newest updated 2026 Android software**. *(SDK 36)*

