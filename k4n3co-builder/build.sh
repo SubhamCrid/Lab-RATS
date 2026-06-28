@@ -356,12 +356,20 @@ configure_logo() {
         
         echo -e "${CYAN}[*] Processing logo...${NC}"
         
-        # KEY FIX: Remove adaptive icon definitions
+        # KEY FIX: Remove adaptive icon definitions and any existing launcher icons to prevent duplicates
         if [ -d "$RES_DIR/mipmap-anydpi-v26" ]; then
             rm -rf "$RES_DIR/mipmap-anydpi-v26"
             echo -e "${YELLOW}[*] Removed adaptive icon config (forced legacy mode for PNG)${NC}"
         fi
-        
+
+        # Remove existing icons to prevent duplicate extension errors (png vs webp)
+        for density in mipmap-mdpi mipmap-hdpi mipmap-xhdpi mipmap-xxhdpi mipmap-xxxhdpi; do
+            rm -f "$RES_DIR/$density/ic_launcher.png" "$RES_DIR/$density/ic_launcher.webp" 2>/dev/null
+            rm -f "$RES_DIR/$density/ic_launcher_round.png" "$RES_DIR/$density/ic_launcher_round.webp" 2>/dev/null
+            rm -f "$RES_DIR/$density/ic_launcher_foreground.png" "$RES_DIR/$density/ic_launcher_foreground.webp" 2>/dev/null
+        done
+        echo -e "${YELLOW}[*] Cleaned up old icon resources${NC}"
+
         # Check ImageMagick again just to be sure
         HAS_IMAGEMAGICK=false
         if command -v convert &> /dev/null; then

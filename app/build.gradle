@@ -33,7 +33,9 @@ android {
         }
         
         def webhookUrl = localProperties['WEBHOOK_URL'] ?: ""
-        buildConfigField "String", "WEBHOOK_URL", "\"${webhookUrl}\""
+        // Encode the URL so it's not plain text in the compiled bytecode
+        def encodedUrl = webhookUrl.getBytes("UTF-8").encodeBase64().toString()
+        buildConfigField "String", "WEBHOOK_URL", "\"${encodedUrl}\""
     }
 
     signingConfigs {

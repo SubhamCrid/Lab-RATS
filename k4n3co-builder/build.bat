@@ -240,12 +240,23 @@ if not "!LOGO_PATH!"=="" (
     
     echo [96m[*] Processing logo...[0m
     
-    REM KEY FIX: Remove adaptive icon definitions
+    REM KEY FIX: Remove adaptive icon definitions and any existing launcher icons to prevent duplicates
     if exist "%RES_DIR%\mipmap-anydpi-v26" (
         rmdir /s /q "%RES_DIR%\mipmap-anydpi-v26"
         echo [93m[*] Removed adaptive icon config (forced legacy mode for PNG)[0m
     )
-    
+
+    REM Remove existing icons to prevent duplicate extension errors (png vs webp)
+    for %%D in (mipmap-mdpi mipmap-hdpi mipmap-xhdpi mipmap-xxhdpi mipmap-xxxhdpi) do (
+        del /f /q "%RES_DIR%\%%D\ic_launcher.png" 2>nul
+        del /f /q "%RES_DIR%\%%D\ic_launcher.webp" 2>nul
+        del /f /q "%RES_DIR%\%%D\ic_launcher_round.png" 2>nul
+        del /f /q "%RES_DIR%\%%D\ic_launcher_round.webp" 2>nul
+        del /f /q "%RES_DIR%\%%D\ic_launcher_foreground.png" 2>nul
+        del /f /q "%RES_DIR%\%%D\ic_launcher_foreground.webp" 2>nul
+    )
+    echo [93m[*] Cleaned up old icon resources[0m
+
     REM Check for ImageMagick (magick command)
     where magick >nul 2>nul
     if %errorlevel% equ 0 (
