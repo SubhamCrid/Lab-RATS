@@ -1,7 +1,7 @@
 # 🔥 Lab-RATS APK Builder
 
 <p align="center">
-  <a href="https://github.com/Lab-RATS-LABS"><img src="https://img.shields.io/badge/K4N3CO.LABS-RAT-red?style=for-the-badge" alt="Author"></a>
+  <a href="https://github.com/K4N3CO-LABS"><img src="https://img.shields.io/badge/K4N3CO.LABS-RAT-red?style=for-the-badge" alt="K4N3CO.LABS"></a>
 </p>
 
 ---
@@ -10,7 +10,7 @@
 
 **K4N3CO.LABS**
 
-- 🔗 GitHub: [github.com/K4N3CO.LABS](https://github.com/K4N3CO.LABS)
+- 🔗 GitHub: [github.com/K4N3CO-LABS](https://github.com/K4N3CO-LABS)
 
 ---
 
@@ -36,21 +36,21 @@
 **PowerShell (Recommended)**
 
 ```powershell
-cd labrats-builder
+cd Lab-RATS/app-builder
 .\build.ps1
 ```
 
 **Command Prompt**
 
 ```cmd
-cd labrats-builder
+cd Lab-RATS/app-builder
 build.bat
 ```
 
 ### Linux / macOS
 
 ```bash
-cd labrats-builder
+cd Lab-RATS/app-builder
 chmod +x build.sh
 ./build.sh
 ```
@@ -76,7 +76,7 @@ chmod +x build.sh
 
 ## 🛠️ Build Options
 
-### 1️⃣ Full Build
+### 1. Full Build
 
 Complete guided setup:
 
@@ -86,23 +86,19 @@ Complete guided setup:
 - Configures version
 - Builds signed APK
 
-### 2️⃣ Quick Build
-
-Uses existing configuration from `build_config.json` to build immediately.
-
-### 3️⃣ Generate Keystore Only
+### 2. Generate Keystore Only
 
 Creates Android signing certificate without building.
 
-### 4️⃣ Configure Logo Only
+### 3. Configure Logo Only
 
 Sets up custom app icon without full build.
 
-### 5️⃣ Configure App Settings Only
+### 4. Configure App Settings Only
 
 Updates app name, version, Google Sheet URL.
 
-### 6️⃣ Check/Install Requirements
+### 5. Check/Install Requirements
 
 Shows Java installation status and manual installation guide.
 
