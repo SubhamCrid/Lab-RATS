@@ -638,6 +638,49 @@ public class CameraService extends Service {
         Log.d(TAG, "Streaming stopped");
     }
 
+    public void setFlashMode(boolean on) {
+        if (cameraDevice == null || captureSession == null) return;
+        backgroundHandler.post(() -> {
+            try {
+                CaptureRequest.Builder builder;
+                if (isRecording && recorderSurface != null) {
+                    builder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_RECORD);
+                    builder.addTarget(recorderSurface);
+                } else if (isStreaming && imageReader != null) {
+                    builder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+                    builder.addTarget(imageReader.getSurface());
+                } else {
+                    return;
+                }
+                builder.set(CaptureRequest.FLASH_MODE, on ? CaptureRequest.FLASH_MODE_TORCH : CaptureRequest.FLASH_MODE_OFF);
+                captureSession.setRepeatingRequest(builder.build(), null, backgroundHandler);
+            } catch (Exception e) {
+                Log.e(TAG, "Flash Error: " + e.getMessage());
+            }
+        });
+    }
+
+    public void blinkFlash(String cameraId) {
+        new Thread(() -> {
+            try {
+                if ((isStreaming || isRecording) && cameraId != null && cameraId.equals(currentCameraId)) {
+                    for (int i = 0; i < 3; i++) {
+                        setFlashMode(true); Thread.sleep(300);
+                        setFlashMode(false); Thread.sleep(300);
+                    }
+                } else {
+                    CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+                    for (int i = 0; i < 3; i++) {
+                        manager.setTorchMode(cameraId, true); Thread.sleep(300);
+                        manager.setTorchMode(cameraId, false); Thread.sleep(300);
+                    }
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Blink Error: " + e.getMessage());
+            }
+        }).start();
+    }
+
     private byte[] yuv420ToJpeg(Image image, int quality, int rotation) {
         try {
             int width = image.getWidth();
@@ -728,7 +771,7 @@ public class CameraService extends Service {
         try {
             String[] cameraIds = cameraManager.getCameraIdList();
             for (String cameraId : cameraIds) {
-                CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(currentCameraId);
+                CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraId);
                 Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
 
                 String facingStr = "Unknown";

@@ -62,7 +62,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="C2_TERMINAL_INTERFACE_v7.9.2"
+                    android:text="v1.3.2"
                     android:textSize="8sp"
                     android:textColor="@color/neon_cyan"
                     android:alpha="0.6"

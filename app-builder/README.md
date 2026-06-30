@@ -102,6 +102,10 @@ Updates app name, version, Google Sheet URL.
 
 Shows Java installation status and manual installation guide.
 
+### APK Builder Interface Screenshot
+
+<a href='https://postimg.cc/64fbtNKM' target='_blank'><img src='https://i.postimg.cc/64fbtNKM/APK-builder-pic.jpg' border='0' alt='APK-builder-pic'></a>
+
 ---
 
 ## ☕ Java Installation

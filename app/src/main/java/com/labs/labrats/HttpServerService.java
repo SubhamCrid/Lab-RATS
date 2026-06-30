@@ -53,7 +53,20 @@ public class HttpServerService extends Service {
         String action = intent != null ? intent.getAction() : null;
 
         if ("START".equals(action)) {
-            startForeground(NOTIFICATION_ID, createNotification());
+            // Check if we have location permissions before attempting to start as location FGS
+            boolean hasFineLocation = androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED;
+            boolean hasCoarseLocation = androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED;
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                int serviceType = android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
+                // Only add location type if we actually have the permissions, otherwise it will crash on Android 14+
+                if (hasFineLocation || hasCoarseLocation) {
+                    serviceType |= android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION;
+                }
+                startForeground(NOTIFICATION_ID, createNotification(), serviceType);
+            } else {
+                startForeground(NOTIFICATION_ID, createNotification());
+            }
             startServer();
         } else if ("STOP".equals(action)) {
             stopServer();
