@@ -87,7 +87,6 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "  margin-bottom: 40px;" +
             "  position: relative;" +
             "  overflow: hidden;" +
-            "  background: radial-gradient(circle at center, rgba(0, 242, 255, 0.05) 0%, transparent 70%);" +
             "}" +
             ".header h1 {" +
             "  font-family: 'Orbitron', sans-serif;" +
@@ -220,7 +219,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
             ".back-btn-container { margin-bottom: 25px; }" +
             ".btn-back { display: inline-flex; align-items: center; gap: 8px; background: rgba(0, 242, 255, 0.05); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); padding: 8px 16px; text-decoration: none; border-radius: 4px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; }" +
             ".btn-back:hover { background: var(--neon-cyan); color: var(--bg-dark); box-shadow: 0 0 15px var(--neon-cyan); }" +
-            ".watermark { position: absolute; top: 50%; left: 20px; transform: translateY(-50%); height: 90%; width: auto; z-index: 10000; opacity: 0.35; background: none; border: none; padding: 0; pointer-events: none; filter: drop-shadow(0 0 15px var(--neon-cyan)); }" +
+            ".watermark { position: absolute; top: 50%; left: 20px; transform: translateY(-50%); height: 90%; width: auto; z-index: 10000; opacity: 0.35; background: none; border: none; padding: 0; pointer-events: none; }" +
             "</style>" +
             "</head>" +
             "<body>" +
