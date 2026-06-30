@@ -4,4 +4,4 @@
 -keep class fi.iki.elonen.** { *; }
 
 # Keep our server classes
--keep class com.labs.k4n3co.** { *; }
+-keep class com.labs.labrats.** { *; }

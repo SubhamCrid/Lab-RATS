@@ -49,7 +49,7 @@ captures/
 # Keystore files (keep private!)
 *.jks
 *.keystore
-k4n3co-keystore.jks
+lab-rats-keystore.jks
 keystore.properties
 
 # Builder config (contains passwords)

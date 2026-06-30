@@ -3,20 +3,20 @@ setlocal EnableDelayedExpansion
 chcp 65001 >nul 2>&1
 
 REM #################################################
-REM          K4N3CO APK BUILDER - Windows
+REM          Lab-RATS APK BUILDER - Windows
 REM                   v2.0
 REM
-REM  Developed by: K4N3CO.LABS
-REM  GitHub: github.com/K4N3CO-LABS
+REM  Developed by: Lab-RATS.LABS
+REM  GitHub: github.com/Lab-RATS-LABS
 REM #################################################
 
-title K4N3CO APK Builder v2.0 - by K4N3CO.LABS
+title Lab-RATS APK Builder v2.0 - by Lab-RATS.LABS
 
 REM Get script directory
 set "SCRIPT_DIR=%~dp0"
 set "PROJECT_DIR=%SCRIPT_DIR%.."
 set "CONFIG_FILE=%SCRIPT_DIR%build_config.txt"
-set "DEFAULT_LOGO=%PROJECT_DIR%\k4n3co.png"
+set "DEFAULT_LOGO=%PROJECT_DIR%\lab-rats.png"
 
 goto :main_menu
 
@@ -32,11 +32,11 @@ echo [91m║  ██╔═██╗ ╚════██║██║╚██�
 echo [91m║  ██║  ██╗     ██║██║ ╚████║██████╔╝╚██████╗╚██████╔╝         ║[0m
 echo [91m║  ╚═╝  ╚═╝     ╚═╝╚═╝  ╚═══╝╚═════╝  ╚═════╝ ╚═════╝          ║[0m
 echo [91m║                                                              ║[0m
-echo [95m║                    LAB-RATS APK BUILDER                   ║[0m
+echo [95m║                    Lab-RATS APK BUILDER                   ║[0m
 echo [91m║                                                              ║[0m
 echo [91m╠══════════════════════════════════════════════════════════════╣[0m
-echo [95m║  Developed by: K4N3CO.LABS                                   ║[0m
-echo [95m║  GitHub:   https://github.com/K4N3CO-LABS                    ║[0m
+echo [95m║  Developed by: Lab-RATS.LABS                                   ║[0m
+echo [95m║  GitHub:   https://github.com/Lab-RATS-LABS                    ║[0m
 echo [91m╚══════════════════════════════════════════════════════════════╝[0m
 echo.
 goto :eof
@@ -119,13 +119,13 @@ echo.
 goto :eof
 
 :generate_keystore
-set "KEYSTORE_PATH=%PROJECT_DIR%\k4n3co-keystore.jks"
+set "KEYSTORE_PATH=%PROJECT_DIR%\lab-rats-keystore.jks"
 
 REM Default values
-set "KEY_ALIAS=k4n3co-key"
-set "KEYSTORE_PASS=k4n3co123"
-set "CN_NAME=K4N3CO Developer"
-set "ORG_NAME=K4N3CO.LABS"
+set "KEY_ALIAS=lab-rats-key"
+set "KEYSTORE_PASS=lab-rats123"
+set "CN_NAME=Lab-RATS Developer"
+set "ORG_NAME=Lab-RATS.LABS"
 set "COUNTRY=US"
 set "VALIDITY_DAYS=9125"
 
@@ -148,14 +148,14 @@ if not "%AUTO_KEYSTORE%"=="1" (
     echo.
     echo [95m[^>] Enter keystore details (press Enter for defaults):[0m
     echo.
-    set /p "KEY_ALIAS=    Key alias [k4n3co-key]: "
-    if "!KEY_ALIAS!"=="" set "KEY_ALIAS=k4n3co-key"
-    set /p "KEYSTORE_PASS=    Keystore password [k4n3co123]: "
-    if "!KEYSTORE_PASS!"=="" set "KEYSTORE_PASS=k4n3co123"
-    set /p "CN_NAME=    Your name [K4N3CO Developer]: "
-    if "!CN_NAME!"=="" set "CN_NAME=K4N3CO Developer"
-    set /p "ORG_NAME=    Organization [K4N3CO.LABS]: "
-    if "!ORG_NAME!"=="" set "ORG_NAME=K4N3CO.LABS"
+    set /p "KEY_ALIAS=    Key alias [lab-rats-key]: "
+    if "!KEY_ALIAS!"=="" set "KEY_ALIAS=lab-rats-key"
+    set /p "KEYSTORE_PASS=    Keystore password [lab-rats123]: "
+    if "!KEYSTORE_PASS!"=="" set "KEYSTORE_PASS=lab-rats123"
+    set /p "CN_NAME=    Your name [Lab-RATS Developer]: "
+    if "!CN_NAME!"=="" set "CN_NAME=Lab-RATS Developer"
+    set /p "ORG_NAME=    Organization [Lab-RATS.LABS]: "
+    if "!ORG_NAME!"=="" set "ORG_NAME=Lab-RATS.LABS"
     set /p "COUNTRY=    Country code [US]: "
     if "!COUNTRY!"=="" set "COUNTRY=US"
 ) else (
@@ -173,7 +173,7 @@ if %errorlevel% equ 0 (
     
     REM Create keystore.properties for Gradle
     set "KEYSTORE_PROPS=%PROJECT_DIR%\keystore.properties"
-    echo storeFile=k4n3co-keystore.jks> "!KEYSTORE_PROPS!"
+    echo storeFile=lab-rats-keystore.jks> "!KEYSTORE_PROPS!"
     echo storePassword=!KEYSTORE_PASS!>> "!KEYSTORE_PROPS!"
     echo keyAlias=!KEY_ALIAS!>> "!KEYSTORE_PROPS!"
     echo keyPassword=!KEYSTORE_PASS!>> "!KEYSTORE_PROPS!"
@@ -204,7 +204,7 @@ echo.
 set "RES_DIR=%PROJECT_DIR%\app\src\main\res"
 
 echo [95m[^>] Logo options:[0m
-echo     1. Use default K4N3CO logo (k4n3co.png)
+echo     1. Use default Lab-RATS logo (lab-rats.png)
 echo     2. Use custom logo (provide image path)
 echo     3. Keep current logo (no change)
 echo.
@@ -216,7 +216,7 @@ set "LOGO_PATH="
 if "!LOGO_OPTION!"=="1" (
     if exist "%DEFAULT_LOGO%" (
         set "LOGO_PATH=%DEFAULT_LOGO%"
-        echo [92m[✓] Using default K4N3CO logo[0m
+        echo [92m[✓] Using default Lab-RATS logo[0m
     ) else (
         echo [91m[!] Default logo not found at: %DEFAULT_LOGO%[0m
         goto :logo_done
@@ -336,9 +336,9 @@ set /p "PKG_NAME=    "
 if "!PKG_NAME!"=="" set "PKG_NAME=com.labrats.remote"
 
 REM App Name
-echo [95m[^>] Enter App Name [LAB-RATS]:[0m
+echo [95m[^>] Enter App Name [Lab-RATS]:[0m
 set /p "APP_NAME=    "
-if "!APP_NAME!"=="" set "APP_NAME=LAB-RATS"
+if "!APP_NAME!"=="" set "APP_NAME=Lab-RATS"
 
 REM Min SDK
 echo [95m[^>] Enter Min SDK [26]:[0m
@@ -419,7 +419,7 @@ if exist "%CONFIG_FILE%" (
 )
 
 REM Check if keystore exists - auto-generate if not
-set "KEYSTORE_FILE=%PROJECT_DIR%\k4n3co-keystore.jks"
+set "KEYSTORE_FILE=%PROJECT_DIR%\lab-rats-keystore.jks"
 if not exist "!KEYSTORE_FILE!" (
     echo [93m[!] No keystore found. Auto-generating...[0m
     set "AUTO_KEYSTORE=1"
@@ -438,7 +438,7 @@ set "TIMESTAMP=!datetime:~0,8!_!datetime:~8,6!"
 
 REM Create safe app name
 set "APP_NAME_SAFE=!APP_NAME: =_!"
-if "!APP_NAME_SAFE!"=="" set "APP_NAME_SAFE=K4N3CO"
+if "!APP_NAME_SAFE!"=="" set "APP_NAME_SAFE=Lab-RATS"
 if "!VERSION_NAME!"=="" set "VERSION_NAME=2.0"
 
 set "APK_FOUND=0"
@@ -513,8 +513,8 @@ echo.
 echo [92m[✓] APKs saved to: !OUTPUT_DIR![0m
 echo.
 echo [95m╔══════════════════════════════════════════════════════════════╗[0m
-echo [95m║  Developed by: K4N3CO.LABS                                   ║[0m
-echo [95m║  GitHub:   https://github.com/K4N3CO-LABS                    ║[0m
+echo [95m║  Developed by: Lab-RATS.LABS                                   ║[0m
+echo [95m║  GitHub:   https://github.com/Lab-RATS-LABS                    ║[0m
 echo [95m╚══════════════════════════════════════════════════════════════╝[0m
 echo.
 goto :eof
@@ -554,7 +554,7 @@ if "!MENU_OPTION!"=="1" (
     call :show_manual_java_install
 ) else if "!MENU_OPTION!"=="6" (
     echo [96m[*] Goodbye![0m
-    echo [95m    Follow: https://github.com/K4N3CO-LABS[0m
+    echo [95m    Follow: https://github.com/Lab-RATS-LABS[0m
     exit /b 0
 ) else (
     echo [91m[!] Invalid option[0m

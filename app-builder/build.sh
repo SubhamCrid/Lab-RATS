@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #################################################
-#          LAB-RATS APK BUILDER - Linux/Mac       #
+#          Lab-RATS APK BUILDER - Linux/Mac       #
 #                   v2.0                        #
 #                                               #
-#  Developed by: K4N3CO.LABS         #
-#  GitHub: github.com/K4N3CO-LABS      #
+#  Developed by: Lab-RATS.LABS         #
+#  GitHub: github.com/Lab-RATS-LABS      #
 #################################################
 
 # Colors for output
@@ -24,7 +24,7 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 CONFIG_FILE="$SCRIPT_DIR/build_config.txt"
 
 # Default logo
-DEFAULT_LOGO="$PROJECT_DIR/k4n3co.png"
+DEFAULT_LOGO="$PROJECT_DIR/lab-rats.png"
 
 # Banner
 print_banner() {
@@ -39,11 +39,11 @@ print_banner() {
     echo "║  ██║  ██╗     ██║██║ ╚████║██████╔╝╚██████╗╚██████╔╝         ║"
     echo "║  ╚═╝  ╚═╝     ╚═╝╚═╝  ╚═══╝╚═════╝  ╚═════╝ ╚═════╝          ║"
     echo "║                                                              ║"
-    echo "║                    LAB-RATS APK BUILDER                   ║"
+    echo "║                    Lab-RATS APK BUILDER                   ║"
     echo "║                                                              ║"
     echo "╠══════════════════════════════════════════════════════════════╣"
-    echo "║  Developed by: K4N3CO.LABS                                   ║"
-    echo "║  GitHub:   https://github.com/K4N3CO-LABS                    ║"
+    echo "║  Developed by: Lab-RATS.LABS                                   ║"
+    echo "║  GitHub:   https://github.com/Lab-RATS-LABS                    ║"
     echo "╚══════════════════════════════════════════════════════════════╝"
     echo -e "${NC}"
     echo ""
@@ -209,14 +209,14 @@ show_manual_java_install() {
 generate_keystore() {
     local AUTO_MODE="$1"
     
-    KEYSTORE_PATH="$PROJECT_DIR/k4n3co-keystore.jks"
+    KEYSTORE_PATH="$PROJECT_DIR/lab-rats-keystore.jks"
     KEYSTORE_PROPS="$PROJECT_DIR/keystore.properties"
     
     # Default values
-    KEY_ALIAS="k4n3co-key"
-    KEYSTORE_PASS="k4n3co123"
-    CN_NAME="K4N3CO Developer"
-    ORG_NAME="K4N3CO.LABS"
+    KEY_ALIAS="lab-rats-key"
+    KEYSTORE_PASS="lab-rats123"
+    CN_NAME="Lab-RATS Developer"
+    ORG_NAME="Lab-RATS.LABS"
     COUNTRY="US"
     VALIDITY_DAYS=9125  # 25 years
     
@@ -284,7 +284,7 @@ generate_keystore() {
         
         # Create keystore.properties for Gradle
         cat > "$KEYSTORE_PROPS" << EOF
-storeFile=k4n3co-keystore.jks
+storeFile=lab-rats-keystore.jks
 storePassword=$KEYSTORE_PASS
 keyAlias=$KEY_ALIAS
 keyPassword=$KEYSTORE_PASS
@@ -316,7 +316,7 @@ configure_logo() {
     RES_DIR="$PROJECT_DIR/app/src/main/res"
     
     echo -e "${PURPLE}[>] Logo options:${NC}"
-    echo "    1. Use default Lab-RATS logo (k4n3co.png)"
+    echo "    1. Use default Lab-RATS logo (lab-rats.png)"
     echo "    2. Use custom logo (provide image path)"
     echo "    3. Keep current logo (no change)"
     echo ""
@@ -442,8 +442,8 @@ configure_app() {
     PKG_NAME=${PKG_NAME:-com.labrats.remote}
     
     # App name
-    read -p "    Enter App Name [LAB-RATS]: " APP_NAME
-    APP_NAME=${APP_NAME:-LAB-RATS}
+    read -p "    Enter App Name [Lab-RATS]: " APP_NAME
+    APP_NAME=${APP_NAME:-Lab-RATS}
     
     # Min SDK
     read -p "    Enter Min SDK [26]: " MIN_SDK
@@ -543,7 +543,7 @@ build_apk() {
     fi
     
     # Check if keystore exists - auto-generate if not
-    KEYSTORE_FILE="$PROJECT_DIR/k4n3co-keystore.jks"
+    KEYSTORE_FILE="$PROJECT_DIR/lab-rats-keystore.jks"
     if [ ! -f "$KEYSTORE_FILE" ]; then
         echo -e "${YELLOW}[!] No keystore found. Auto-generating...${NC}"
         generate_keystore "auto"
@@ -638,8 +638,8 @@ build_apk() {
         echo ""
         
         echo -e "${PURPLE}╔══════════════════════════════════════════════════════════════╗${NC}"
-        echo -e "${PURPLE}║  Developed by: K4N3CO.LABS                                   ║${NC}"
-        echo -e "${PURPLE}║  GitHub:   https://github.com/K4N3CO-LABS                    ║${NC}"
+        echo -e "${PURPLE}║  Developed by: Lab-RATS.LABS                                   ║${NC}"
+        echo -e "${PURPLE}║  GitHub:   https://github.com/Lab-RATS-LABS                    ║${NC}"
         echo -e "${PURPLE}╚══════════════════════════════════════════════════════════════╝${NC}"
         echo ""
     else
@@ -703,7 +703,7 @@ main_menu() {
             ;;
         6)
             echo -e "${CYAN}[*] Goodbye!${NC}"
-            echo -e "${PURPLE}    Follow: https://github.com/K4N3CO-LABS${NC}"
+            echo -e "${PURPLE}    Follow: https://github.com/Lab-RATS-LABS${NC}"
             exit 0
             ;;
         *)

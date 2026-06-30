@@ -1,4 +1,4 @@
-package com.labs.k4n3co;
+package com.labs.labrats;
 
 import android.Manifest;
 import android.content.Context;

@@ -1,9 +1,9 @@
 #################################################
-#          K4N3CO APK BUILDER - PowerShell      #
+#          Lab-RATS APK BUILDER - PowerShell      #
 #                   v2.0                        #
 #                                               #
-#  Developed by: K4N3CO.LABS         #
-#  GitHub: github.com/K4N3CO-LABS      #
+#  Developed by: Lab-RATS.LABS         #
+#  GitHub: github.com/Lab-RATS-LABS      #
 #################################################
 
 $ErrorActionPreference = "SilentlyContinue"
@@ -12,13 +12,13 @@ $ErrorActionPreference = "SilentlyContinue"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ProjectDir = Split-Path -Parent $ScriptDir
 $ConfigFile = Join-Path $ScriptDir "build_config.json"
-$DefaultLogo = Join-Path $ProjectDir "k4n3co.png"
+$DefaultLogo = Join-Path $ProjectDir "lab-rats.png"
 
 # Default settings
 $DefaultSettings = @{
-    KeyAlias = "k4n3co-key"
-    KeystorePass = "k4n3co123"
-    AppName = "K4N3CO.LABS"
+    KeyAlias = "lab-rats-key"
+    KeystorePass = "lab-rats123"
+    AppName = "Lab-RATS.LABS"
     VersionName = "2.0"
     VersionCode = 20
 }
@@ -35,12 +35,12 @@ function Write-Banner {
     Write-Host "  ██║  ██╗     ██║██║ ╚████║██████╔╝╚██████╗╚██████╔╝           " -ForegroundColor Red
     Write-Host "  ╚═╝  ╚═╝     ╚═╝╚═╝  ╚═══╝╚═════╝  ╚═════╝ ╚═════╝            " -ForegroundColor Red
     Write-Host "                                                                " -ForegroundColor Red
-    Write-Host "                 K4N3CO.LABS APK BUILDER                        " -ForegroundColor Red
+    Write-Host "                 Lab-RATS.LABS APK BUILDER                        " -ForegroundColor Red
     Write-Host "                 PowerShell Edition                             " -ForegroundColor Red
     Write-Host "                                                                " -ForegroundColor Red
     Write-Host "================================================================" -ForegroundColor Red
-    Write-Host "  Developed by: K4N3CO.LABS                                     " -ForegroundColor Magenta
-    Write-Host "  GitHub:   https://github.com/K4N3CO-LABS                      " -ForegroundColor Magenta
+    Write-Host "  Developed by: Lab-RATS.LABS                                     " -ForegroundColor Magenta
+    Write-Host "  GitHub:   https://github.com/Lab-RATS-LABS                      " -ForegroundColor Magenta
     Write-Host "================================================================" -ForegroundColor Red
     Write-Host ""
 }
@@ -161,14 +161,14 @@ function Show-ManualJavaInstall {
 function New-Keystore {
     param([bool]$AutoGenerate = $false)
     
-    $keystorePath = Join-Path $ProjectDir "k4n3co-keystore.jks"
+    $keystorePath = Join-Path $ProjectDir "lab-rats-keystore.jks"
     $keystorePropsFile = Join-Path $ProjectDir "keystore.properties"
     
     # Default values
     $keyAlias = $DefaultSettings.KeyAlias
     $keystorePass = $DefaultSettings.KeystorePass
-    $cnName = "K4N3CO Developer"
-    $orgName = "K4N3CO.LABS"
+    $cnName = "Lab-RATS Developer"
+    $orgName = "Lab-RATS.LABS"
     $country = "US"
     $validityDays = 25 * 365
     
@@ -226,7 +226,7 @@ function New-Keystore {
         
         # Create keystore.properties for Gradle
         $keystorePropsContent = @"
-storeFile=k4n3co-keystore.jks
+storeFile=lab-rats-keystore.jks
 storePassword=$keystorePass
 keyAlias=$keyAlias
 keyPassword=$keystorePass
@@ -261,7 +261,7 @@ function Set-Logo {
     $resDir = Join-Path $ProjectDir "app\src\main\res"
     
     Write-Host "[>] Logo options:" -ForegroundColor Magenta
-    Write-Host "    1. Use default K4N3CO logo (k4n3co.png)"
+    Write-Host "    1. Use default Lab-RATS logo (lab-rats.png)"
     Write-Host "    2. Use custom logo (provide image path)"
     Write-Host "    3. Keep current logo (no change)"
     Write-Host ""
@@ -275,7 +275,7 @@ function Set-Logo {
         "1" {
             if (Test-Path $DefaultLogo) {
                 $logoPath = $DefaultLogo
-                Write-Host "[OK] Using default K4N3CO logo" -ForegroundColor Green
+                Write-Host "[OK] Using default Lab-RATS logo" -ForegroundColor Green
             }
             else {
                 Write-Host "[!] Default logo not found at: $DefaultLogo" -ForegroundColor Red
@@ -412,7 +412,7 @@ function Set-AppConfig {
     $randVerCode = Get-Random -Minimum 10 -Maximum 1000
     
     # Package Name (Application ID)
-    $currentPkg = "com.labs.k4n3co" # Fallback
+    $currentPkg = "com.labs.labrats" # Fallback
     if (Test-Path $buildGradle) {
         $gradleContent = Get-Content $buildGradle -Raw
         if ($gradleContent -match 'applicationId\s+"([^"]+)"') {
@@ -424,7 +424,7 @@ function Set-AppConfig {
     if ([string]::IsNullOrEmpty($pkgName)) { $pkgName = $currentPkg }
     
     # App name
-    $currentAppName = "K4N3CO.LABS"
+    $currentAppName = "Lab-RATS.LABS"
     if (Test-Path $stringsFile) {
         $stringsContent = Get-Content $stringsFile -Raw
         if ($stringsContent -match '<string name="app_name">([^<]+)</string>') {
@@ -548,7 +548,7 @@ function Build-Apk {
     }
     
     # Check if keystore exists - auto-generate if not
-    $keystoreFile = Join-Path $ProjectDir "k4n3co-keystore.jks"
+    $keystoreFile = Join-Path $ProjectDir "lab-rats-keystore.jks"
     if (-not (Test-Path $keystoreFile)) {
         Write-Host "[!] No keystore found. Auto-generating..." -ForegroundColor Yellow
         New-Keystore -AutoGenerate $true
@@ -562,7 +562,7 @@ function Build-Apk {
     }
 
     $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
-    $appName = if ($config.AppName) { $config.AppName -replace ' ', '_' } else { "K4N3CO" }
+    $appName = if ($config.AppName) { $config.AppName -replace ' ', '_' } else { "Lab-RATS" }
     $versionName = if ($config.VersionName) { $config.VersionName } else { "2.0" }
     $apkFound = $false
 
@@ -635,8 +635,8 @@ function Build-Apk {
         Write-Host ""
         
         Write-Host "================================================================" -ForegroundColor Magenta
-        Write-Host "  Developed by: K4N3CO.LABS                                     " -ForegroundColor Magenta
-        Write-Host "  GitHub:   https://github.com/K4N3CO-LABS                      " -ForegroundColor Magenta
+        Write-Host "  Developed by: Lab-RATS.LABS                                     " -ForegroundColor Magenta
+        Write-Host "  GitHub:   https://github.com/Lab-RATS-LABS                      " -ForegroundColor Magenta
         Write-Host "================================================================" -ForegroundColor Magenta
         Write-Host ""
     }
@@ -699,7 +699,7 @@ function Show-MainMenu {
         }
         "6" {
             Write-Host "[*] Goodbye!" -ForegroundColor Cyan
-            Write-Host "    Follow: https://github.com/K4N3CO-LABS" -ForegroundColor Magenta
+            Write-Host "    Follow: https://github.com/Lab-RATS-LABS" -ForegroundColor Magenta
             return
         }
         default {

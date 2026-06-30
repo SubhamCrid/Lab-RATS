@@ -11,7 +11,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace 'com.labs.k4n3co'
+    namespace 'com.labs.labrats'
     compileSdk 34
 
     buildFeatures {
@@ -39,10 +39,10 @@ android {
     signingConfigs {
         release {
             if (keystorePropertiesFile.exists()) {
-                storeFile rootProject.file(keystoreProperties['storeFile'] ?: 'k4n3co-keystore.jks')
-                storePassword keystoreProperties['storePassword'] ?: 'k4n3co123'
-                keyAlias keystoreProperties['keyAlias'] ?: 'k4n3co-key'
-                keyPassword keystoreProperties['keyPassword'] ?: 'k4n3co123'
+                storeFile rootProject.file(keystoreProperties['storeFile'] ?: 'lab-rats-keystore.jks')
+                storePassword keystoreProperties['storePassword'] ?: 'lab-rats123'
+                keyAlias keystoreProperties['keyAlias'] ?: 'lab-rats-key'
+                keyPassword keystoreProperties['keyPassword'] ?: 'lab-rats123'
             }
         }
     }

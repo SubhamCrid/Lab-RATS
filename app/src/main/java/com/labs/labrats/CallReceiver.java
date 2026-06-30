@@ -1,4 +1,4 @@
-package com.labs.k4n3co;
+package com.labs.labrats;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

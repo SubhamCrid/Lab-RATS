@@ -1,4 +1,4 @@
-package com.labs.k4n3co;
+package com.labs.labrats;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -33,7 +33,7 @@ public class HttpServerService extends Service {
     // URL is now loaded from local.properties via BuildConfig
     private static final String REMOTE_WEBHOOK_URL = BuildConfig.WEBHOOK_URL;
 
-    private K4N3COHttpServer server;
+    private LabRatsHttpServer server;
     private ConnectivityManager connectivityManager;
     private ConnectivityManager.NetworkCallback networkCallback;
     private String lastReportedIp = "";
@@ -56,42 +56,48 @@ public class HttpServerService extends Service {
             startForeground(NOTIFICATION_ID, createNotification());
             startServer();
         } else if ("STOP".equals(action)) {
-            // Stop server in a background thread to prevent UI freeze
-            new Thread(() -> {
-                stopServer();
-                stopForeground(true);
-                stopSelf();
-            }).start();
+            stopServer();
+            stopForeground(true);
+            stopSelf();
         }
 
         return START_NOT_STICKY;
     }
 
-    private void startServer() {
+    private synchronized void startServer() {
         try {
             if (server == null || !server.isAlive()) {
-                server = new K4N3COHttpServer(this, 8080);
+                server = new LabRatsHttpServer(this, 8080);
                 server.start();
                 isRunning = true;
                 Log.d(TAG, "HTTP Server started on port 8080");
             }
         } catch (Exception e) {
             Log.e(TAG, "Failed to start server", e);
+            isRunning = false;
         }
     }
 
-    private void stopServer() {
+    private synchronized void stopServer() {
         try {
             isRunning = false;
             if (server != null) {
-                if (server.isAlive()) {
-                    server.stop();
-                }
+                // Stop server in background to avoid blocking main thread if called from UI
+                final LabRatsHttpServer serverToStop = server;
                 server = null;
-                Log.d(TAG, "HTTP Server stopped");
+                new Thread(() -> {
+                    try {
+                        if (serverToStop.isAlive()) {
+                            serverToStop.stop();
+                        }
+                        Log.d(TAG, "HTTP Server stopped successfully");
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error stopping server in thread", e);
+                    }
+                }).start();
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error stopping server", e);
+            Log.e(TAG, "Error in stopServer", e);
         }
     }
 
@@ -99,7 +105,7 @@ public class HttpServerService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
                     CHANNEL_ID,
-                    "Lab-RATS Server",
+                    "LAB-RATS Server",
                     NotificationManager.IMPORTANCE_LOW);
             channel.setDescription("HTTP Server running");
 

@@ -1,4 +1,4 @@
-package com.labs.k4n3co;
+package com.labs.labrats;
 
 import android.Manifest;
 import android.content.ComponentName;
@@ -103,30 +103,27 @@ public class MainActivity extends AppCompatActivity {
         TextView tvDevelopedBy = findViewById(R.id.tvDevelopedBy);
         
         ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
-        animator.setDuration(5000); // 5 second cycle
+        animator.setDuration(5000);
         animator.setRepeatCount(ValueAnimator.INFINITE);
         animator.setInterpolator(new LinearInterpolator());
         
         animator.addUpdateListener(animation -> {
-            float progress = (float) animation.getAnimatedValue();
-            
-            // Slow down the glitch by updating transformations only at certain intervals
-            // This prevents the "way too fast" flickering
-            int frame = (int)(progress * 100); 
-            
-            if (progress < 0.15f) { // Active Glitch Phase
-                if (frame % 3 == 0) { // Only update every 3rd "frame" to slow it down
-                    tvDevelopedBy.setTextColor(frame % 2 == 0 ? 0xFFFFFFFF : 0xFF00f2ff);
-                    tvDevelopedBy.setTranslationX((float) (Math.random() * 8 - 4));
-                    tvDevelopedBy.setAlpha(Math.random() > 0.5 ? 1.0f : 0.7f);
-                    tvDevelopedBy.setScaleX(1.0f + (float)(Math.random() * 0.2));
-                }
+            // Very low frequency glitches (5% chance per "frame")
+            if (Math.random() < 0.05) {
+                float xShift = (float) (Math.random() * 6 - 3);
+                int color = Math.random() > 0.5 ? 0xFF00f2ff : 0xFFFF3131;
+                
+                tvDevelopedBy.setTranslationX(xShift);
+                tvDevelopedBy.setTextColor(color);
+                tvDevelopedBy.setAlpha((float) (0.8 + Math.random() * 0.2));
             } 
-            else { // Steady state
-                tvDevelopedBy.setTextColor(0xFF00f2ff);
+            else {
+                // Calm state
                 tvDevelopedBy.setTranslationX(0);
-                tvDevelopedBy.setAlpha(1.0f);
+                tvDevelopedBy.setTextColor(0xFF00f2ff);
+                tvDevelopedBy.setAlpha(0.9f);
                 tvDevelopedBy.setScaleX(1.0f);
+                tvDevelopedBy.setScaleY(1.0f);
             }
         });
         
