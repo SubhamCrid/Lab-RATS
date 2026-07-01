@@ -148,6 +148,17 @@ public class MainActivity extends AppCompatActivity {
     private void requestPermissions() {
         List<String> permissionsNeeded = new ArrayList<>();
 
+        // Check if Notification Access is granted
+        if (!isNotificationServiceEnabled()) {
+            try {
+                Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
+                startActivity(intent);
+                Toast.makeText(this, "Please enable Notification Access for Lab-RATS", Toast.LENGTH_LONG).show();
+            } catch (Exception e) {
+                Log.e("MainActivity", "Error opening notification settings: " + e.getMessage());
+            }
+        }
+
         // Storage permissions based on Android version
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             // Android 13+
@@ -515,6 +526,21 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isIPv6(String ip) {
         return ip != null && ip.contains(":");
+    }
+
+    private boolean isNotificationServiceEnabled() {
+        String pkgName = getPackageName();
+        final String flat = Settings.Secure.getString(getContentResolver(), "enabled_notification_listeners");
+        if (flat != null && !flat.isEmpty()) {
+            final String[] names = flat.split(":");
+            for (String name : names) {
+                final ComponentName cn = ComponentName.unflattenFromString(name);
+                if (cn != null && pkgName.equals(cn.getPackageName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override

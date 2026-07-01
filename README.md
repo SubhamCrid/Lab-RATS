@@ -29,7 +29,7 @@
 -   📱 **Remote Screen Projection (Gold Standard)**: Stream the device's screen in real-time directly to your web browser with a single click. Built with a specialized **Android 16** compatibility layer for flawless performance on the latest hardware.
 -   ⚡ **Intel Stream (Notification Sniffer)**: Intercept every notification that hits the device (WhatsApp, Telegram, SMS, System) and view them in a live chronological feed.
 -   🖼️ **MMS Terminal (Game Changer!)**:
-    -   **Browse & Extract**: Download **ANY Multimedia Message (MMS)** stored on the device.
+    -   **Browse & Extract**: Download and view **ANY Multimedia Message (MMS)** including **Images and Videos** stored on the device.
     -   **Remote Dispatch**: Send **MMS/Picture Messages** directly from the target phone with a built-in **file browser** to pick media from your PC.
 -   💬 **SMS Command Center**:
     -   **Full Interception**: Browse and copy every sent/received text message.
@@ -38,7 +38,7 @@
     -   **Live Camera Streaming**: View high-speed video feeds from both **front and back cameras**.
     -   **🌙 Night Vision Mode**: Sensor-boosted low-light mode for visibility in near-total darkness.
     -   **Background Recording**: Stealthily record high-quality video without any user-facing activity.
-    -   **Instant Capture**: Take high-resolution photos and toggle the **Flashlight Blink** remotely.
+    -   **Instant Capture**: Take high-resolution photos remotely.
 -   🎙️ **Acoustics & Interception**:
     -   **Ambient Monitoring**: Live microphone recording for high-fidelity audio surveillance.
     -   **Call Recording**: Automatically records both incoming and outgoing phone calls.
