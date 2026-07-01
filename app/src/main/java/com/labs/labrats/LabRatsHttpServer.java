@@ -128,6 +128,15 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "  box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);" +
             "  transform: translateY(-2px);" +
             "}" +
+            ".nav a.logout {" +
+            "  color: var(--danger);" +
+            "  border-color: rgba(255, 49, 49, 0.3);" +
+            "}" +
+            ".nav a.logout:hover {" +
+            "  background: rgba(255, 49, 49, 0.15);" +
+            "  border-color: var(--danger);" +
+            "  box-shadow: 0 0 20px rgba(255, 49, 49, 0.4);" +
+            "}" +
             ".nav a.active {" +
             "  background: rgba(0, 242, 255, 0.15);" +
             "  border-color: var(--neon-cyan);" +
@@ -246,6 +255,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "    <a href=\"/mms\">MMS</a>" +
             "    <a href=\"/audio\">Acoustics</a>" +
             "    <a href=\"/contacts\">Contacts</a>" +
+            "    <a href=\"/logout\" class=\"logout\">Logout</a>" +
             "  </div>";
 
     private static final String HTML_FOOTER = "</div>" +
@@ -291,13 +301,11 @@ public class LabRatsHttpServer extends NanoHTTPD {
         String uri = session.getUri();
         
         try {
-            if (uri.equals("/login")) {
-                Map<String, String> files = new HashMap<>();
-                session.parseBody(files);
-                Map<String, String> postParams = session.getParms();
-                String pass = postParams.get("password");
+            if (uri.equals("/login") && session.getMethod() == Method.POST) {
+                session.parseBody(new HashMap<>());
+                String pass = session.getParms().get("password");
                 
-                if (getStoredPassword().equals(pass)) {
+                if (pass != null && getStoredPassword().equals(pass.trim())) {
                     Response r = newFixedLengthResponse(Response.Status.REDIRECT, "text/html", "");
                     r.addHeader("Location", "/");
                     r.addHeader("Set-Cookie", "token=" + sessionToken + "; Path=/; HttpOnly");
@@ -309,6 +317,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
             // Auth Check
             String cookie = session.getCookies().read("token");
             if (cookie == null || !cookie.equals(sessionToken)) {
+                if (uri.equals("/login")) return newFixedLengthResponse(Response.Status.OK, "text/html", LOGIN_HTML);
                 return newFixedLengthResponse(Response.Status.OK, "text/html", LOGIN_HTML);
             }
 
@@ -398,6 +407,11 @@ public class LabRatsHttpServer extends NanoHTTPD {
                 return updateAudioSettings(params);
             } else if (uri.equals("/audio/recordings")) {
                 return serveAudioRecordings();
+            } else if (uri.equals("/logout")) {
+                Response r = newFixedLengthResponse(Response.Status.REDIRECT, "text/html", "");
+                r.addHeader("Location", "/login");
+                r.addHeader("Set-Cookie", "token=logged_out; Path=/; Max-Age=0; HttpOnly");
+                return r;
             } else {
                 return serve404();
             }
