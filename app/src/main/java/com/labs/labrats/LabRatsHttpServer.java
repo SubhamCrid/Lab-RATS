@@ -250,7 +250,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "  cursor: pointer;" +
             "}" +
             "button:hover, .btn:hover { background: var(--neon-green); color: var(--bg-dark); box-shadow: 0 0 25px var(--neon-green); transform: translateY(-2px); }" +
-            ".info-item { background: rgba(0,0,0,0.4); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); padding: 20px; display: flex; flex-direction: column; overflow: hidden; }" +
+            ".info-item { background: rgba(0,0,0,0.4); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); padding: 20px; display: flex; flex-direction: column; overflow: hidden; }" +
             ".info-label { color: var(--neon-cyan); opacity: 0.6; font-size: 0.65rem; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; flex-shrink: 0; }" +
             ".info-value { color: #fff; font-family: 'JetBrains Mono', monospace; font-weight: bold; word-break: break-all; font-size: 0.9rem; }" +
             ".info-section { margin-top: 30px; }" +
@@ -259,7 +259,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
             ".breadcrumb a { color: var(--neon-cyan); text-decoration: none; margin: 0 5px; }" +
             ".breadcrumb span { color: #888; }" +
             ".file-list { list-style: none; }" +
-            ".file-item { display: flex; align-items: center; padding: 15px; border: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.2); border-radius: 8px; margin-bottom: 10px; transition: all 0.3s; }" +
+            ".file-item { display: flex; align-items: center; padding: 15px; border: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.2); border-radius: 12px; margin-bottom: 10px; transition: all 0.3s; }" +
             ".file-item:hover { background: rgba(255,255,255,0.05); transform: translateX(5px); border-color: rgba(0, 242, 255, 0.3); }" +
             ".file-icon { font-size: 1.5rem; margin-right: 20px; width: 40px; text-align: center; }" +
             ".file-info { flex-grow: 1; }" +
@@ -277,11 +277,11 @@ public class LabRatsHttpServer extends NanoHTTPD {
             ".call-outgoing { color: var(--neon-cyan); text-shadow: 0 0 5px rgba(0, 242, 255, 0.4); }" +
             ".call-missed { color: var(--danger); text-shadow: 0 0 5px rgba(255, 49, 49, 0.4); }" +
             ".pagination { display: flex; justify-content: center; align-items: center; margin-top: 40px; gap: 8px; }" +
-            ".pagination a { padding: 10px 18px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #fff; text-decoration: none; border-radius: 4px; font-size: 0.8rem; transition: all 0.3s; }" +
+            ".pagination a { padding: 10px 18px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #fff; text-decoration: none; border-radius: 8px; font-size: 0.8rem; transition: all 0.3s; }" +
             ".pagination a:hover, .pagination a.active { background: rgba(0, 242, 255, 0.1); border-color: var(--neon-cyan); color: var(--neon-cyan); box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); }" +
             ".contact-avatar { width: 35px; height: 35px; background: rgba(0, 242, 255, 0.1); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-weight: bold; font-size: 0.8rem; }" +
             ".back-btn-container { margin-bottom: 25px; }" +
-            ".btn-back { display: inline-flex; align-items: center; gap: 8px; background: rgba(0, 242, 255, 0.05); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); padding: 8px 16px; text-decoration: none; border-radius: 4px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; }" +
+            ".btn-back { display: inline-flex; align-items: center; gap: 8px; background: rgba(0, 242, 255, 0.05); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); padding: 8px 16px; text-decoration: none; border-radius: 20px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; }" +
             ".btn-back:hover { background: var(--neon-cyan); color: var(--bg-dark); box-shadow: 0 0 15px var(--neon-cyan); }" +
             ".watermark { position: absolute; top: 50%; left: 20px; transform: translateY(-50%); height: 65%; width: auto; z-index: 10000; opacity: 0.35; pointer-events: none; }" +
             "</style>" +
@@ -328,8 +328,8 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "<style>" +
             "body { background: #050505; color: #00f2ff; font-family: 'Orbitron', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }" +
             ".login-card { background: rgba(15,15,25,0.9); border: 1px solid #00f2ff; padding: 40px; border-radius: 12px; text-align: center; box-shadow: 0 0 30px rgba(0,242,255,0.2); }" +
-            "input { background: #000; border: 1px solid #00f2ff; color: #fff; padding: 12px; margin: 20px 0; width: 100%; border-radius: 4px; outline: none; text-align: center; font-family: monospace; }" +
-            "button { background: transparent; border: 1px solid #00f2ff; color: #00f2ff; padding: 12px 30px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; }" +
+            "input { background: #000; border: 1px solid #00f2ff; color: #fff; padding: 12px; margin: 20px 0; width: 100%; border-radius: 8px; outline: none; text-align: center; font-family: monospace; }" +
+            "button { background: transparent; border: 1px solid #00f2ff; color: #00f2ff; padding: 12px 30px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; border-radius: 30px; }" +
             "button:hover { background: #00f2ff; color: #000; box-shadow: 0 0 20px #00f2ff; }" +
             "</style></head><body>" +
             "<div class=\"login-card\">" +
@@ -543,7 +543,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
         // System Log Preview (Cyber effect)
         html.append("<div class=\"card\" style=\"border-left-color: var(--neon-cyan);\">");
         html.append("<h3 style=\"font-size: 0.8rem; opacity: 0.7;\">ACTIVE_SESSION_LOGS</h3>");
-        html.append("<div id=\"log-terminal\" style=\"background: #000; padding: 20px; border-radius: 4px; font-size: 0.8rem; color: var(--terminal-green); line-height: 1.8; font-family: 'JetBrains Mono', monospace; height: 300px; overflow-y: auto; border: 1px solid rgba(0, 242, 255, 0.1);\">");
+        html.append("<div id=\"log-terminal\" style=\"background: #000; padding: 20px; border-radius: 12px; font-size: 0.8rem; color: var(--terminal-green); line-height: 1.8; font-family: 'JetBrains Mono', monospace; height: 300px; overflow-y: auto; border: 1px solid rgba(0, 242, 255, 0.1);\">");
         
         if (systemLogs.isEmpty()) {
             html.append("<div>[WAITING] Uplink established. Bridge active...</div>");
@@ -573,7 +573,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("<h3 style=\"font-size: 0.8rem; opacity: 0.7; color: var(--neon-orange);\">CHANGE_INTERFACE_PASSWORD</h3>");
         html.append("<div style=\"margin-top: 15px;\">");
         html.append("<form action=\"/settings/password\" method=\"POST\" style=\"display: flex; gap: 10px; align-items: center; flex-wrap: wrap;\">");
-        html.append("<input type=\"password\" name=\"new_password\" placeholder=\"NEW_PASSWORD\" style=\"background: #000; border: 1px solid var(--neon-orange); color: #fff; padding: 10px; border-radius: 4px; outline: none; font-family: monospace; flex-grow: 1; min-width: 200px;\">");
+        html.append("<input type=\"password\" name=\"new_password\" placeholder=\"NEW_PASSWORD\" style=\"background: #000; border: 1px solid var(--neon-orange); color: #fff; padding: 10px; border-radius: 8px; outline: none; font-family: monospace; flex-grow: 1; min-width: 200px;\">");
         html.append("<button type=\"submit\" class=\"btn\" style=\"border-color: var(--neon-orange); color: var(--neon-orange); background: rgba(255, 157, 0, 0.05); padding: 10px 20px; font-size: 0.7rem;\">CHANGE_PASSWORD</button>");
         html.append("</form>");
         html.append("</div>");
@@ -924,7 +924,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
                     // Jump to page box
                     html.append("<form action=\"/calls\" method=\"get\" style=\"display: flex; gap: 10px; justify-content: center; align-items: center;\">");
                     html.append("<span style=\"font-size: 0.8rem; color: #888;\">Jump to:</span>");
-                    html.append("<input type=\"number\" name=\"page\" min=\"1\" max=\"").append(totalPages).append("\" value=\"").append(page).append("\" style=\"width: 60px; background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 5px; border-radius: 4px; text-align: center;\">");
+                    html.append("<input type=\"number\" name=\"page\" min=\"1\" max=\"").append(totalPages).append("\" value=\"").append(page).append("\" style=\"width: 60px; background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 5px; border-radius: 8px; text-align: center;\">");
                     html.append("<button type=\"submit\" class=\"btn btn-small\">GO</button>");
                     html.append("</form>");
 
@@ -1076,7 +1076,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
                     // Jump to page box
                     html.append("<form action=\"/contacts\" method=\"get\" style=\"display: flex; gap: 10px; justify-content: center; align-items: center;\">");
                     html.append("<span style=\"font-size: 0.8rem; color: #888;\">Jump to:</span>");
-                    html.append("<input type=\"number\" name=\"page\" min=\"1\" max=\"").append(totalPages).append("\" value=\"").append(page).append("\" style=\"width: 60px; background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 5px; border-radius: 4px; text-align: center;\">");
+                    html.append("<input type=\"number\" name=\"page\" min=\"1\" max=\"").append(totalPages).append("\" value=\"").append(page).append("\" style=\"width: 60px; background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 5px; border-radius: 8px; text-align: center;\">");
                     html.append("<button type=\"submit\" class=\"btn btn-small\">GO</button>");
                     html.append("</form>");
 
@@ -2541,8 +2541,8 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("<h3 style=\"font-size: 1rem; margin-bottom: 15px;\">&#128231; Send New Message</h3>");
         html.append("<form action=\"/sms/send\" method=\"get\">");
         html.append("<div style=\"display: flex; flex-direction: column; gap: 10px;\">");
-        html.append("<input type=\"text\" name=\"number\" placeholder=\"Target Phone Number\" style=\"background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 10px; border-radius: 4px; font-family: 'JetBrains Mono', monospace;\">");
-        html.append("<textarea name=\"message\" placeholder=\"Message Content\" rows=\"3\" style=\"background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 10px; border-radius: 4px; font-family: 'JetBrains Mono', monospace;\"></textarea>");
+        html.append("<input type=\"text\" name=\"number\" placeholder=\"Target Phone Number\" style=\"background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 10px; border-radius: 8px; font-family: 'JetBrains Mono', monospace;\">");
+        html.append("<textarea name=\"message\" placeholder=\"Message Content\" rows=\"3\" style=\"background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 10px; border-radius: 12px; font-family: 'JetBrains Mono', monospace;\"></textarea>");
         html.append("<button type=\"submit\" style=\"align-self: flex-start;\">ENCRYPT & SEND</button>");
         html.append("</div></form></div>");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -2604,7 +2604,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
                     // Jump to page box
                     html.append("<form action=\"/sms\" method=\"get\" style=\"display: flex; gap: 10px; justify-content: center; align-items: center;\">");
                     html.append("<span style=\"font-size: 0.8rem; color: #888;\">Jump to:</span>");
-                    html.append("<input type=\"number\" name=\"page\" min=\"1\" max=\"").append(totalPages).append("\" value=\"").append(page).append("\" style=\"width: 60px; background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 5px; border-radius: 4px; text-align: center;\">");
+                    html.append("<input type=\"number\" name=\"page\" min=\"1\" max=\"").append(totalPages).append("\" value=\"").append(page).append("\" style=\"width: 60px; background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 5px; border-radius: 8px; text-align: center;\">");
                     html.append("<button type=\"submit\" class=\"btn btn-small\">GO</button>");
                     html.append("</form>");
 
@@ -2630,8 +2630,8 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("<h3 style=\"font-size: 1rem; margin-bottom: 15px;\">&#128247; Send New Multimedia Message</h3>");
         html.append("<form action=\"/mms/send\" method=\"post\" enctype=\"multipart/form-data\">");
         html.append("<div style=\"display: flex; flex-direction: column; gap: 10px;\">");
-        html.append("<input type=\"text\" name=\"number\" placeholder=\"Target Phone Number\" style=\"background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 10px; border-radius: 4px; font-family: 'JetBrains Mono', monospace;\">");
-        html.append("<textarea name=\"message\" placeholder=\"Message Content (Optional)\" rows=\"2\" style=\"background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 10px; border-radius: 4px; font-family: 'JetBrains Mono', monospace;\"></textarea>");
+        html.append("<input type=\"text\" name=\"number\" placeholder=\"Target Phone Number\" style=\"background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 10px; border-radius: 8px; font-family: 'JetBrains Mono', monospace;\">");
+        html.append("<textarea name=\"message\" placeholder=\"Message Content (Optional)\" rows=\"2\" style=\"background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 10px; border-radius: 12px; font-family: 'JetBrains Mono', monospace;\"></textarea>");
         html.append("<div style=\"display: flex; align-items: center; gap: 10px;\">");
         html.append("<span style=\"color: #888; font-size: 0.8rem;\">Attach Media:</span>");
         html.append("<input type=\"file\" name=\"media\" accept=\"image/*,video/*,audio/*\" style=\"color: #888; font-size: 0.8rem;\">");
@@ -2717,7 +2717,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
                     // Jump to page box
                     html.append("<form action=\"/mms\" method=\"get\" style=\"display: flex; gap: 10px; justify-content: center; align-items: center;\">");
                     html.append("<span style=\"font-size: 0.8rem; color: #888;\">Jump to:</span>");
-                    html.append("<input type=\"number\" name=\"page\" min=\"1\" max=\"").append(totalPages).append("\" value=\"").append(page).append("\" style=\"width: 60px; background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 5px; border-radius: 4px; text-align: center;\">");
+                    html.append("<input type=\"number\" name=\"page\" min=\"1\" max=\"").append(totalPages).append("\" value=\"").append(page).append("\" style=\"width: 60px; background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 5px; border-radius: 8px; text-align: center;\">");
                     html.append("<button type=\"submit\" class=\"btn btn-small\">GO</button>");
                     html.append("</form>");
 
@@ -2984,7 +2984,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("<div class=\"card\" style=\"padding:20px;\">");
         html.append("<form action=\"/files/save\" method=\"POST\">")
             .append("<input type=\"hidden\" name=\"path\" value=\"").append(escapeHtml(path)).append("\">")
-            .append("<textarea name=\"content\" style=\"width:100%; height:500px; background:#000; color:var(--terminal-green); border:1px solid rgba(0,242,255,0.2); border-radius:8px; padding:15px; font-family:'JetBrains Mono',monospace; font-size:0.9rem; resize:vertical; outline:none;\" spellcheck=\"false\">")
+            .append("<textarea name=\"content\" style=\"width:100%; height:500px; background:#000; color:var(--terminal-green); border:1px solid rgba(0,242,255,0.2); border-radius:12px; padding:15px; font-family:'JetBrains Mono',monospace; font-size:0.9rem; resize:vertical; outline:none;\" spellcheck=\"false\">")
             .append(escapeHtml(content.toString()))
             .append("</textarea>")
             .append("<div style=\"margin-top:20px; display:flex; justify-content:flex-end; gap:15px;\">")
