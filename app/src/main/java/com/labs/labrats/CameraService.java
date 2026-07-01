@@ -104,6 +104,9 @@ public class CameraService extends Service {
     private static long recordingStartTime = 0;
     private Surface recorderSurface;
 
+    // Night Mode
+    private static volatile boolean nightModeEnabled = false;
+
     // WakeLock for background operation
     private PowerManager.WakeLock wakeLock;
 
@@ -620,7 +623,14 @@ public class CameraService extends Service {
             CaptureRequest.Builder builder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             builder.addTarget(imageReader.getSurface());
             builder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_VIDEO);
-            builder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
+            
+            if (nightModeEnabled) {
+                builder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
+                builder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, 100000000L); // 1/10s
+                builder.set(CaptureRequest.SENSOR_SENSITIVITY, 1600); // High ISO
+            } else {
+                builder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
+            }
 
             captureSession.setRepeatingRequest(builder.build(), null, backgroundHandler);
             isStreaming = true;
@@ -848,6 +858,17 @@ public class CameraService extends Service {
 
     public static int getStreamHeight() {
         return streamHeight;
+    }
+
+    public void setNightMode(boolean enabled) {
+        nightModeEnabled = enabled;
+        if (isStreaming && captureSession != null && cameraDevice != null) {
+            startPreview(); // Restart preview to apply changes
+        }
+    }
+
+    public static boolean isNightModeEnabled() {
+        return nightModeEnabled;
     }
 
     // ============ CAMERA INFO CLASS ============

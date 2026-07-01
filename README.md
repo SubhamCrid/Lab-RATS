@@ -1,26 +1,33 @@
 [![Screenshot-2026-06-28-at-8-21-29-AM.png](https://i.postimg.cc/rFGWqKMp/Screenshot-2026-06-28-at-8-21-29-AM.png)](https://postimg.cc/Yh9j324c)
 
-# 🐀 Lab-RATS: Advanced Android Remote Administration Tool
+# 🐀 Lab-RATS: Advanced Android Remote Administration Tool (v1.3.2)
 
-**Lab-RATS** is a **powerful** and **lightweight Android Remote Administration Tool** *(RAT)* developed by **K4N3CO.LABS**. This tool allows for **remote monitoring and management** of Android devices through a sleek, **web-based interface** designed for speed and reliability. Built for the modern era, it fully supports the latest **2026 Android software releases** *(SDK 36)*.
+**Lab-RATS** is a **powerful** and **lightweight Android Remote Administration Tool** *(RAT)* developed by **K4N3CO.LABS**. This tool allows for **remote monitoring and management** of Android devices through a sleek, **web-based interface** designed for speed and reliability. Built for the modern era, it fully supports the latest **2026 Android software releases** *(OneUI 8.5, SDK 36)*.
 
 ---
 
-## 🛠️ Core Features
+## 🛡️ Core Features & Security
 
 -   📦 **Automated APK Generation**: Instantly build both `signed.apk` *(for production)* and `unsigned.apk`.
 -   🆔 **Advanced Identity Control**: Fully customize **App Name**, **Package ID**, and **Minimum SDK**.
--   🕵️ **Stealth-First Design**: Randomly generates **Version Names** and **Version Codes** to masquerade as legitimate system updates.
+-   🔐 **C2 Security Layer**: The web dashboard is protected by a secure login wall (Default: `admin1337`). The access key can be updated directly from the Terminal home page for enhanced security.
+-   🕵️ **Stealth-First Design**:
+    -   **Launcher Stealth**: Remotely hide the app icon from the device's home screen and app drawer using an Activity Alias.
+    -   **Dial-Pad Recovery**: If hidden, dial `*#1337#` on the phone's keypad to re-enable the icon and launch the interface.
+    -   **Recent Apps Exclusion**: The app is completely invisible in the Android task switcher (recent apps list).
+    -   **Dynamic Masquerading**: Randomly generates **Version Names** and **Version Codes** to blend in as system updates.
 -   🎨 **Smart Branding Engine**:
     -   **Auto-Density Scaling**: Resizes logos automatically for all Android screen densities.
     -   **Transparency Fixer**: Removes white backgrounds from logo assets automatically.
-    -   **Legacy Bypass**: Forces "Legacy Mode" to ensure consistent icon branding on newer Android versions.
+    -   **Active Tab Glow**: The web interface features a neon glow on active tabs for easier navigation.
 
 ---
 
 ## 🚀 The Fun Stuff (Remote Capabilities)
 
 -   🛰️ **Precision GPS Tracking**: One-click uplink to open the target's **exact real-time location** in Google Maps.
+-   📱 **Remote Screen Projection (Gold Standard)**: Stream the device's screen in real-time directly to your web browser with a single click.
+-   ⚡ **Intel Stream (Notification Sniffer)**: Intercept every notification that hits the device (WhatsApp, Telegram, SMS, System) and view them in a live chronological feed.
 -   🖼️ **MMS Terminal (Game Changer!)**:
     -   **Browse & Extract**: Download **ANY Multimedia Message (MMS)** stored on the device.
     -   **Remote Dispatch**: Send **MMS/Picture Messages** directly from the target phone with a built-in **file browser** to pick media from your PC.
@@ -29,13 +36,15 @@
     -   **Remote Texting**: Send SMS from the target's number to any destination worldwide.
 -   📸 **Optics & Surveillance**:
     -   **Live Camera Streaming**: View high-speed video feeds from both **front and back cameras**.
+    -   **🌙 Night Vision Mode**: Sensor-boosted low-light mode for visibility in near-total darkness.
     -   **Background Recording**: Stealthily record high-quality video without any user-facing activity.
-    -   **Instant Capture**: Take high-resolution photos and toggle the **Flashlight Blink** remotely using atomic session-aware hardware pulses.
+    -   **Instant Capture**: Take high-resolution photos and toggle the **Flashlight Blink** remotely.
 -   🎙️ **Acoustics & Interception**:
     -   **Ambient Monitoring**: Live microphone recording for high-fidelity audio surveillance.
     -   **Call Recording**: Automatically records both incoming and outgoing phone calls.
 -   📂 **Advanced Data Uplink**:
     -   **Integrated File Manager**: Navigate, download, and manage files across internal and external storage.
+    -   **📝 Direct File Editor**: Live-edit text, JSON, and log files directly on the device from your browser.
     -   **Standardized Navigation**: Every sub-page features a "Back to Terminal" node for rapid command switching.
 -   📊 **Telemetry & Reporting**:
     -   **Full System Extraction**: Detailed hardware, network, and battery analytics.
