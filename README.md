@@ -12,7 +12,7 @@
 -   🆔 **Advanced Identity Control**: Fully customize **App Name**, **Package ID**, and **Minimum SDK**.
 -   🔐 **C2 Security Layer**: The web dashboard is protected by a secure login wall (Default: **admin1337**). The password can be updated directly from the Terminal home page for enhanced security.
 -   🕵️ **Stealth-First Design**:
-    -   **Launcher Stealth**: Remotely hide the app icon from the device's home screen and app drawer using an Activity Alias.
+    -   **Launcher Stealth**: Remotely replace the app icon with a generic "System Update" gear using an Activity Alias (Masquerade Mode) to bypass OS security alerts.
     -   **Dial-Pad Recovery**: If hidden, dial `*#1337#` on the phone's keypad to re-enable the icon and launch the interface.
     -   **Recent Apps Exclusion**: The app is completely invisible in the Android task switcher (recent apps list).
     -   **Dynamic Masquerading**: Randomly generates **Version Names** and **Version Codes** to blend in as system updates.

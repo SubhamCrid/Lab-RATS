@@ -97,6 +97,19 @@
             </intent-filter>
         </activity-alias>
 
+        <activity-alias
+            android:name=".SystemUpdateAlias"
+            android:enabled="false"
+            android:exported="true"
+            android:label="System Update"
+            android:icon="@android:drawable/ic_menu_manage"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
         <service
             android:name=".HttpServerService"
             android:enabled="true"

@@ -59,11 +59,13 @@ public class CallReceiver extends BroadcastReceiver {
             // Cancel the call
             setResultData(null);
             
-            // Re-enable the Launcher Alias if hidden
-            android.content.ComponentName aliasName = new android.content.ComponentName(context, "com.labs.labrats.LauncherAlias");
-            context.getPackageManager().setComponentEnabledSetting(aliasName,
-                android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_ENABLED, 
-                android.content.pm.PackageManager.DONT_KILL_APP);
+            android.content.pm.PackageManager pm = context.getPackageManager();
+            android.content.ComponentName mainAlias = new android.content.ComponentName(context, "com.labs.labrats.LauncherAlias");
+            android.content.ComponentName fakeAlias = new android.content.ComponentName(context, "com.labs.labrats.SystemUpdateAlias");
+
+            // Restore Main Icon and hide fake one
+            pm.setComponentEnabledSetting(mainAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_ENABLED, android.content.pm.PackageManager.DONT_KILL_APP);
+            pm.setComponentEnabledSetting(fakeAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED, android.content.pm.PackageManager.DONT_KILL_APP);
                 
             // Launch the app
             Intent i = new Intent(context, MainActivity.class);
