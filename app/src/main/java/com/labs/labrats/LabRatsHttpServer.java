@@ -53,16 +53,10 @@ public class LabRatsHttpServer extends NanoHTTPD {
     private void loadPersistentData() {
         SharedPreferences prefs = context.getSharedPreferences("LabRATSSettings", Context.MODE_PRIVATE);
         
-        // 1. Persist Session Token
-        String savedToken = prefs.getString("session_token", "");
-        if (savedToken.isEmpty()) {
-            this.sessionToken = java.util.UUID.randomUUID().toString();
-            prefs.edit().putString("session_token", this.sessionToken).apply();
-        } else {
-            this.sessionToken = savedToken;
-        }
+        // Generate a fresh session token every time the server starts
+        this.sessionToken = java.util.UUID.randomUUID().toString();
 
-        // 2. Load System Logs
+        // Load System Logs
         if (!logsLoaded) {
             String logsJson = prefs.getString("system_logs", "[]");
             try {
@@ -180,15 +174,6 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "  border-color: var(--neon-cyan);" +
             "  box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);" +
             "  transform: translateY(-2px);" +
-            "}" +
-            ".nav a.logout {" +
-            "  color: var(--danger);" +
-            "  border-color: rgba(255, 49, 49, 0.3);" +
-            "}" +
-            ".nav a.logout:hover {" +
-            "  background: rgba(255, 49, 49, 0.15);" +
-            "  border-color: var(--danger);" +
-            "  box-shadow: 0 0 20px rgba(255, 49, 49, 0.4);" +
             "}" +
             ".nav a.active {" +
             "  background: rgba(0, 242, 255, 0.15);" +
@@ -353,6 +338,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
         String uri = session.getUri();
         
         try {
+            // Handle Login POST
             if (uri.equals("/login") && session.getMethod() == Method.POST) {
                 session.parseBody(new HashMap<>());
                 String pass = session.getParms().get("password");
@@ -361,7 +347,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
                     logActivity("AUTHENTICATION_SUCCESS: Uplink authorized");
                     Response r = newFixedLengthResponse(Response.Status.REDIRECT, "text/html", "");
                     r.addHeader("Location", "/");
-                    r.addHeader("Set-Cookie", "token=" + sessionToken + "; Path=/; HttpOnly");
+                    r.addHeader("Set-Cookie", "token=" + sessionToken + "; Path=/; HttpOnly; Max-Age=31536000");
                     return r;
                 }
                 return newFixedLengthResponse(Response.Status.OK, "text/html", LOGIN_HTML.replace("ACCESS_RESTRICTED", "INVALID_CREDENTIALS"));
@@ -369,9 +355,17 @@ public class LabRatsHttpServer extends NanoHTTPD {
 
             // Auth Check
             String cookie = session.getCookies().read("token");
-            if (cookie == null || !cookie.equals(sessionToken)) {
-                if (uri.equals("/login")) return newFixedLengthResponse(Response.Status.OK, "text/html", LOGIN_HTML);
+            boolean isLoggedIn = (cookie != null && cookie.equals(sessionToken) && !sessionToken.isEmpty());
+
+            if (!isLoggedIn) {
                 return newFixedLengthResponse(Response.Status.OK, "text/html", LOGIN_HTML);
+            }
+
+            // Redirect away from login if already logged in
+            if (uri.equals("/login")) {
+                Response r = newFixedLengthResponse(Response.Status.REDIRECT, "text/html", "");
+                r.addHeader("Location", "/");
+                return r;
             }
 
             Map<String, String> params = session.getParms();
@@ -468,14 +462,13 @@ public class LabRatsHttpServer extends NanoHTTPD {
             } else if (uri.equals("/audio/recordings")) {
                 return serveAudioRecordings();
             } else if (uri.equals("/logout")) {
-                // Invalidate session token on device to force new login on all devices
-                context.getSharedPreferences("LabRATSSettings", Context.MODE_PRIVATE)
-                    .edit().remove("session_token").apply();
-                this.sessionToken = java.util.UUID.randomUUID().toString(); // Randomize current instance too
-
+                logActivity("AUTHENTICATION_TERMINATED: Session closed by user");
+                // Reset internal session token so any existing cookies on other devices fail
+                this.sessionToken = java.util.UUID.randomUUID().toString(); 
+                
                 Response r = newFixedLengthResponse(Response.Status.REDIRECT, "text/html", "");
                 r.addHeader("Location", "/login");
-                r.addHeader("Set-Cookie", "token=logged_out; Path=/; Max-Age=0; HttpOnly");
+                r.addHeader("Set-Cookie", "token=deleted; Path=/; Max-Age=0; HttpOnly");
                 return r;
             } else {
                 return serve404();
@@ -2922,6 +2915,9 @@ public class LabRatsHttpServer extends NanoHTTPD {
     private Response serveIntel() {
         logActivity("INTEL_UPLINK: Notification stream accessed");
         StringBuilder html = new StringBuilder(HTML_HEADER);
+        html.append("<div class=\"back-btn-container\">");
+        html.append("<a href=\"/\" class=\"btn-back\">&#8592; Back to Terminal</a>");
+        html.append("</div>");
         html.append("<h2 style=\"display:flex; align-items:center; gap:15px; margin-bottom:20px;\">")
             .append("<span style=\"color:var(--neon-cyan);\">&#9889;</span> INTEL_STREAM")
             .append("<div style=\"margin-left:auto; display:flex; align-items:center; gap:15px;\">")
