@@ -66,12 +66,8 @@
 </p>
 
 <p align="center">
-  <b>--- &gt; Remote Web Control Panel (PC Interface) &lt; ---</b><br>
-<a href="https://postimg.cc/5Xsy7PHm" target="_blank"><img src="https://i.postimg.cc/5Xsy7PHm/Lab-rats-Homepage.png" alt="Lab-rats-Homepage"></a>
-<a href="https://postimg.cc/87ZcKyFB" target="_blank"><img src="https://i.postimg.cc/87ZcKyFB/Lab-rats-Hardware.png" alt="Lab-rats-Hardware"></a>
-<a href="https://postimg.cc/18m4KxzJ" target="_blank"><img src="https://i.postimg.cc/18m4KxzJ/Lab-rats-Data.png" alt="Lab-rats-Data"></a>
-<a href="https://postimg.cc/BjmbYh8x" target="_blank"><img src="https://i.postimg.cc/BjmbYh8x/Lab-rats-Camera-Menu.png" alt="Lab-rats-Camera-Menu"></a> 
-<a href="https://postimg.cc/xXfqPrd6" target="_blank"><img src="https://i.postimg.cc/xXfqPrd6/Lab-rats-Camera-pic.png" alt="Lab-rats-Camera-pic"></a> <a href="https://postimg.cc/9DL08x4Y" target="_blank"><img src="https://i.postimg.cc/9DL08x4Y/Lab-rats-GPS.png" alt="Lab-rats-GPS"></a> <a href="https://postimg.cc/RWghsP3G" target="_blank"><img src="https://i.postimg.cc/RWghsP3G/Lab-rats-SMS.png" alt="Lab-rats-SMS"></a> <a href="https://postimg.cc/XrsqH2Z8" target="_blank"><img src="https://i.postimg.cc/XrsqH2Z8/Lab-Rats-MMS.png" alt="Lab-Rats-MMS"></a> <a href="https://postimg.cc/sMTx6nB5" target="_blank"><img src="https://i.postimg.cc/sMTx6nB5/Lab-Rats-Audio.png" alt="Lab-Rats-Audio"></a>
+  <b>--- &gt; Remote Web Control Panel (PC Interface) &lt; ---</b><br> 
+<a href='https://postimg.cc/qzHx5pft' target='_blank'><img src='https://i.postimg.cc/qzHx5pft/Lab-RATS-Home.png' border='0' alt='Lab-RATS-Home'></a> <a href="https://postimg.cc/87ZcKyFB" target="_blank"><img src="https://i.postimg.cc/87ZcKyFB/Lab-rats-Hardware.png" alt="Lab-rats-Hardware"></a> <a href="https://postimg.cc/18m4KxzJ" target="_blank"><img src="https://i.postimg.cc/18m4KxzJ/Lab-rats-Data.png" alt="Lab-rats-Data"></a> <a href="https://postimg.cc/BjmbYh8x" target="_blank"><img src="https://i.postimg.cc/BjmbYh8x/Lab-rats-Camera-Menu.png" alt="Lab-rats-Camera-Menu"></a> <a href='https://postimg.cc/F7hJSz5H' target='_blank'><img src='https://i.postimg.cc/F7hJSz5H/Screenshot-2026-07-01-at-5-20-00-PM.png' border='0' alt='Screenshot-2026-07-01-at-5-20-00-PM'></a> <a href="https://postimg.cc/9DL08x4Y" target="_blank"><img src="https://i.postimg.cc/9DL08x4Y/Lab-rats-GPS.png" alt="Lab-rats-GPS"></a> <a href="https://postimg.cc/RWghsP3G" target="_blank"><img src="https://i.postimg.cc/RWghsP3G/Lab-rats-SMS.png" alt="Lab-rats-SMS"></a> <a href="https://postimg.cc/XrsqH2Z8" target="_blank"><img src="https://i.postimg.cc/XrsqH2Z8/Lab-Rats-MMS.png" alt="Lab-Rats-MMS"></a> <a href="https://postimg.cc/sMTx6nB5" target="_blank"><img src="https://i.postimg.cc/sMTx6nB5/Lab-Rats-Audio.png" alt="Lab-Rats-Audio"></a>
 </p>
 
 ---
