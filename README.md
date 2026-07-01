@@ -10,7 +10,7 @@
 
 -   📦 **Automated APK Generation**: Instantly build both `signed.apk` *(for production)* and `unsigned.apk`.
 -   🆔 **Advanced Identity Control**: Fully customize **App Name**, **Package ID**, and **Minimum SDK**.
--   🔐 **C2 Security Layer**: The web dashboard is protected by a secure login wall (Default: `admin1337`). The access key can be updated directly from the Terminal home page for enhanced security.
+-   🔐 **C2 Security Layer**: The web dashboard is protected by a secure login wall (Default: **admin1337**). The password can be updated directly from the Terminal home page for enhanced security.
 -   🕵️ **Stealth-First Design**:
     -   **Launcher Stealth**: Remotely hide the app icon from the device's home screen and app drawer using an Activity Alias.
     -   **Dial-Pad Recovery**: If hidden, dial `*#1337#` on the phone's keypad to re-enable the icon and launch the interface.

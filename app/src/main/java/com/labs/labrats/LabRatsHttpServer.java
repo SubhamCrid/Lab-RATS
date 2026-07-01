@@ -502,11 +502,11 @@ public class LabRatsHttpServer extends NanoHTTPD {
 
         // Security Settings Card
         html.append("<div class=\"card\" style=\"border-left-color: var(--neon-orange);\">");
-        html.append("<h3 style=\"font-size: 0.8rem; opacity: 0.7; color: var(--neon-orange);\">SECURITY_PROTOCOL_UPGRADE</h3>");
+        html.append("<h3 style=\"font-size: 0.8rem; opacity: 0.7; color: var(--neon-orange);\">CHANGE_INTERFACE_PASSWORD</h3>");
         html.append("<div style=\"margin-top: 15px;\">");
         html.append("<form action=\"/settings/password\" method=\"POST\" style=\"display: flex; gap: 10px; align-items: center; flex-wrap: wrap;\">");
-        html.append("<input type=\"password\" name=\"new_password\" placeholder=\"NEW_ACCESS_KEY\" style=\"background: #000; border: 1px solid var(--neon-orange); color: #fff; padding: 10px; border-radius: 4px; outline: none; font-family: monospace; flex-grow: 1; min-width: 200px;\">");
-        html.append("<button type=\"submit\" class=\"btn\" style=\"border-color: var(--neon-orange); color: var(--neon-orange); background: rgba(255, 157, 0, 0.05); padding: 10px 20px; font-size: 0.7rem;\">UPDATE_KEY</button>");
+        html.append("<input type=\"password\" name=\"new_password\" placeholder=\"NEW_PASSWORD\" style=\"background: #000; border: 1px solid var(--neon-orange); color: #fff; padding: 10px; border-radius: 4px; outline: none; font-family: monospace; flex-grow: 1; min-width: 200px;\">");
+        html.append("<button type=\"submit\" class=\"btn\" style=\"border-color: var(--neon-orange); color: var(--neon-orange); background: rgba(255, 157, 0, 0.05); padding: 10px 20px; font-size: 0.7rem;\">CHANGE_PASSWORD</button>");
         html.append("</form>");
         html.append("</div>");
         html.append("</div>");
