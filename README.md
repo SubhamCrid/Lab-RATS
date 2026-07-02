@@ -62,7 +62,7 @@
 
 <p align="center">
   <b>--- &gt; Android App (C2 Interface) on Target Device &lt; ---</b><br>
-  <a href='https://postimg.cc/2VbLY8CV' target='_blank'><img src='https://i.postimg.cc/2VbLY8CV/Lab-RATS-APK-screen.jpg' border='0' alt='Lab-RATS-APK-screen'></a>
+<a href="https://postimg.cc/XXCnWGL2" target="_blank"><img src="https://i.postimg.cc/XXCnWGL2/Android-App-Screen.jpg" alt="Android-App-Screen"></a>
 </p>
 
 <p align="center">
