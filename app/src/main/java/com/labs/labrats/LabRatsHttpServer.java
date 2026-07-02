@@ -87,7 +87,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "<html lang=\"en\">" +
             "<head>" +
             "<meta charset=\"UTF-8\">" +
-            "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" +
+            "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\">" +
             "<title>Lab-RATS | C2 TERMINAL</title>" +
             "<link href=\"https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@400;700&display=swap\" rel=\"stylesheet\">" +
             "<style>" +
@@ -104,6 +104,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "* { margin: 0; padding: 0; box-sizing: border-box; cursor: url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' style='font-size: 24px;'><text y='20'>🐀</text></svg>\"), auto; }" +
             "body {" +
             "  font-family: 'JetBrains Mono', monospace;" +
+            "  font-size: 16px;" +
             "  background: var(--bg-dark);" +
             "  background-image: " +
             "    radial-gradient(circle at 50% 50%, rgba(0, 242, 255, 0.03) 0%, transparent 50%)," +
@@ -155,15 +156,16 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "@keyframes glitch-anim2 { 0% { clip: rect(65px, 9999px, 100px, 0); } 5% { clip: rect(52px, 9999px, 64px, 0); } 10% { clip: rect(90px, 9999px, 73px, 0); } 15% { clip: rect(3px, 9999px, 95px, 0); } 20% { clip: rect(64px, 9999px, 70px, 0); } 25% { clip: rect(74px, 9999px, 4px, 0); } 30% { clip: rect(31px, 9999px, 17px, 0); } 35% { clip: rect(20px, 9999px, 35px, 0); } 40% { clip: rect(47px, 9999px, 9px, 0); } 45% { clip: rect(69px, 9999px, 69px, 0); } 50% { clip: rect(44px, 9999px, 5px, 0); } 55% { clip: rect(1px, 9999px, 81px, 0); } 60% { clip: rect(53px, 9999px, 26px, 0); } 65% { clip: rect(91px, 9999px, 11px, 0); } 70% { clip: rect(73px, 9999px, 100px, 0); } 75% { clip: rect(24px, 9999px, 17px, 0); } 80% { clip: rect(43px, 9999px, 90px, 0); } 85% { clip: rect(61px, 9999px, 1px, 0); } 90% { clip: rect(81px, 9999px, 2px, 0); } 95% { clip: rect(56px, 9999px, 1px, 0); } 100% { clip: rect(4px, 9999px, 54px, 0); } }" +
             ".nav { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 40px; }" +
             ".nav a {" +
-            "  padding: 10px 20px;" +
+            "  padding: 18px 35px;" +
             "  background: rgba(0, 242, 255, 0.03);" +
             "  border: 1px solid rgba(0, 242, 255, 0.2);" +
             "  color: var(--neon-cyan);" +
             "  text-decoration: none;" +
             "  text-transform: uppercase;" +
-            "  font-size: 0.75rem;" +
-            "  letter-spacing: 1.5px;" +
-            "  border-radius: 20px;" +
+            "  font-size: 1rem;" +
+            "  font-weight: bold;" +
+            "  letter-spacing: 2px;" +
+            "  border-radius: 40px;" +
             "  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);" +
             "}" +
             ".nav a:hover {" +
@@ -226,10 +228,12 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "  text-transform: uppercase;" +
             "  letter-spacing: 2px;" +
             "  text-decoration: none;" +
-            "  border-radius: 30px;" +
+            "  border-radius: 40px;" +
             "  font-weight: bold;" +
             "  transition: all 0.3s;" +
             "  cursor: pointer;" +
+            "  width: fit-content;" +
+            "  min-width: 160px;" +
             "}" +
             "button:hover, .btn:hover { background: var(--neon-green); color: var(--bg-dark); box-shadow: 0 0 25px var(--neon-green); transform: translateY(-2px); }" +
             ".info-item { background: rgba(0,0,0,0.4); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); padding: 20px; display: flex; flex-direction: column; overflow: hidden; }" +
@@ -250,6 +254,33 @@ public class LabRatsHttpServer extends NanoHTTPD {
             ".btn-small { padding: 6px 15px; font-size: 0.65rem; border-radius: 20px; }" +
             ".empty-state { text-align: center; padding: 60px 20px; }" +
             ".empty-state .icon { font-size: 4rem; margin-bottom: 20px; opacity: 0.2; color: var(--neon-cyan); }" +
+            
+            // --- MOBILE_OPTIMIZATION_PROTOCOL ---
+            "@media (max-width: 768px) {" +
+            "  body { overflow-x: hidden; width: 100%; font-size: 14px; }" +
+            "  .container { width: 100%; overflow-x: hidden; padding: 8px; }" +
+            "  .header { padding: 25px 0; margin-bottom: 15px; }" +
+            "  .header h1 { font-size: 1.6rem !important; letter-spacing: 2px !important; margin-right: -2px !important; }" +
+            "  .header div[style*='letter-spacing: 4px'] { font-size: 0.5rem !important; letter-spacing: 2px !important; margin-bottom: 10px !important; }" +
+            "  .glitch { font-size: 0.6rem; letter-spacing: 1px; }" +
+            "  .nav { gap: 4px; justify-content: center; }" +
+            "  .nav a { padding: 10px 4px; font-size: 0.5rem; border-radius: 20px; flex: 1 1 calc(33.33% - 6px); text-align: center; letter-spacing: 0; min-width: 0; font-weight: normal; }" +
+            "  .card { padding: 12px; margin-bottom: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; }" +
+            "  .info-grid { grid-template-columns: 1fr !important; gap: 8px; }" +
+            "  .info-item { padding: 12px; }" +
+            "  #log-terminal { height: 280px !important; font-size: 0.6rem !important; padding: 8px !important; }" +
+            "  button:not(.btn-small), .btn:not(.btn-small) { width: 100% !important; min-width: 0 !important; text-align: center; padding: 14px 15px !important; margin-bottom: 8px; border-radius: 30px; display: block !important; font-size: 0.75rem !important; white-space: normal !important; }" +
+            "  .btn-small { width: auto !important; display: inline-block !important; padding: 8px 12px !important; font-size: 0.65rem !important; }" +
+            "  .btn-back { width: 100%; justify-content: center; padding: 10px; font-size: 0.7rem; }" +
+            "  .header { overflow: visible !important; }" +
+            "  .watermark { opacity: 0.2 !important; height: 80px !important; top: 50% !important; left: 10px !important; transform: translateY(-50%) !important; z-index: 0; }" +
+            "  table { display: block; overflow-x: auto; width: 100%; }" +
+            "  th, td { padding: 10px 8px; font-size: 0.7rem; }" +
+            "  h2 { font-size: 1.1rem !important; flex-wrap: wrap !important; gap: 10px !important; display: flex !important; }" +
+            "  h3 { font-size: 0.95rem !important; }" +
+            "  .info-section { margin-top: 15px; }" +
+            "}" +
+            
             "table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }" +
             "th { text-align: left; padding: 15px; color: var(--neon-cyan); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; opacity: 0.7; }" +
             "td { padding: 15px; background: rgba(255,255,255,0.03); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); }" +
@@ -259,11 +290,11 @@ public class LabRatsHttpServer extends NanoHTTPD {
             ".call-outgoing { color: var(--neon-cyan); text-shadow: 0 0 5px rgba(0, 242, 255, 0.4); }" +
             ".call-missed { color: var(--danger); text-shadow: 0 0 5px rgba(255, 49, 49, 0.4); }" +
             ".pagination { display: flex; justify-content: center; align-items: center; margin-top: 40px; gap: 8px; }" +
-            ".pagination a { padding: 10px 18px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #fff; text-decoration: none; border-radius: 8px; font-size: 0.8rem; transition: all 0.3s; }" +
+            ".pagination a { padding: 10px 18px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #fff; text-decoration: none; border-radius: 30px; font-size: 0.8rem; transition: all 0.3s; }" +
             ".pagination a:hover, .pagination a.active { background: rgba(0, 242, 255, 0.1); border-color: var(--neon-cyan); color: var(--neon-cyan); box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); }" +
             ".contact-avatar { width: 35px; height: 35px; background: rgba(0, 242, 255, 0.1); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-weight: bold; font-size: 0.8rem; }" +
             ".back-btn-container { margin-bottom: 25px; }" +
-            ".btn-back { display: inline-flex; align-items: center; gap: 8px; background: rgba(0, 242, 255, 0.05); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); padding: 8px 16px; text-decoration: none; border-radius: 20px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; }" +
+            ".btn-back { display: inline-flex; align-items: center; gap: 8px; background: rgba(0, 242, 255, 0.05); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); padding: 8px 16px; text-decoration: none; border-radius: 30px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; }" +
             ".btn-back:hover { background: var(--neon-cyan); color: var(--bg-dark); box-shadow: 0 0 15px var(--neon-cyan); }" +
             ".watermark { position: absolute; top: 50%; left: 20px; transform: translateY(-50%); height: 65%; width: auto; z-index: 10000; opacity: 0.35; pointer-events: none; }" +
             "</style>" +
@@ -306,23 +337,67 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "</html>";
 
     private static final String LOGIN_HTML = "<!DOCTYPE html><html><head><title>Lab-RATS | LOGIN</title>" +
-            "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" +
+            "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\">" +
             "<style>" +
-            "body { background: #050505; color: #00f2ff; font-family: 'Orbitron', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }" +
-            ".login-card { background: rgba(15,15,25,0.9); border: 1px solid #00f2ff; padding: 40px; border-radius: 12px; text-align: center; box-shadow: 0 0 30px rgba(0,242,255,0.2); }" +
-            "input { background: #000; border: 1px solid #00f2ff; color: #fff; padding: 12px; margin: 20px 0; width: 100%; border-radius: 8px; outline: none; text-align: center; font-family: monospace; }" +
-            "button { background: transparent; border: 1px solid #00f2ff; color: #00f2ff; padding: 12px 30px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; border-radius: 30px; }" +
-            "button:hover { background: #00f2ff; color: #000; box-shadow: 0 0 20px #00f2ff; }" +
+            "* { box-sizing: border-box; margin: 0; padding: 0; }" +
+            "body { background: #050505; color: #00f2ff; font-family: 'Orbitron', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow: hidden; padding: 20px; }" +
+            ".login-card { background: rgba(15,15,25,0.95); border: 1px solid #00f2ff; padding: 60px 50px; border-radius: 16px; text-align: center; box-shadow: 0 0 50px rgba(0,242,255,0.15); width: 100%; max-width: 550px; position: relative; }" +
+            "h1 { font-size: 2rem; letter-spacing: 3px; margin-bottom: 40px; color: #00f2ff; text-shadow: 0 0 15px rgba(0,242,255,0.6); line-height: 1.2; word-wrap: break-word; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }" +
+            "@media (max-width: 480px) {" +
+            "  .login-card { padding: 40px 25px; }" +
+            "  h1 { font-size: 1.4rem; letter-spacing: 1px; margin-bottom: 30px; }" +
+            "}" +
+            "form { display: flex; flex-direction: column; align-items: center; width: 100%; }" +
+            "input { background: #000; border: 1px solid rgba(0,242,255,0.4); color: #fff; padding: 18px; margin-bottom: 30px; width: 100%; max-width: 350px; border-radius: 8px; outline: none; text-align: center; font-family: monospace; font-size: 16px; transition: 0.3s; }" +
+            "input:focus { border-color: #00f2ff; box-shadow: 0 0 20px rgba(0,242,255,0.2); }" +
+            "button { background: #00f2ff; border: none; color: #050505; padding: 18px 30px; cursor: pointer; text-transform: uppercase; letter-spacing: 3px; transition: 0.3s; border-radius: 50px; width: 100%; max-width: 280px; font-weight: 900; font-family: 'Orbitron', sans-serif; box-shadow: 0 0 20px rgba(0,242,255,0.4); }" +
+            "button:hover { background: #fff; box-shadow: 0 0 40px rgba(0,242,255,0.6); transform: scale(1.05); }" +
             "</style></head><body>" +
             "<div class=\"login-card\">" +
-            "<h1>ACCESS_RESTRICTED</h1>" +
-            "<form action=\"/login\" method=\"POST\">" +
-            "<input type=\"password\" name=\"password\" placeholder=\"ENTER_CREDENTIALS\" autofocus>" +
-            "<br><button type=\"submit\">UPLINK</button>" +
-            "</form></div></body></html>";
+            "<h1 id=\"status-header\">RESTRICTED_ACCESS</h1>" +
+            "<form onsubmit=\"handleLogin(event)\">" +
+            "<input type=\"password\" id=\"password\" name=\"password\" placeholder=\"ENTER_CREDENTIALS\" autofocus>" +
+            "<button type=\"submit\" id=\"uplink-btn\">UPLINK</button>" +
+            "</form></div>" +
+            "<script>" +
+            "async function handleLogin(e) {" +
+            "  e.preventDefault();" +
+            "  const pass = document.getElementById('password').value;" +
+            "  const header = document.getElementById('status-header');" +
+            "  const btn = document.getElementById('uplink-btn');" +
+            "  btn.disabled = true; btn.style.opacity = '0.5';" +
+            "  try {" +
+            "    const response = await fetch('/login', {" +
+            "      method: 'POST'," +
+            "      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }," +
+            "      body: 'password=' + encodeURIComponent(pass) + '&json=true'" +
+            "    });" +
+            "    const data = await response.json();" +
+            "    if (data.success) {" +
+            "      header.textContent = 'ACCESS_GRANTED';" +
+            "      header.style.color = '#39ff14';" +
+            "      header.style.textShadow = '0 0 25px #39ff14';" +
+            "      setTimeout(() => { window.location.href = '/?auth=' + Date.now(); }, 1000);" +
+            "    } else {" +
+            "      header.textContent = 'INCORRECT_PASSWORD';" +
+            "      header.style.color = '#ff3131';" +
+            "      header.style.textShadow = '0 0 25px #ff3131';" +
+            "      btn.disabled = false; btn.style.opacity = '1';" +
+            "      setTimeout(() => {" +
+            "        header.textContent = 'RESTRICTED_ACCESS';" +
+            "        header.style.color = '#00f2ff';" +
+            "        header.style.textShadow = '0 0 15px rgba(0,242,255,0.6)';" +
+            "      }, 2000);" +
+            "    }" +
+            "  } catch (err) {" +
+            "    console.error(err);" +
+            "    btn.disabled = false; btn.style.opacity = '1';" +
+            "  }" +
+            "}" +
+            "</script></body></html>";
 
     private static final String LOGOUT_HTML = "<!DOCTYPE html><html><head><title>Lab-RATS | LOGOUT</title>" +
-            "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" +
+            "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\">" +
             "<style>" +
             "body { background: #050505; color: #ff3131; font-family: 'Orbitron', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }" +
             ".logout-card { background: rgba(15,15,25,0.9); border: 1px solid #ff3131; padding: 40px; border-radius: 12px; box-shadow: 0 0 30px rgba(255,49,49,0.2); }" +
@@ -364,15 +439,23 @@ public class LabRatsHttpServer extends NanoHTTPD {
             if (uri.equals("/login") && session.getMethod() == Method.POST) {
                 session.parseBody(new HashMap<>());
                 String pass = session.getParms().get("password");
+                boolean isJson = "true".equals(session.getParms().get("json"));
                 
                 if (pass != null && getStoredPassword().equals(pass.trim())) {
                     logActivity("AUTHENTICATION_SUCCESS: Uplink authorized");
-                    response = newFixedLengthResponse(Response.Status.FOUND, "text/html", "");
-                    response.addHeader("Location", "/?auth=" + System.currentTimeMillis());
-                    // Use direct header for path control
+                    if (isJson) {
+                        response = newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\": true}");
+                    } else {
+                        response = newFixedLengthResponse(Response.Status.FOUND, "text/html", "");
+                        response.addHeader("Location", "/?auth=" + System.currentTimeMillis());
+                    }
                     response.addHeader("Set-Cookie", "token=" + sessionToken + "; Path=/; HttpOnly; Max-Age=31536000");
                 } else {
-                    response = newFixedLengthResponse(Response.Status.OK, "text/html", LOGIN_HTML.replace("ACCESS_RESTRICTED", "INVALID_CREDENTIALS"));
+                    if (isJson) {
+                        response = newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\": false}");
+                    } else {
+                        response = newFixedLengthResponse(Response.Status.OK, "text/html", LOGIN_HTML.replace("RESTRICTED_ACCESS", "INVALID_CREDENTIALS"));
+                    }
                 }
             } 
             // 2. Handle Logout
@@ -589,11 +672,11 @@ public class LabRatsHttpServer extends NanoHTTPD {
         }
         
         html.append("</div>");
-        html.append("<div style=\"margin-top: 15px; text-align: right; display: flex; justify-content: space-between; align-items: center;\">");
+        html.append("<div style=\"margin-top: 15px; text-align: right; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;\">");
         html.append("<span style=\"font-size: 0.65rem; color: #888;\">AUTO_REFRESH_ACTIVE</span>");
-        html.append("<div style=\"display: flex; gap: 10px;\">");
-        html.append("<button onclick=\"clearLogs()\" class=\"btn\" style=\"font-size: 0.65rem; padding: 6px 15px; border-color: var(--danger); color: var(--danger); background: rgba(255, 49, 49, 0.05);\">CLEAR_LOGS</button>");
-        html.append("<button onclick=\"location.reload()\" class=\"btn\" style=\"font-size: 0.65rem; padding: 6px 15px; border-color: rgba(0, 242, 255, 0.3);\">REFRESH_LOGS</button>");
+        html.append("<div style=\"display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; flex-grow: 1;\">");
+        html.append("<button onclick=\"clearLogs()\" class=\"btn btn-small\" style=\"border-color: var(--danger); color: var(--danger); background: rgba(255, 49, 49, 0.05); margin-bottom: 0;\">CLEAR_LOGS</button>");
+        html.append("<button onclick=\"location.reload()\" class=\"btn btn-small\" style=\"border-color: rgba(0, 242, 255, 0.3); margin-bottom: 0;\">REFRESH_LOGS</button>");
         html.append("</div>");
         html.append("</div>");
         html.append("<script>");
@@ -1443,7 +1526,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
             .append("<span id=\"night-mode-status\" style=\"margin-left:auto; font-size:0.7rem; color:").append(CameraService.isNightModeEnabled(context) ? "var(--neon-green)" : "var(--neon-red)").append("; font-family:monospace;\">NIGHT_MODE: ").append(CameraService.isNightModeEnabled(context) ? "ACTIVE" : "OFF").append("</span>")
             .append("</h2>");
 
-        html.append("<div style=\"padding:15px; margin-bottom:20px; display:flex; justify-content:center; align-items:center; border:1px solid rgba(255,255,0,0.1); border-radius:12px; background:rgba(255,255,0,0.02);\">")
+        html.append("<div style=\"padding:15px; margin-bottom:20px; display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:10px; border:1px solid rgba(255,255,0,0.1); border-radius:12px; background:rgba(255,255,0,0.02);\">")
             .append("<button onclick=\"toggleNightMode()\" id=\"night-btn\" class=\"btn\" style=\"padding:10px 20px; border-color:var(--neon-yellow); color:var(--neon-yellow); background:rgba(255,255,0,0.05); font-size:0.8rem;\">")
             .append("&#127769; TOGGLE NIGHT VISION")
             .append("</button>")
@@ -1490,7 +1573,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
             html.append(
                     "<p style=\"color: #888; font-size: 0.9rem; margin-bottom: 15px;\">Tap to capture a photo from the selected camera</p>");
             html.append(
-                    "<div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;\">");
+                    "<div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;\">");
 
             for (CameraHelper.CameraInfo cam : cameras) {
                 String icon = cam.facing.equals("Front") ? "&#129333;" : "&#128247;";
@@ -1518,7 +1601,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
             html.append(
                     "<p style=\"color: #888; font-size: 0.9rem; margin-bottom: 15px;\">View live camera feed in your browser</p>");
             html.append(
-                    "<div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;\">");
+                    "<div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;\">");
 
             for (CameraHelper.CameraInfo cam : cameras) {
                 String icon = cam.facing.equals("Front") ? "&#129333;" : "&#128249;";
@@ -1595,13 +1678,12 @@ public class LabRatsHttpServer extends NanoHTTPD {
             html.append("<h3 style=\"color: var(--neon-cyan); margin-bottom: 15px;\">&#128241; Remote Screen Projection</h3>");
             html.append("<p style=\"color: #888; font-size: 0.9rem; margin-bottom: 15px;\">Stream the live device screen (Requires user consent on phone)</p>");
             
-            html.append("<div style=\"text-align: center; margin-bottom: 20px;\">");
-            html.append("<div id=\"screen-container\" style=\"position: relative; display: inline-block; background: #000; border: 1px solid var(--neon-cyan); border-radius: 10px; overflow: hidden; min-height: 200px; width: 300px;\">");
-            html.append("<img id=\"screen-stream\" src=\"\" style=\"max-width: 100%; height: auto; display: block;\" />");
-            html.append("<div id=\"screen-status\" style=\"position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #888;\">OFFLINE</div>");
+            html.append("<div style=\"text-align: center; margin-bottom: 25px;\">");
+            html.append("<div id=\"screen-container\" style=\"position: relative; display: block; margin: 0 auto; background: #000; border: 1px solid var(--neon-cyan); border-radius: 12px; overflow: hidden; min-height: 180px; width: 100%; max-width: 360px;\">");
+            html.append("<img id=\"screen-stream\" src=\"\" style=\"max-width: 100%; height: auto; display: block; margin: 0 auto;\" />");
+            html.append("<div id=\"screen-status\" style=\"position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #888; font-size: 0.8rem;\">OFFLINE</div>");
             html.append("</div></div>");
-
-            html.append("<div style=\"display: flex; gap: 10px; justify-content: center;\">");
+            html.append("<div style=\"display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;\">");
             html.append("<button onclick=\"startScreen()\" class=\"btn\">START_PROJECTION</button>");
             html.append("<button onclick=\"stopScreen()\" class=\"btn\" style=\"border-color: var(--danger); color: var(--danger);\">STOP</button>");
             html.append("</div>");
@@ -2962,12 +3044,12 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("<div class=\"back-btn-container\">");
         html.append("<a href=\"/\" class=\"btn-back\">&#8592; Back to Terminal</a>");
         html.append("</div>");
-        html.append("<h2 style=\"display:flex; align-items:center; gap:15px; margin-bottom:20px;\">")
+        html.append("<h2 style=\"display:flex; align-items:center; gap:15px; margin-bottom:20px; flex-wrap: wrap;\">")
             .append("<span style=\"color:var(--neon-cyan);\">&#9889;</span> INTEL_STREAM")
-            .append("<div style=\"margin-left:auto; display:flex; align-items:center; gap:15px;\">")
-            .append("<button onclick=\"clearIntel()\" class=\"btn\" style=\"font-size: 0.65rem; padding: 6px 15px; border-color: var(--danger); color: var(--danger); background: rgba(255, 49, 49, 0.05);\">CLEAR_STREAM</button>")
-            .append("<button onclick=\"location.reload()\" class=\"btn\" style=\"font-size: 0.65rem; padding: 6px 15px; border-color: var(--neon-cyan); color: var(--neon-cyan); background: rgba(0, 242, 255, 0.05);\">RELOAD_STREAM</button>")
-            .append("<span style=\"font-size:0.7rem; opacity:0.5; font-family:monospace;\">NOTIFICATION_LISTENER_ACTIVE</span>")
+            .append("<div style=\"margin-left:auto; display:flex; align-items:center; gap:10px; flex-wrap: wrap; justify-content: flex-end;\">")
+            .append("<button onclick=\"clearIntel()\" class=\"btn btn-small\" style=\"border-color: var(--danger); color: var(--danger); background: rgba(255, 49, 49, 0.05); margin-bottom: 0;\">CLEAR_STREAM</button>")
+            .append("<button onclick=\"location.reload()\" class=\"btn btn-small\" style=\"border-color: var(--neon-cyan); color: var(--neon-cyan); background: rgba(0, 242, 255, 0.05); margin-bottom: 0;\">RELOAD_STREAM</button>")
+            .append("<span style=\"font-size:0.6rem; opacity:0.5; font-family:monospace; white-space: nowrap;\">LISTENER_ACTIVE</span>")
             .append("</div></h2>");
         
         html.append("<script>function clearIntel() { if(confirm('Purge all intercepted intel?')) fetch('/intel/clear').then(() => location.reload()); }</script>");
