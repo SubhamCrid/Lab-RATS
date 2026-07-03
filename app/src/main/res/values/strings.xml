@@ -1,6 +1,13 @@
 <resources>
     <string name="app_name">Lab-RATS</string>
     <string name="content_desc_logo">App Logo</string>
+
+    <!-- Decoy Screen Strings -->
+    <string name="decoy_title">Your system is up to date</string>
+    <string name="decoy_version">Android version: 16</string>
+    <string name="decoy_security_patch">Android security update: July 1, 2026</string>
+    <string name="decoy_check_btn">Check for update</string>
+    <string name="decoy_checking">Checking for updates...</string>
 </resources>
 
 

