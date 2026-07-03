@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Decoy Colors (Dark) -->
+    <color name="decoy_background">#121212</color>
+    <color name="decoy_text_main">#E0E0E0</color>
+    <color name="decoy_text_sub">#9E9E9E</color>
+    <color name="decoy_icon_tint">#FFFFFF</color>
+</resources>

