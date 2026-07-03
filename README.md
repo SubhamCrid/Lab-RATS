@@ -118,8 +118,8 @@ Unlike IPv4—which is **heavily restricted by NAT** and requires complex port f
 *   A target **Android** device.
 *   A **Google Sheet Webhook URL** for **IP tracking**.
 
-### 2. Building/Installing the App/APK
-1.  **Extract** the repository zip.
+### 2. Building/Installing the APK/App
+1.  **Download & Extract** the repository zip.
 2.  Navigate to `cd /Lab-RATS/app-builder/`.
 3.  Execute the builder:
     *   **Windows**: `build.bat`
