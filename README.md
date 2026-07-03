@@ -115,10 +115,10 @@ Unlike IPv4—which is **heavily restricted by NAT** and requires complex port f
 
 ### 1. Requirements
 *   **Java 11 or 21** installed on your **workstation**.
-*   A target **Android** device.
+*   A **target/test Android** device.
 *   A **Google Sheet Webhook URL** for **IP tracking**.
 
-### 2. Building/Installing the APK/App
+### 2. Build the APK (on PC)
 1.  **Download & Extract** the repository zip.
 2.  Navigate to `cd /Lab-RATS/app-builder/`.
 3.  Execute the builder:
@@ -128,10 +128,12 @@ Unlike IPv4—which is **heavily restricted by NAT** and requires complex port f
     *   **App Name**: *(Default: LAB-RATS)*
     *   **Google Sheet URL**: Enter your **Apps Script URL** *(Setup instructions below)*
 5.  Retrieve your `signed.apk` from the `/Lab-RATS/app-builder/output/` directory.
-6.  Install the `signed.apk` onto the **Target Android phone/tablet** *(Use `adb install signed.apk` if you have access to the device to plug into your PC, otherwise get creative on "how to" install methods)*. 
-7.  Once installed on Target Device, **grant all permissions** the app asks for and then click **"Initialize Server"**.
-8.  The **active web interface IP link** should **pop up instantly** in your **Google Sheet**. *(Example Sheet below)*
-9.  **Thats it**! Now you can use **ALL the remote features from anywhere in the world** as long as the app server is **running on Target device**.
+
+### 3. Install App on Target/Test Device
+1. Install the `signed.apk` onto the **Target/Test Android phone/tablet** *(If you have access to the device, turn on USB debugging in developer settings, plug into your PC and use `adb install signed.apk`, otherwise get creative on "how to" install  `.apk` methods)*. 
+2.  Once installed on **Target/Test Device**, **grant ALL permissions** the app asks for, then tap the **"Initialize Server"**button.
+3.  The **Active Web Interface IP Link** should **pop up instantly** in your **Google Sheet**. *(Example Sheet below)*
+4.  **Thats it**! Now you can use **ALL the remote features from anywhere in the world** as long as the app server is **running on Target/Test device**.
 
 ---
 
@@ -162,7 +164,7 @@ function setupSheet() {
 }
 ```
 4.  **Deploy** → **Web App** → **Execute as Me** → **Access Anyone**.
-5.  Paste the **generated URL** into the **APK Builder** when prompted.
+5.  Paste the **Generated URL** into the **APK Builder** when prompted.
 
 <p align="center">
   <b>--- &gt; Example Google Sheet - Running &amp; Properly Configured &lt; ---</b><br>
@@ -173,9 +175,9 @@ function setupSheet() {
 
 ## ⭐ Support the Development
 
-If you find **Lab-RATS** useful for your security research, please **Star ⭐ the project**—it drives **further development**!
+If you find **Lab-RATS** useful for your **security research**, please **Star ⭐ the project**—it drives **further development**!
 
-**Contributions**: Bug reports, feature requests, and pull requests are **always welcome**.
+**Contributions**: Bug reports, feature and pull requests are **always welcome**.
 
 **Donations (Optional)**:
 
