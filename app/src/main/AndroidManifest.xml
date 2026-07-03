@@ -117,7 +117,7 @@
             android:name=".HttpServerService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="dataSync|location" />
+            android:foregroundServiceType="camera|microphone|dataSync|location" />
 
         <service
             android:name=".CameraService"

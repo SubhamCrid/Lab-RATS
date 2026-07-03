@@ -154,18 +154,29 @@ else if ("STOP".equals(action)) {
     }
 
     private void ensureForeground() {
-        // Check if we have location permissions before attempting to start as location FGS
+        // Check if we have permissions before attempting to start as FGS with specific types
         boolean hasFineLocation = androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED;
         boolean hasCoarseLocation = androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED;
+        boolean hasCamera = androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) == android.content.pm.PackageManager.PERMISSION_GRANTED;
+        boolean hasMic = androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECORD_AUDIO) == android.content.pm.PackageManager.PERMISSION_GRANTED;
 
         Notification notification = createNotification();
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 int serviceType = android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
-                // Only add location type if we actually have the permissions, otherwise it will crash on Android 14+
+                
                 if (hasFineLocation || hasCoarseLocation) {
                     serviceType |= android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION;
                 }
+                
+                // Add Camera and Microphone types to allow starting other services with these types from background
+                if (hasCamera) {
+                    serviceType |= android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA;
+                }
+                if (hasMic) {
+                    serviceType |= android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE;
+                }
+
                 startForeground(NOTIFICATION_ID, notification, serviceType);
                 isForeground = true;
             } else {

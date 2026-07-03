@@ -20,6 +20,7 @@
     -   **Auto-Density Scaling**: Resizes logos automatically for all Android screen densities.
     -   **Transparency Fixer**: Removes white backgrounds from logo assets automatically.
     -   **Active Tab Glow**: The web interface features a neon glow on active tabs for easier navigation.
+-   📱 **Mobile-Responsive C2**: The web terminal is fully optimized for smartphone browsers, featuring a touch-friendly layout, adaptive navigation tabs, and scalable UI elements for monitoring from any device.
 
 ---
 
@@ -37,6 +38,7 @@
 -   📸 **Optics & Surveillance**:
     -   **Live Camera Streaming**: View high-speed video feeds from both **front and back cameras**.
     -   **🌙 Night Vision Mode**: Sensor-boosted low-light mode for visibility in near-total darkness.
+    -   **Hardware Stability Engine**: Unified camera management prevents resource conflicts, ensuring reliable background capture and streaming even on high-security Android 15/16 devices.
     -   **Background Recording**: Stealthily record high-quality video without any user-facing activity.
     -   **Instant Capture**: Take high-resolution photos remotely.
 -   🎙️ **Acoustics & Interception**:

