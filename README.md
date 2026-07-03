@@ -20,10 +20,10 @@
 
 ## 🕵️ Covert & Stealth Operations
 
--   🎭 **Launcher Masquerade**: **Remotely swap the app icon and name** with a generic **"System Update"** name and standard **gear app icon**. *(Located at the bottom of the Hardware tab)*
--   🛠️ **Interactive Decoy UI**: When **stealth mode** is activated, the app launches a **very** convincing **Fake System Update** interface. This interface includes a functional **"Check for update"** button, **realistic progress animations**, and **system-style notifications** to bypass **manual inspections**.
+-   🎭 **Launcher Masquerade**: **Remotely mask the app icon and name** with a generic **"System Update"** name and standard **gear app icon**. *(Located at the bottom of the Hardware tab in web interface)*
+-   🛠️ **Interactive Decoy UI**: When **stealth mode** is activated, the app launches a **very** convincing **Fake System Update** interface overlay. This interface includes a functional **"Check for update"** button, **realistic progress animations**, and **system-style notifications** to bypass **manual inspections**.
 -   🌓 **Adaptive Stealth Theme**: The **decoy interface automatically** syncs with the device's **Light/Dark Mode** settings, including **status bar color-switching**, to maintain a **perfect native appearance**.
--   ☎️ **Dial-Pad Recovery**: If the icon is hidden in **stealth mode**, **dial `*#1337#` on the phone's keypad** to instantly restore the **original Lab-RATS identity and app icon**.
+-   ☎️ **Dial-Pad Recovery**: When the icon is masked in **stealth mode**, **dial `*#1337#` on the phone's keypad** to remove mask and instantly restore the **original Lab-RATS identity and app icon**.
 -   🚪 **Backdoor Access**: While in **stealth mode**, **rapidly tapping the sprocket gear** on the **Fake Update screen 10 times** bypasses the decoy and opens the **primary Lab-RATS** app server screen. *(Returns to stealth mode once closed.)*
 -   👻 **Task-List Stealth**: The app is **hard-coded to be invisible** in the Android **"Recent Apps"** list, preventing discovery during multitasking.
 -   🎲 **Version Camouflage**: Dynamically generates random **Version Names** and **Codes** that mimic **legitimate OTA updates**.
