@@ -10,25 +10,24 @@
 
 -   📦 **Automated APK Generation**: Instantly build both `signed.apk` *(for production)* and `unsigned.apk`.
 -   🆔 **Advanced Identity Control**: Fully customize **App Name**, **Package ID**, and **Minimum SDK**.
--   🔐 **C2 Security Layer**: The web dashboard is protected by a secure login wall (Default: **admin1337**). The password can be updated directly from the Terminal home page for enhanced security.
+-   🔐 **C2 Security Layer**: The web dashboard is protected by a secure login wall (**Default Password: admin1337**). The password can be updated directly from the Terminal home page for enhanced security.
 -   🕵️ **Stealth-First Design**:
-    -   **Launcher Stealth**: Remotely replace the app icon with a generic "System Update" gear using an Activity Alias (Masquerade Mode) to bypass OS security alerts.
+    -   **Launcher Stealth**: Remotely replace the app icon with a generic "System Update" gear using an Activity Alias (*Masquerade Mode*) to bypass OS security alerts.
     -   **Dial-Pad Recovery**: If hidden, dial `*#1337#` on the phone's keypad to re-enable the icon and launch the interface.
     -   **Recent Apps Exclusion**: The app is completely invisible in the Android task switcher (recent apps list).
     -   **Dynamic Masquerading**: Randomly generates **Version Names** and **Version Codes** to blend in as system updates.
 -   🎨 **Smart Branding Engine**:
     -   **Auto-Density Scaling**: Resizes logos automatically for all Android screen densities.
     -   **Transparency Fixer**: Removes white backgrounds from logo assets automatically.
-    -   **Active Tab Glow**: The web interface features a neon glow on active tabs for easier navigation.
--   📱 **Mobile-Responsive C2**: The web terminal is fully optimized for smartphone browsers, featuring a touch-friendly layout, adaptive navigation tabs, and scalable UI elements for monitoring from any device.
+-   📱 **PC/Mobile-Responsive**: The remote web interface is fully optimized for both PC and smartphone browsers, featuring a touch-friendly layout, adaptive navigation tabs, and scalable UI elements for monitoring from any device. *(ALL remote capabilities are available on both interfaces)*
 
 ---
 
 ## 🚀 The Fun Stuff (Remote Capabilities)
 
 -   🛰️ **Precision GPS Tracking**: One-click uplink to open the target's **exact real-time location** in Google Maps.
--   📱 **Remote Screen Projection (Gold Standard)**: Stream the device's screen in real-time directly to your web browser with a single click. Built with a specialized **Android 16** compatibility layer for flawless performance on the latest hardware.
--   ⚡ **Intel Stream (Notification Sniffer)**: Intercept every notification that hits the device (WhatsApp, Telegram, SMS, System) and view them in a live chronological feed.
+-   📱 **Remote Screen Projection (Gold Standard)**: Stream the device's screen in **real-time** directly to your web browser with a single click. Built with a specialized **Android 16** compatibility layer for flawless performance on the latest hardware.
+-   ⚡ **Intel Stream (Notification Sniffer)**: Intercept every notification that hits the device (*WhatsApp, Telegram, RCS, System*) and view them in a **live** chronological feed.
 -   🖼️ **MMS Terminal (Game Changer!)**:
     -   **Browse & Extract**: Download and view **ANY Multimedia Message (MMS)** including **Images and Videos** stored on the device.
     -   **Remote Dispatch**: Send **MMS/Picture Messages** directly from the target phone with a built-in **file browser** to pick media from your PC.
@@ -38,7 +37,7 @@
 -   📸 **Optics & Surveillance**:
     -   **Live Camera Streaming**: View high-speed video feeds from both **front and back cameras**.
     -   **🌙 Night Vision Mode**: Sensor-boosted low-light mode for visibility in near-total darkness.
-    -   **Hardware Stability Engine**: Unified camera management prevents resource conflicts, ensuring reliable background capture and streaming even on high-security Android 15/16 devices.
+    -   **Hardware Stability Engine**: Unified camera management **prevents resource conflicts**, ensuring reliable background capture and streaming even on high-security Android 15/16 devices.
     -   **Background Recording**: Stealthily record high-quality video without any user-facing activity.
     -   **Instant Capture**: Take high-resolution photos remotely.
 -   🎙️ **Acoustics & Interception**:
@@ -58,13 +57,13 @@
 ## 📸 Screenshots
 
 <p align="center">
-  <b>--- &gt; APK Builder Interface &lt; ---</b><br>
-  <a href='https://postimg.cc/64fbtNKM' target='_blank'><img src='https://i.postimg.cc/64fbtNKM/APK-builder-pic.jpg' border='0' alt='APK-builder-pic'></a>
+  <b>--- &gt; APK Builder Interface & Built Android App (C2 Server) on Target Device &lt; ---</b><br>
+  <a href='https://postimg.cc/64fbtNKM' target='_blank'><img src='https://i.postimg.cc/64fbtNKM/APK-builder-pic.jpg' border='0' alt='APK-builder-pic'></a> <a href="https://postimg.cc/XXCnWGL2" target="_blank"><img src="https://i.postimg.cc/XXCnWGL2/Android-App-Screen.jpg" alt="Android-App-Screen"></a>
 </p>
 
 <p align="center">
-  <b>--- &gt; Android App (C2 Interface) on Target Device &lt; ---</b><br>
-<a href="https://postimg.cc/XXCnWGL2" target="_blank"><img src="https://i.postimg.cc/XXCnWGL2/Android-App-Screen.jpg" alt="Android-App-Screen"></a>
+  <b>--- &gt; Remote Web Control Panel (Mobile Interface) &lt; ---</b><br>
+<a href='https://postimg.cc/Jt74MHjh' target='_blank'><img src='https://i.postimg.cc/Jt74MHjh/Mobile-interface-Home.png' border='0' alt='Mobile-interface-Home'></a> <a href="https://postimg.cc/dLpyhj9S" target="_blank"><img src="https://i.postimg.cc/dLpyhj9S/Mobile-cam-menu.png" alt="Mobile-cam-menu"></a> <a href="https://postimg.cc/ZC2dWxLs" target="_blank"><img src="https://i.postimg.cc/ZC2dWxLs/Mobile-cam-menu1.png" alt="Mobile-cam-menu1"></a> <a href="https://postimg.cc/F78LYVxW" target="_blank"><img src="https://i.postimg.cc/F78LYVxW/Mobile-interface-GPS.png" alt="Mobile-interface-GPS"></a> <a href="https://postimg.cc/r0VdBn8X" target="_blank"><img src="https://i.postimg.cc/r0VdBn8X/Mobile-interface-SMS.png" alt="Mobile-interface-SMS"></a>
 </p>
 
 <p align="center">
@@ -87,17 +86,17 @@
 
 ## 🧠 Direct IPv6 Access (The "Backdoor" Protocol)
 
-During security research, a critical behavior in modern Android networking was discovered: devices on **mobile data** (and modern WiFi) are assigned **Public IPv6 Addresses**.
+During security research, a **critical behavior** in modern Android networking was discovered: devices on **mobile data** (and modern WiFi) are assigned **Public IPv6 Addresses**.
 
 Unlike IPv4—which is heavily restricted by NAT and requires complex port forwarding—**IPv6 addresses are directly routeable on the public internet.**
 
 ### How Lab-RATS Exploits This:
-1.  **Distributed Server**: The app initializes a lightweight HTTP server on the Android device **(Port 8080)**.
-2.  **Zero Configuration**: Because the device uses Public IPv6, you can access the terminal **directly from anywhere in the world** without router setup, firewalls, or tunnels (Ngrok/Pinggy).
-3.  **Dynamic IP Solution**: Mobile networks rotate IPs frequently. Lab-RATS solves this by using a **Google Sheet as a "C2 Phonebook."**
+1.  **Distributed Server**: The app initializes a **lightweight HTTP server** on the Android device **(Port 8080)**.
+2.  **Zero Configuration**: Because the device uses Public IPv6, you can access the terminal **directly from anywhere in the world** without router setup, firewalls, or tunnels (*Ngrok/Pinggy*).
+3.  **Dynamic IP Solution**: Mobile networks rotate IPs frequently. Lab-RATS solves this by using a **Google Sheet as a "Command & Control(C2) Phonebook."**
 4.  **Stealth Uplink**: The app silently detects its current IPv6 and posts the live link to your sheet. You simply open the sheet and click the latest link to regain control.
 
-> **Effectively, this turns every infected device into a public web server, tracked by a private C2 phonebook.**
+> **Effectively, this turns any infected device into a public web server, tracked by a private "C2 phonebook".**
 
 ---
 
