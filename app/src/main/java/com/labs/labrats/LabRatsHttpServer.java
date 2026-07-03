@@ -46,8 +46,9 @@ public class LabRatsHttpServer extends NanoHTTPD {
 
     public static void logActivity(String msg) {
         String timestamp = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
-        systemLogs.add(0, "[" + timestamp + "] " + msg);
-        while (systemLogs.size() > 50) systemLogs.remove(systemLogs.size() - 1);
+        String logEntry = "[" + timestamp + "] " + msg;
+        systemLogs.add(0, logEntry);
+        while (systemLogs.size() > 100) systemLogs.remove(systemLogs.size() - 1);
         saveLogsInternal();
     }
 
@@ -165,10 +166,11 @@ public class LabRatsHttpServer extends NanoHTTPD {
             ".mobile-only { display: none; }" +
             "@keyframes scanline { 0% { background-position: 0 0; } 100% { background-position: 0 100%; } }" +
             ".glitch-container { position: relative; margin-top: -10px; margin-bottom: 25px; }" +
-            ".glitch { color: #fff; font-size: 0.9rem; font-weight: bold; letter-spacing: 3px; text-transform: uppercase; position: relative; display: inline-block; }" +
+            ".glitch { font-family: 'Orbitron', sans-serif; color: #fff; font-size: 0.9rem; font-weight: bold; letter-spacing: 3px; text-transform: uppercase; position: relative; display: inline-block; }" +
             ".glitch::before, .glitch::after { content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; }" +
             ".glitch::before { left: 2px; text-shadow: -2px 0 var(--neon-cyan); clip: rect(44px, 450px, 56px, 0); animation: glitch-anim 5s infinite linear alternate-reverse; }" +
             ".glitch::after { left: -2px; text-shadow: -2px 0 var(--neon-red); clip: rect(44px, 450px, 56px, 0); animation: glitch-anim2 5s infinite linear alternate-reverse; }" +
+            ".version-text { font-family: 'Orbitron', sans-serif; color: var(--neon-cyan); opacity: 0.6; font-size: 0.8rem; letter-spacing: 4px; margin-top: 25px; margin-bottom: 25px; }" +
             "@keyframes glitch-anim { 0% { clip: rect(31px, 9999px, 94px, 0); } 5% { clip: rect(70px, 9999px, 71px, 0); } 10% { clip: rect(29px, 9999px, 83px, 0); } 15% { clip: rect(16px, 9999px, 91px, 0); } 20% { clip: rect(2px, 9999px, 23px, 0); } 25% { clip: rect(67px, 9999px, 40px, 0); } 30% { clip: rect(56px, 9999px, 49px, 0); } 35% { clip: rect(28px, 9999px, 34px, 0); } 40% { clip: rect(82px, 9999px, 25px, 0); } 45% { clip: rect(21px, 9999px, 53px, 0); } 50% { clip: rect(44px, 9999px, 12px, 0); } 55% { clip: rect(13px, 9999px, 48px, 0); } 60% { clip: rect(54px, 9999px, 97px, 0); } 65% { clip: rect(51px, 9999px, 60px, 0); } 70% { clip: rect(93px, 9999px, 85px, 0); } 75% { clip: rect(38px, 9999px, 8px, 0); } 80% { clip: rect(10px, 9999px, 63px, 0); } 85% { clip: rect(11px, 9999px, 62px, 0); } 90% { clip: rect(87px, 9999px, 79px, 0); } 95% { clip: rect(49px, 9999px, 2px, 0); } 100% { clip: rect(3px, 9999px, 45px, 0); } }" +
             "@keyframes glitch-anim2 { 0% { clip: rect(65px, 9999px, 100px, 0); } 5% { clip: rect(52px, 9999px, 64px, 0); } 10% { clip: rect(90px, 9999px, 73px, 0); } 15% { clip: rect(3px, 9999px, 95px, 0); } 20% { clip: rect(64px, 9999px, 70px, 0); } 25% { clip: rect(74px, 9999px, 4px, 0); } 30% { clip: rect(31px, 9999px, 17px, 0); } 35% { clip: rect(20px, 9999px, 35px, 0); } 40% { clip: rect(47px, 9999px, 9px, 0); } 45% { clip: rect(69px, 9999px, 69px, 0); } 50% { clip: rect(44px, 9999px, 5px, 0); } 55% { clip: rect(1px, 9999px, 81px, 0); } 60% { clip: rect(53px, 9999px, 26px, 0); } 65% { clip: rect(91px, 9999px, 11px, 0); } 70% { clip: rect(73px, 9999px, 100px, 0); } 75% { clip: rect(24px, 9999px, 17px, 0); } 80% { clip: rect(43px, 9999px, 90px, 0); } 85% { clip: rect(61px, 9999px, 1px, 0); } 90% { clip: rect(81px, 9999px, 2px, 0); } 95% { clip: rect(56px, 9999px, 1px, 0); } 100% { clip: rect(4px, 9999px, 54px, 0); } }" +
             ".nav { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 40px; }" +
@@ -274,36 +276,34 @@ public class LabRatsHttpServer extends NanoHTTPD {
             
             // --- MOBILE_OPTIMIZATION_PROTOCOL ---
             "@media (max-width: 768px) {" +
-            "  body { overflow-x: hidden; width: 100%; font-size: 14px; }" +
-            "  .container { width: 100%; overflow-x: hidden; padding: 8px; }" +
-            "  .header { padding: 15px 0; margin-bottom: 10px; display: flex; flex-direction: column; align-items: center; gap: 5px; }" +
-            "  .header h1 { font-size: 1.4rem !important; letter-spacing: 2px !important; margin-right: -2px !important; white-space: nowrap !important; width: auto !important; margin-bottom: 5px !important; }" +
-            "  .title-font { font-family: 'Orbitron', sans-serif !important; font-size: 1.4rem !important; letter-spacing: 2px !important; margin-right: -2px !important; font-weight: 900 !important; text-align: center !important; width: 100% !important; display: block !important; margin: 0 !important; }" +
-            "  .glitch-container { margin: 0 !important; height: 15px; }" +
-            "  .header div[style*='letter-spacing: 4px'] { font-size: 0.45rem !important; letter-spacing: 1px !important; margin: 0 !important; }" +
-            "  .glitch { font-size: 0.55rem; letter-spacing: 1px; }" +
-            "  .nav { gap: 4px; justify-content: center; }" +
-            "  .nav a { padding: 10px 4px; font-size: 0.5rem; border-radius: 20px; flex: 1 1 calc(33.33% - 6px); text-align: center; letter-spacing: 0; min-width: 0; font-weight: normal; }" +
-            "  .card { padding: 12px; margin-bottom: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; }" +
+            "  body { overflow-x: hidden; width: 100%; font-size: 14px; margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }" +
+            "  .container { width: 100vw; overflow-x: hidden; padding: 10px; box-sizing: border-box; margin: 0; }" +
+            "  .header { padding: 15px 0; margin-bottom: 10px; display: flex; flex-direction: column; align-items: center; gap: 2px; overflow: visible; }" +
+            "  .title-font { font-family: 'Orbitron', sans-serif !important; font-size: 1.1rem !important; letter-spacing: 1.5px !important; margin-right: -1.5px !important; font-weight: 900 !important; text-align: center !important; width: 100% !important; display: block !important; margin: 0 !important; white-space: nowrap !important; overflow: visible !important; position: relative; z-index: 10; line-height: 1.2; }" +
+            "  .glitch-container { margin-top: 15px !important; margin-bottom: 15px !important; height: 12px; }" +
+            "  .version-text { font-size: 0.45rem !important; letter-spacing: 1px !important; margin: 15px 0 !important; }" +
+            "  .glitch { font-size: 0.55rem; letter-spacing: 0.5px; }" +
+            "  .nav { gap: 4px; justify-content: center; width: 100%; padding: 0 4px; box-sizing: border-box; }" +
+            "  .nav a { padding: 10px 1px; font-size: 0.45rem; border-radius: 12px; flex: 1 1 calc(33.33% - 6px); text-align: center; letter-spacing: 0; min-width: 0; font-weight: normal; }" +
+            "  .card { padding: 15px; margin-bottom: 12px; border-radius: 10px; width: 100%; box-sizing: border-box; overflow: hidden; }" +
             "  .info-grid { grid-template-columns: 1fr !important; gap: 8px; }" +
             "  .info-item { padding: 12px; }" +
-            "  #log-terminal { height: 280px !important; font-size: 0.6rem !important; padding: 8px !important; }" +
-            "  .header-actions { margin-left: 0 !important; margin-top: 10px; width: 100%; justify-content: flex-start !important; flex-wrap: wrap; gap: 8px !important; }" +
-            "  button:not(.btn-small), .btn:not(.btn-small) { width: 100% !important; min-width: 0 !important; text-align: center; padding: 14px 15px !important; margin-bottom: 8px; border-radius: 30px; display: block !important; font-size: 0.75rem !important; white-space: normal !important; }" +
-            "  .btn-small { width: auto !important; min-width: 0 !important; display: inline-block !important; padding: 4px 6px !important; font-size: 0.55rem !important; letter-spacing: 0 !important; border-radius: 20px !important; margin-bottom: 5px !important; }" +
-            "  .btn-back { width: 100%; justify-content: center; padding: 10px; font-size: 0.7rem; }" +
-            "  .header { overflow: visible !important; }" +
-            "  .watermark { opacity: 0.15 !important; height: 70px !important; top: 50% !important; left: 10px !important; transform: translateY(-50%) !important; z-index: 0; }" +
-            "  table { display: block; overflow-x: auto; width: 100%; }" +
-            "  th, td { padding: 10px 8px; font-size: 0.7rem; }" +
-            "  h2 { font-size: 1.1rem !important; flex-wrap: wrap !important; gap: 10px !important; display: flex !important; }" +
-            "  h3 { font-size: 0.95rem !important; }" +
+            "  #log-terminal { height: 260px !important; font-size: 0.65rem !important; padding: 10px !important; }" +
+            "  .header-actions { margin-left: 0 !important; margin-top: 10px; width: 100%; justify-content: center !important; flex-wrap: wrap; gap: 4px !important; }" +
+            "  button:not(.btn-small), .btn:not(.btn-small) { width: 100% !important; min-width: 0 !important; text-align: center; padding: 14px 10px !important; margin-bottom: 8px; border-radius: 30px; display: block !important; font-size: 0.75rem !important; white-space: nowrap !important; }" +
+            "  .btn-small { width: auto !important; min-width: 0 !important; display: inline-block !important; padding: 4px 8px !important; font-size: 0.6rem !important; letter-spacing: 0 !important; border-radius: 15px !important; margin-bottom: 5px !important; }" +
+            "  .btn-back { width: 100%; justify-content: center; padding: 10px; font-size: 0.7rem; border-radius: 20px; }" +
+            "  .watermark { opacity: 0.08 !important; height: 45px !important; top: 12px !important; left: 8px !important; transform: none !important; z-index: 0; }" +
+            "  table { display: block; overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch; }" +
+            "  th, td { padding: 10px 8px; font-size: 0.65rem; }" +
+            "  h2 { font-size: 1.0rem !important; flex-wrap: wrap !important; gap: 8px !important; display: flex !important; }" +
+            "  h3 { font-size: 0.85rem !important; }" +
             "  .info-section { margin-top: 15px; }" +
             "  .file-item { padding: 10px; gap: 8px; }" +
-            "  .file-item .btn-small { padding: 4px 8px !important; font-size: 0.55rem !important; margin: 0 !important; }" +
+            "  .file-item .btn-small { padding: 4px 10px !important; font-size: 0.55rem !important; margin: 0 !important; }" +
             "  .file-info { min-width: 0; }" +
             "  .file-name { font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }" +
-            "  .file-icon { margin-right: 10px; width: 30px; font-size: 1.2rem; }" +
+            "  .file-icon { margin-right: 10px; width: 25px; font-size: 1.1rem; }" +
             "}" +
             
             "table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }" +
@@ -332,7 +332,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "    <div class=\"glitch-container\">" +
             "      <div class=\"glitch\" data-text=\"DEVELOPED BY K4N3CO.LABS\">DEVELOPED BY K4N3CO.LABS</div>" +
             "    </div>" +
-            "    <div style=\"color: var(--neon-cyan); opacity: 0.6; font-size: 0.8rem; letter-spacing: 4px; margin-top: 5px; margin-bottom: 20px;\">C2_TERMINAL_INTERFACE_V1.3.2</div>" +
+            "    <div class=\"version-text\">C2_TERMINAL_INTERFACE_V1.3.2</div>" +
             "  </div>" +
             "  <div class=\"nav\">" +
             "    <a href=\"/\">Terminal</a>" +
@@ -434,9 +434,10 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "</script></body></html>";
 
     private static final String LOGOUT_HTML = "<!DOCTYPE html><html><head><title>Lab-RATS | LOGOUT</title>" +
-            "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\">" +
+            "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0\">" +
             "<style>" +
-            "body { background: #050505; color: #ff3131; font-family: 'Orbitron', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }" +
+            "@font-face { font-family: 'OrbitronC2'; src: url('/font/orbitron.ttf?v=100') format('truetype'); font-display: swap; }" +
+            "body { background: #050505; color: #ff3131; font-family: 'OrbitronC2', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }" +
             ".logout-card { background: rgba(15,15,25,0.9); border: 1px solid #ff3131; padding: 40px; border-radius: 12px; box-shadow: 0 0 30px rgba(255,49,49,0.2); }" +
             "p { color: #888; font-family: 'Orbitron', sans-serif; margin-top: 20px; }" +
             "</style></head><body>" +
@@ -460,6 +461,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
         staticContext = context.getApplicationContext();
         
         // Generate a fresh session token for this server lifetime
+        // Ensures "every reload requires a login" for security
         sessionToken = java.util.UUID.randomUUID().toString();
 
         loadPersistentData();
@@ -495,14 +497,16 @@ public class LabRatsHttpServer extends NanoHTTPD {
                     }
                 }
             } 
-            // 2. Handle Logout
+            // 2. Handle Logout (Hard kill session)
             else if (uri.equals("/logout")) {
                 logActivity("AUTHENTICATION_TERMINATED: Session closed");
-                // Cycle the token on server side immediately to kill all active sessions
+                // Invalidate persistent server token immediately
                 sessionToken = java.util.UUID.randomUUID().toString(); 
+                context.getSharedPreferences("LabRATSSettings", Context.MODE_PRIVATE)
+                    .edit().putString("session_token", sessionToken).apply();
                 
                 response = newFixedLengthResponse(Response.Status.OK, "text/html", LOGOUT_HTML);
-                // Kill cookie on client side
+                // Nuclear cookie wipe
                 response.addHeader("Set-Cookie", "token=deleted; Path=/; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Strict");
             }
             // 3. Auth Check for all other pages
@@ -895,7 +899,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
                         html.append("<a class=\"btn btn-small\" style=\"margin-right:8px; border-color:var(--neon-orange); color:var(--neon-orange); background:rgba(255,157,0,0.05);\" href=\"/files/edit/").append(filePath).append("\">EDIT</a>");
                     }
                     html.append("<a class=\"btn btn-small\" href=\"/download/").append(filePath)
-                            .append("\">FETCH</a>");
+                            .append("\">GET</a>");
                 }
 
                 html.append("</li>");
@@ -3164,49 +3168,36 @@ public class LabRatsHttpServer extends NanoHTTPD {
             }
             html.append("</tbody></table>");
             
-            // Pagination Links
+            // Pagination UI
             if (totalPages > 1) {
-                html.append("<div class=\"pagination\">");
+                html.append("<div class=\"pagination\" style=\"margin-top: 25px; flex-direction: column; gap: 12px;\">");
+                
+                html.append("<div style=\"display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;\">");
                 if (page > 1) {
+                    html.append("<a href=\"/intel?page=1\">FIRST</a>");
                     html.append("<a href=\"/intel?page=").append(page - 1).append("\">&laquo; PREV</a>");
                 }
                 
-                // Show jump to page
-                html.append("<form action=\"/intel\" method=\"GET\" style=\"display: inline-flex; align-items: center; gap: 5px;\">")
-                    .append("<input type=\"number\" name=\"page\" min=\"1\" max=\"").append(totalPages).append("\" value=\"").append(page).append("\" style=\"width: 60px; height: 38px; background: #000; border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 8px; text-align: center;\">")
-                    .append("<button type=\"submit\" class=\"btn btn-small\" style=\"padding: 8px 12px; margin: 0; min-width: 0;\">GO</button>")
-                    .append("</form>");
-
-                if (page < totalPages) {
-                    html.append("<a href=\"/intel?page=").append(page + 1).append("\">NEXT &raquo;</a>");
-                }
-                html.append("</div>");
-            }
-
-            // Pagination UI
-            if (totalPages > 1) {
-                html.append("<div class=\"pagination\" style=\"flex-direction: column; gap: 15px;\">");
-                html.append("<div style=\"display: flex; gap: 5px; justify-content: center; flex-wrap: wrap;\">");
-                if (page > 1) {
-                    html.append("<a href=\"/intel?page=1\">First</a>");
-                    html.append("<a href=\"/intel?page=").append(page - 1).append("\">&#8592; Prev</a>");
-                }
-                int startPage = Math.max(1, page - 2);
-                int endPage = Math.min(totalPages, page + 2);
+                int startPage = Math.max(1, page - 1);
+                int endPage = Math.min(totalPages, page + 1);
                 for (int i = startPage; i <= endPage; i++) {
                     String active = (i == page) ? "class=\"active\"" : "";
                     html.append("<a ").append(active).append(" href=\"/intel?page=").append(i).append("\">").append(i).append("</a>");
                 }
+
                 if (page < totalPages) {
-                    html.append("<a href=\"/intel?page=").append(page + 1).append("\">Next &#8594;</a>");
-                    html.append("<a href=\"/intel?page=").append(totalPages).append("\">Last</a>");
+                    html.append("<a href=\"/intel?page=").append(page + 1).append("\">NEXT &raquo;</a>");
+                    html.append("<a href=\"/intel?page=").append(totalPages).append("\">LAST</a>");
                 }
                 html.append("</div>");
-                html.append("<form action=\"/intel\" method=\"get\" style=\"display: flex; gap: 10px; justify-content: center; align-items: center;\">");
-                html.append("<span style=\"font-size: 0.8rem; color: #888;\">Jump to:</span>");
-                html.append("<input type=\"number\" name=\"page\" min=\"1\" max=\"").append(totalPages).append("\" value=\"").append(page).append("\" style=\"width: 60px; background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 5px; border-radius: 8px; text-align: center;\">");
-                html.append("<button type=\"submit\" class=\"btn btn-small\">GO</button>");
-                html.append("</form>");
+
+                // Jump to page form
+                html.append("<form action=\"/intel\" method=\"GET\" style=\"display: inline-flex; align-items: center; gap: 8px; margin-top: 5px;\">")
+                    .append("<span style=\"font-size: 0.7rem; color: #888;\">JUMP:</span>")
+                    .append("<input type=\"number\" name=\"page\" min=\"1\" max=\"").append(totalPages).append("\" value=\"").append(page).append("\" style=\"width: 55px; height: 32px; background: #000; border: 1px solid rgba(0, 242, 255, 0.2); color: #fff; border-radius: 8px; text-align: center; font-size: 0.8rem;\">")
+                    .append("<button type=\"submit\" class=\"btn btn-small\" style=\"padding: 5px 10px; margin: 0;\">GO</button>")
+                    .append("</form>");
+
                 html.append("</div>");
             }
         }

