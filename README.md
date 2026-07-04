@@ -68,21 +68,25 @@
 ## 📸 Screenshots
 
 <p align="center">
-  <b>--- &gt; APK Builder Interface & Built Android App (C2 Server) on Target Device &lt; ---</b><br>
+<b>--- &gt; The APP/APK Building Tool in Terminal &lt; ---</b><br><b>--- &gt; A Built APP/APK Server Running on Android Device &lt; ---</b><br>
   <a href='https://postimg.cc/64fbtNKM' target='_blank'><img src='https://i.postimg.cc/64fbtNKM/APK-builder-pic.jpg' border='0' alt='APK-builder-pic'></a> <a href="https://postimg.cc/XXCnWGL2" target="_blank"><img src="https://i.postimg.cc/XXCnWGL2/Android-App-Screen.jpg" alt="Android-App-Screen"></a>
 </p>
 
 <p align="center">
-<b>--- &gt; Covert App Icon Changed & Fake Update Overlay Using Masquerade Mode &lt; ---</b><br>
-<a href="https://postimg.cc/063h6QNL" target="_blank"><img src="https://i.postimg.cc/063h6QNL/SYS-Update-icon.png" alt="SYS-Update-icon"></a> <a href="https://postimg.cc/v1jC1BmJ" target="_blank"><img src="https://i.postimg.cc/v1jC1BmJ/Fake-update.png" alt="Fake-update"></a>
+  <b>--- &gt; Change the App Identity, Name and Icon on Target Device Remotely with One Click &lt; ---</b><br>
+<p align="center">
+<a href='https://postimg.cc/hhrzqMBt' target='_blank'><img src='https://i.postimg.cc/hhrzqMBt/Stealth-Icons.jpg' border='0' alt='Stealth-Icons'></a> 
 
 <p align="center">
-  <b>--- &gt; Remote Web Control Panel (Mobile Interface) &lt; ---</b><br>
+ <a href="https://postimg.cc/jnqpNR2N" target="_blank"><img src="https://i.postimg.cc/jnqpNR2N/Stealth-Overlays.jpg" alt="Stealth-Overlays"></a>
+
+<p align="center">
+  <b>--- &gt; The Remote Web Control Panel (Mobile Interface) &lt; ---</b><br>
 <a href='https://postimg.cc/Jt74MHjh' target='_blank'><img src='https://i.postimg.cc/Jt74MHjh/Mobile-interface-Home.png' border='0' alt='Mobile-interface-Home'></a> <a href="https://postimg.cc/dLpyhj9S" target="_blank"><img src="https://i.postimg.cc/dLpyhj9S/Mobile-cam-menu.png" alt="Mobile-cam-menu"></a> <a href="https://postimg.cc/ZC2dWxLs" target="_blank"><img src="https://i.postimg.cc/ZC2dWxLs/Mobile-cam-menu1.png" alt="Mobile-cam-menu1"></a> <a href="https://postimg.cc/F78LYVxW" target="_blank"><img src="https://i.postimg.cc/F78LYVxW/Mobile-interface-GPS.png" alt="Mobile-interface-GPS"></a> <a href="https://postimg.cc/r0VdBn8X" target="_blank"><img src="https://i.postimg.cc/r0VdBn8X/Mobile-interface-SMS.png" alt="Mobile-interface-SMS"></a>
 </p>
 
 <p align="center">
-  <b>--- &gt; Remote Web Control Panel (PC Interface) &lt; ---</b><br> 
+  <b>--- &gt; The Remote Web Control Panel (PC Interface) &lt; ---</b><br> 
 <a href="https://postimg.cc/VdVFmKWK" target="_blank"><img src="https://i.postimg.cc/VdVFmKWK/1-Terminal-Tab.png" alt="1-Terminal-Tab"></a>
 <a href="https://postimg.cc/xc4Pn63s" target="_blank"><img src="https://i.postimg.cc/xc4Pn63s/2-Ghost-Tab.png" alt="2-Ghost-Tab"></a>
 <a href="https://postimg.cc/RNDT4gLD" target="_blank"><img src="https://i.postimg.cc/RNDT4gLD/3-Optics-Tab.png" alt="3-Optics-Tab"></a>
