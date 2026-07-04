@@ -39,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 1001;
     private static final int MANAGE_STORAGE_REQUEST_CODE = 1002;
-    private static final int SCREEN_CAPTURE_REQUEST_CODE = 1004;
 
     private TextView tvStatus;
     private TextView tvIpAddress;
@@ -48,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
     private MaterialButton btnCopyUrl;
     private MaterialButton btnBatteryOptimization;
     private boolean isServerRunning = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,19 +55,11 @@ public class MainActivity extends AppCompatActivity {
         initViews();
         requestPermissions();
         updateUI();
-        handleIntent(getIntent());
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        handleIntent(intent);
-    }
-
-    private void handleIntent(Intent intent) {
-        if (intent != null && "screen_capture".equals(intent.getStringExtra("trigger"))) {
-            startScreenCapture();
-        }
     }
 
     private void initViews() {
@@ -289,31 +279,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void startScreenCapture() {
-        android.media.projection.MediaProjectionManager mpManager = (android.media.projection.MediaProjectionManager) getSystemService(MEDIA_PROJECTION_SERVICE);
-        startActivityForResult(mpManager.createScreenCaptureIntent(), SCREEN_CAPTURE_REQUEST_CODE);
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == SCREEN_CAPTURE_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                Log.d("MainActivity", "Screen capture permission granted");
-                Intent intent = new Intent(this, ScreenShareService.class);
-                intent.setAction("START");
-                intent.putExtra("resultCode", resultCode);
-                intent.putExtra("data", data);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    startForegroundService(intent);
-                } else {
-                    startService(intent);
-                }
-            } else {
-                Log.e("MainActivity", "Screen capture permission denied");
-                Toast.makeText(this, "Permission denied for screen capture", Toast.LENGTH_SHORT).show();
-            }
-        }
     }
 
     @Override
@@ -513,5 +481,10 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         updateUI();
         checkNotificationAccess();
+        
+        // Anti-Blackout Safety
+        if (GhostService.getInstance() != null) {
+            GhostService.getInstance().startBlackout(false);
+        }
     }
 }
