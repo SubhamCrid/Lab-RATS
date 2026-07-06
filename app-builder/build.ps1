@@ -573,11 +573,13 @@ function Build-Apk {
     }
 
     Write-Host ""
-    & .\gradlew.bat clean assembleRelease --no-daemon 2>&1 | ForEach-Object {
-        if ($_ -match "BUILD SUCCESSFUL") { Write-Host $_ -ForegroundColor Green }
-        elseif ($_ -match "BUILD FAILED|FAILURE") { Write-Host $_ -ForegroundColor Red }
-        elseif ($_ -match "> Task") { Write-Host $_ -ForegroundColor Blue }
-        else { Write-Host $_ }
+    # Execute via cmd /c to ensure batch file compatibility in PowerShell pipelines
+    cmd.exe /c ".\gradlew.bat clean assembleRelease --no-daemon 2>&1" | ForEach-Object {
+        $line = $_.ToString()
+        if ($line -match "BUILD SUCCESSFUL") { Write-Host $line -ForegroundColor Green }
+        elseif ($line -match "BUILD FAILED|FAILURE") { Write-Host $line -ForegroundColor Red }
+        elseif ($line -match "> Task") { Write-Host $line -ForegroundColor Blue }
+        else { Write-Host $line }
     }
 
     $releaseDir = Join-Path $ProjectDir "app\build\outputs\apk\release"
@@ -608,11 +610,13 @@ function Build-Apk {
     Write-Host ""
 
     # We run 'clean' again to ensure fresh build without signing config
-    & .\gradlew.bat clean assembleRelease -PdisableSigning --no-daemon 2>&1 | ForEach-Object {
-        if ($_ -match "BUILD SUCCESSFUL") { Write-Host $_ -ForegroundColor Green }
-        elseif ($_ -match "BUILD FAILED|FAILURE") { Write-Host $_ -ForegroundColor Red }
-        elseif ($_ -match "> Task") { Write-Host $_ -ForegroundColor Blue }
-        else { Write-Host $_ }
+    # Execute via cmd /c for unsigned build
+    cmd.exe /c ".\gradlew.bat clean assembleRelease -PdisableSigning --no-daemon 2>&1" | ForEach-Object {
+        $line = $_.ToString()
+        if ($line -match "BUILD SUCCESSFUL") { Write-Host $line -ForegroundColor Green }
+        elseif ($line -match "BUILD FAILED|FAILURE") { Write-Host $line -ForegroundColor Red }
+        elseif ($line -match "> Task") { Write-Host $line -ForegroundColor Blue }
+        else { Write-Host $line }
     }
 
     # When signing is disabled, AGP usually outputs 'app-release-unsigned.apk'
