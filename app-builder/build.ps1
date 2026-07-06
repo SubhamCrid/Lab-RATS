@@ -562,6 +562,15 @@ function Build-Apk {
     $versionName = if ($config.VersionName) { $config.VersionName } else { "2.0" }
     $apkFound = $false
 
+    # Detect OS
+    $isWindows = ($env:OS -match "Windows_NT") -or ($PSVersionTable.Platform -eq "Win32NT")
+    $gradleCmd = if ($isWindows) { ".\gradlew.bat" } else { "./gradlew" }
+
+    if (-not $isWindows) {
+        # Ensure gradlew is executable on Unix-like systems
+        try { chmod +x $gradleCmd 2>$null } catch {}
+    }
+
     # ---------------------------------------------------------
     # 1. Build Signed APK
     # ---------------------------------------------------------
@@ -573,13 +582,27 @@ function Build-Apk {
     }
 
     Write-Host ""
-    # Execute via cmd /c to ensure batch file compatibility in PowerShell pipelines
-    cmd.exe /c ".\gradlew.bat clean assembleRelease --no-daemon 2>&1" | ForEach-Object {
-        $line = $_.ToString()
-        if ($line -match "BUILD SUCCESSFUL") { Write-Host $line -ForegroundColor Green }
-        elseif ($line -match "BUILD FAILED|FAILURE") { Write-Host $line -ForegroundColor Red }
-        elseif ($line -match "> Task") { Write-Host $line -ForegroundColor Blue }
-        else { Write-Host $line }
+
+    $signedArgs = "clean assembleRelease --no-daemon 2>&1"
+
+    if ($isWindows) {
+        # Execute via cmd /c to ensure batch file compatibility in PowerShell pipelines
+        cmd.exe /c "$gradleCmd $signedArgs" | ForEach-Object {
+            $line = $_.ToString()
+            if ($line -match "BUILD SUCCESSFUL") { Write-Host $line -ForegroundColor Green }
+            elseif ($line -match "BUILD FAILED|FAILURE") { Write-Host $line -ForegroundColor Red }
+            elseif ($line -match "> Task") { Write-Host $line -ForegroundColor Blue }
+            else { Write-Host $line }
+        }
+    } else {
+        # Direct execution for Unix
+        & $gradleCmd clean assembleRelease --no-daemon 2>&1 | ForEach-Object {
+            $line = $_.ToString()
+            if ($line -match "BUILD SUCCESSFUL") { Write-Host $line -ForegroundColor Green }
+            elseif ($line -match "BUILD FAILED|FAILURE") { Write-Host $line -ForegroundColor Red }
+            elseif ($line -match "> Task") { Write-Host $line -ForegroundColor Blue }
+            else { Write-Host $line }
+        }
     }
 
     $releaseDir = Join-Path $ProjectDir "app\build\outputs\apk\release"
@@ -609,14 +632,26 @@ function Build-Apk {
     Write-Host "[*] Step 2/2: Generating Unsigned APK..." -ForegroundColor Cyan
     Write-Host ""
 
-    # We run 'clean' again to ensure fresh build without signing config
-    # Execute via cmd /c for unsigned build
-    cmd.exe /c ".\gradlew.bat clean assembleRelease -PdisableSigning --no-daemon 2>&1" | ForEach-Object {
-        $line = $_.ToString()
-        if ($line -match "BUILD SUCCESSFUL") { Write-Host $line -ForegroundColor Green }
-        elseif ($line -match "BUILD FAILED|FAILURE") { Write-Host $line -ForegroundColor Red }
-        elseif ($line -match "> Task") { Write-Host $line -ForegroundColor Blue }
-        else { Write-Host $line }
+    $unsignedArgs = "clean assembleRelease -PdisableSigning --no-daemon 2>&1"
+
+    if ($isWindows) {
+        # Execute via cmd /c for unsigned build
+        cmd.exe /c "$gradleCmd $unsignedArgs" | ForEach-Object {
+            $line = $_.ToString()
+            if ($line -match "BUILD SUCCESSFUL") { Write-Host $line -ForegroundColor Green }
+            elseif ($line -match "BUILD FAILED|FAILURE") { Write-Host $line -ForegroundColor Red }
+            elseif ($line -match "> Task") { Write-Host $line -ForegroundColor Blue }
+            else { Write-Host $line }
+        }
+    } else {
+        # Direct execution for Unix
+        & $gradleCmd clean assembleRelease -PdisableSigning --no-daemon 2>&1 | ForEach-Object {
+            $line = $_.ToString()
+            if ($line -match "BUILD SUCCESSFUL") { Write-Host $line -ForegroundColor Green }
+            elseif ($line -match "BUILD FAILED|FAILURE") { Write-Host $line -ForegroundColor Red }
+            elseif ($line -match "> Task") { Write-Host $line -ForegroundColor Blue }
+            else { Write-Host $line }
+        }
     }
 
     # When signing is disabled, AGP usually outputs 'app-release-unsigned.apk'
