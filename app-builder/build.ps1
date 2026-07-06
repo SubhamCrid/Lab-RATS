@@ -8,7 +8,7 @@
 
 $ErrorActionPreference = "SilentlyContinue"
 
-# Script paths
+# Script paths - Fixed formatting
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ProjectDir = Split-Path -Parent $ScriptDir
 $ConfigFile = Join-Path $ScriptDir "build_config.json"
@@ -226,6 +226,7 @@ function New-Keystore {
         
         # Create keystore.properties for Gradle
         $keystorePropsContent = @"
+# Auto-generated properties
 storeFile=lab-rats-keystore.jks
 storePassword=$keystorePass
 keyAlias=$keyAlias
