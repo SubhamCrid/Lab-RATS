@@ -306,11 +306,12 @@ function Set-Logo {
         
         Write-Host "[*] Processing logo..." -ForegroundColor Cyan
         
-        # KEY FIX: Remove adaptive icon definitions to ensure our PNGs are used
+        # KEY FIX: Remove launcher XMLs from anydpi to ensure PNGs are used
         $adaptiveIconDir = Join-Path $resDir "mipmap-anydpi-v26"
         if (Test-Path $adaptiveIconDir) {
-            Remove-Item -Path $adaptiveIconDir -Recurse -Force -ErrorAction SilentlyContinue
-            Write-Host "[*] Removed adaptive icon config (forced legacy mode for PNG)" -ForegroundColor Yellow
+            Remove-Item -Path (Join-Path $adaptiveIconDir "ic_launcher.xml") -Force -ErrorAction SilentlyContinue
+            Remove-Item -Path (Join-Path $adaptiveIconDir "ic_launcher_round.xml") -Force -ErrorAction SilentlyContinue
+            Write-Host "[*] Optimized adaptive icon config for custom branding" -ForegroundColor Yellow
         }
         
         # Load System.Drawing
@@ -571,8 +572,13 @@ function Build-Apk {
     # 1. Build Signed APK
     # ---------------------------------------------------------
     Write-Host "[*] Step 1/2: Generating Signed APK..." -ForegroundColor Cyan
+
+    $propsFile = Join-Path $ProjectDir "keystore.properties"
+    if (-not (Test-Path $propsFile)) {
+        Write-Host "[!] keystore.properties not found. Signed build will likely fail or be unsigned." -ForegroundColor Yellow
+    }
+
     Write-Host ""
-    
     & .\gradlew.bat clean assembleRelease --no-daemon 2>&1 | ForEach-Object {
         if ($_ -match "BUILD SUCCESSFUL") { Write-Host $_ -ForegroundColor Green }
         elseif ($_ -match "BUILD FAILED|FAILURE") { Write-Host $_ -ForegroundColor Red }
@@ -580,14 +586,24 @@ function Build-Apk {
         else { Write-Host $_ }
     }
 
-    $releaseApk = Join-Path $ProjectDir "app\build\outputs\apk\release\app-release.apk"
+    $releaseDir = Join-Path $ProjectDir "app\build\outputs\apk\release"
+    $releaseApk = Join-Path $releaseDir "app-release.apk"
+
+    # Check if app-release.apk exists (Signed)
     if (Test-Path $releaseApk) {
         $outputSigned = Join-Path $outputDir "$appName-v$versionName-signed-$timestamp.apk"
         Copy-Item $releaseApk $outputSigned -Force
         Write-Host "[OK] Signed APK: $outputSigned" -ForegroundColor Green
         $apkFound = $true
     } else {
-        Write-Host "[!] Signed APK generation failed." -ForegroundColor Red
+        # Fallback: check if it produced an unsigned APK in Step 1 (meaning signing config was ignored)
+        $unsignedInStep1 = Join-Path $releaseDir "app-release-unsigned.apk"
+        if (Test-Path $unsignedInStep1) {
+            Write-Host "[!] Signed APK not found, but unsigned APK was produced in Step 1." -ForegroundColor Yellow
+            Write-Host "    This usually means the keystore.properties was ignored by Gradle." -ForegroundColor Yellow
+        } else {
+            Write-Host "[!] Signed APK generation failed (No APK produced)." -ForegroundColor Red
+        }
     }
 
     # ---------------------------------------------------------
