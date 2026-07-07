@@ -175,7 +175,7 @@ bc1q6lmkuju3kf7f8624fwt5qs7k5mf63mekgcnzf4
 
 ---
 
-## 📸 Screenshots Pt.2 - Remote Web Control Panel (PC Interface)
+## 📸 Screenshots Pt. 2 - Remote Web Control Panel (PC Interface)
 
 - **Terminal/Homepage Tab:**
 [![1-Terminal-Tab.png](https://i.postimg.cc/Tw56BwT2/1-Terminal-Tab.png)](https://postimg.cc/47Gq9XKj)
@@ -197,7 +197,7 @@ bc1q6lmkuju3kf7f8624fwt5qs7k5mf63mekgcnzf4
 
 ---
 
-- **Live Image Stream Example:**
+- **Live Camera Stream Example:**
 [![4-Camera-Live.png](https://i.postimg.cc/xCN2BC9C/4-Camera-Live.png)](https://postimg.cc/Q9DwTj9G)
 
 ---
@@ -248,7 +248,7 @@ bc1q6lmkuju3kf7f8624fwt5qs7k5mf63mekgcnzf4
 ---
 
 ## ⚠️ Disclaimer
-This tool is for **educational and authorized security testing purposes.** The **developers assume NO responsibility** for any **misuse** caused by this software. **Please use it responsibly**. **Enjoy**
+This tool is for **educational and authorized testing purposes.** The **developers** assume **NO responsibility** for **ANY** **misuse or damage to relationships** caused by this software. **Please use it responsibly**. **Thank you!**
 
 ---
 
