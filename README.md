@@ -177,58 +177,72 @@ bc1q6lmkuju3kf7f8624fwt5qs7k5mf63mekgcnzf4
 
 ## 📸 Screenshots Pt.2 - Remote Web Control Panel (PC Interface)
 
+- **Terminal/Homepage Tab:**
 [![1-Terminal-Tab.png](https://i.postimg.cc/Tw56BwT2/1-Terminal-Tab.png)](https://postimg.cc/47Gq9XKj)
 
 ---
 
+- **Ghost Operations/Stealth Tab:**
 [![2-Ghost-Tab.png](https://i.postimg.cc/DZ4TRZ7z/2-Ghost-Tab.png)](https://postimg.cc/vgykVGgR)
 
 ---
 
+- **Ghost Remote/Screen Mirror Example:**
 [![7-Ghost-Remote.png](https://i.postimg.cc/PJGjHjqt/7-Ghost-Remote.png)](https://postimg.cc/jwh96BN9)
 
 ---
 
+- **Optics/Camera Tab:**
 [![3-Optics-Tab.png](https://i.postimg.cc/9MwhsMcF/3-Optics-Tab.png)](https://postimg.cc/mz4JHTc0)
 
 ---
 
+- **Live Image Stream Example:**
 [![4-Camera-Live.png](https://i.postimg.cc/xCN2BC9C/4-Camera-Live.png)](https://postimg.cc/Q9DwTj9G)
 
 ---
 
+- **Locate/GPS Tab:**
 [![5-GPS-Tab.png](https://i.postimg.cc/kGrmCm55/5-GPS-Tab.png)](https://postimg.cc/VrFT92ny)
 
 ---
 
+- **Data/Storage Tab:**
 [![6-Data-Tab.png](https://i.postimg.cc/W3qvx3sD/6-Data-Tab.png)](https://postimg.cc/bDPWtqD8)
 
 ---
 
+- **Intel/App Notifications Tab:**
 [![8-Intel-Tab.png](https://i.postimg.cc/sxFrzr2j/8-Intel-Tab.png)](https://postimg.cc/PpMcb0Z9)
 
 ---
 
+- **SMS/Text Message Tab:**
 [![9-SMS-Tab.png](https://i.postimg.cc/x8r2Q2dC/9-SMS-Tab.png)](https://postimg.cc/Q9qPgv1G)
 
 ---
 
+- **MMS/Multimedia Message Tab:**
 [![10-MMS-Tab.png](https://i.postimg.cc/yxqHKHNJ/10-MMS-Tab.png)](https://postimg.cc/ftvF71mZ)
 
 ---
 
+- **Acoustics/Audio Tab:**
 [![11-Acoustics-Tab.png](https://i.postimg.cc/cCqSWSJg/11-Acoustics-Tab.png)](https://postimg.cc/1nKT0bws)
 
 ---
 
+- **Call Logs Tab:**
 [![12-Call-Logs-Tab.png](https://i.postimg.cc/Sshdb1h6/12-Call-Logs-Tab.png)](https://postimg.cc/QBf1pbVC)
 
 ---
 
+- **Contacts Tab:**
 [![13-Contacts-Tab.png](https://i.postimg.cc/4dgPR2gz/13-Contacts-Tab.png)](https://postimg.cc/DWxLqgmZ)
 
 ---
 
+- **Hardware/Device Info Tab:**
 [![14-Hardware-Tab.png](https://i.postimg.cc/wMKpzpBV/14-Hardware-Tab.png)](https://postimg.cc/G8jNP6G8)
 
 ---
