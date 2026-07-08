@@ -85,10 +85,10 @@ During security research, a **critical behavior** in modern Android networking w
 
 ### 1. Requirements
 *   **Java 11 or 21** installed on your workstation.
-*   A target **Android** device.
-*   A **Google Sheet Webhook URL** for IP tracking.
+*   A **target Android** device.
 
->** **PROJECT UPDATE**: Just got the **APK builder working perfectly inside Androids Termux app**! I can now **build and install** the .apk **directly onto my test phone** right from the Termux app terminal. The **possibilities moving forward are wild**! 😎
+>The device used for my testing is a fully-patched rootless Samsung Z Flip 5
+*   A **Google Sheet Webhook URL** for IP tracking.
 
 ### 2. Build the APK (on PC)
 1.  **Download & Extract** the repository zip.
@@ -175,13 +175,22 @@ bc1q6lmkuju3kf7f8624fwt5qs7k5mf63mekgcnzf4
 
 ---
 
-### **Built APP/APK (C2 Server) Installed on Android Device**
+### **NEW - Termux APK Build and Install**
 
-[![Android-App-Screen.jpg](https://i.postimg.cc/J7T0bjkW/Android-App-Screen.jpg)](https://postimg.cc/XXCnWGL2)
+>** **PROJECT UPDATE**: Just got the **APK builder working perfectly inside Androids Termux app**! I can now **build and install** the .apk **directly onto my test phone** right from the Termux apps terminal. The **possibilities moving forward are intriguing**! 😎 *(Will post Termux APK build/setup guide soon, * Video clip of build below skips entering my Google Sheet Webhook for obvious reasons.)*
+
+https://github.com/user-attachments/assets/78ee9667-4f8e-4cde-9cb1-de85c199783f
+
+---
+
+### **Built APK (C2 Server) Installed on Android Device**
+
+[![Lab-RATS-Built-APK-on-Device.jpg](https://i.postimg.cc/vT70FWWM/Lab-RATS-Built-APK-on-Device.jpg)](https://postimg.cc/zHBCTHtP)
 
 ---
 
 ### **Remotely Transform Lab-RATS into a Working Calculator, Weather App, System Update, or Settings Menu**.
+
 <p align="center">
 <a href="https://postimg.cc/hhrzqMBt" target="_blank"><img src="https://i.postimg.cc/hhrzqMBt/Stealth-Icons.jpg" alt="Stealth-Icons"></a>    
 
@@ -193,7 +202,7 @@ bc1q6lmkuju3kf7f8624fwt5qs7k5mf63mekgcnzf4
 ## 📱 Remote Web Control Panel (PC Interface)
 
 ### **Terminal/Homepage Tab:**
-
+    
 [![1-Terminal-Tab.png](https://i.postimg.cc/Tw56BwT2/1-Terminal-Tab.png)](https://postimg.cc/47Gq9XKj)
 
 ---
