@@ -779,7 +779,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
         String snifferStatus = NotificationSniffer.isServiceRunning() ? 
             "<span style=\"color:var(--neon-green); font-size:0.65rem; vertical-align:middle;\">INTEL_ACTIVE</span>" : 
             "<span style=\"color:var(--danger); font-size:0.65rem; vertical-align:middle;\">INTEL_OFFLINE</span>";
-        html.append("<h2 style=\"margin:0; font-size:1.1rem; letter-spacing:1px; line-height:1.2;\">SYSTEM_MONITOR [").append(snifferStatus).append("]</h2>");
+        html.append("<h2 style=\"margin:0; letter-spacing:1px; line-height:1.2;\">SYSTEM_MONITOR [").append(snifferStatus).append("]</h2>");
         html.append("<div style=\"font-size:0.6rem; opacity:0.5; font-family:monospace; margin-top:8px;\">SESSION_ID: ").append(sessionId).append("</div>");
         html.append("</div>");
         html.append("<div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;\">");
@@ -1679,7 +1679,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("</div>");
         html.append("<div class=\"card\">");
         html.append("<div style=\"display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:20px;\">")
-            .append("<h2 style=\"margin:0; font-size:1.2rem; flex-shrink:0;\">&#128247; OPTICS</h2>")
+            .append("<h2 style=\"margin:0; flex-shrink:0;\">&#128247; OPTICS</h2>")
             .append("<span id=\"night-mode-status\" style=\"font-size:0.65rem; color:var(--neon-cyan); font-family:monospace; text-align:right; line-height:1.2;\">NIGHT_MODE:<br><span id=\"night-status-val\" style=\"color:").append(nightMode ? "var(--neon-green)" : "var(--neon-red)").append(";\">").append(nightMode ? "ACTIVE" : "OFF").append("</span></span>")
             .append("</div>");
 
