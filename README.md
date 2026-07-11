@@ -203,6 +203,10 @@ https://github.com/user-attachments/assets/78ee9667-4f8e-4cde-9cb1-de85c199783f
 
 ## 📱 Remote Web Control (C2) Panel - PC Interface
 
+https://github.com/user-attachments/assets/20bd6663-0b6b-4fc7-86b2-973d97763f66
+
+---
+
 ### **Terminal/Homepage Tab:**
     
 [![1-Terminal-Tab.png](https://i.postimg.cc/Tw56BwT2/1-Terminal-Tab.png)](https://postimg.cc/47Gq9XKj)
