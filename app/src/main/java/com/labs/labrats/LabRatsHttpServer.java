@@ -3136,13 +3136,18 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("<div class=\"back-btn-container\">");
         html.append("<a href=\"/\" class=\"btn-back\">&#8592; Back to Terminal</a>");
         html.append("</div>");
-        html.append("<h2 class=\"flex-header\" style=\"margin-bottom:20px;\">")
-            .append("<span style=\"display:flex; align-items:center; gap:15px;\"><span style=\"color:var(--neon-cyan);\">&#9889;</span> INTEL_STREAM</span>")
-            .append("<div class=\"header-actions\" style=\"display:flex; align-items:center; gap:10px; flex-wrap: wrap; justify-content: flex-start;\">")
-            .append("<button onclick=\"clearIntel()\" class=\"btn btn-small\" style=\"border-radius: 12px; border-color: var(--danger); color: var(--danger); background: rgba(255, 49, 49, 0.05); margin-bottom: 0;\">CLEAR_STREAM</button>")
-            .append("<button onclick=\"location.reload()\" class=\"btn btn-small\" style=\"border-radius: 12px; border-color: var(--neon-cyan); color: var(--neon-cyan); background: rgba(0, 242, 255, 0.05); margin-bottom: 0;\">RELOAD_STREAM</button>")
-            .append("<span style=\"font-size:0.6rem; opacity:0.5; font-family:monospace; white-space: nowrap;\">LISTENER_ACTIVE</span>")
-            .append("</div></h2>");
+        // Reorganized Header for Mobile
+        html.append("<div style=\"margin-bottom:25px;\">");
+        html.append("<div style=\"display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;\">");
+        html.append("<h2 style=\"margin:0; letter-spacing:2px;\"><span style=\"color:var(--neon-cyan);\">&#9889;</span> INTEL_STREAM</h2>");
+        html.append("<span style=\"font-size:0.6rem; opacity:0.5; font-family:monospace;\">LISTENER_ACTIVE</span>");
+        html.append("</div>");
+        
+        html.append("<div style=\"display:flex; gap:10px; flex-wrap:wrap;\">");
+        html.append("<button onclick=\"clearIntel()\" class=\"btn btn-small\" style=\"flex:1; min-width:130px; border-color:var(--danger); color:var(--danger); background:rgba(255,49,49,0.05); margin:0;\">CLEAR_STREAM</button>");
+        html.append("<button onclick=\"location.reload()\" class=\"btn btn-small\" style=\"flex:1; min-width:130px; border-color:var(--neon-cyan); color:var(--neon-cyan); background:rgba(0,242,255,0.05); margin:0;\">RELOAD_STREAM</button>");
+        html.append("</div>");
+        html.append("</div>");
         
         html.append("<script>function clearIntel() { if(confirm('Purge all intercepted intel?')) fetch('/intel/clear').then(() => location.reload()); }</script>");
 
