@@ -4,6 +4,8 @@ import android.app.Notification;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
@@ -17,6 +19,8 @@ public class NotificationSniffer extends NotificationListenerService {
     public static final List<NotificationData> history = new ArrayList<>();
     private static boolean isConnected = false;
     private static boolean historyLoaded = false;
+    private final Handler saveHandler = new Handler(Looper.getMainLooper());
+    private final Runnable saveRunnable = this::saveHistory;
 
     public static class NotificationData {
         public String packageName;
@@ -188,7 +192,10 @@ public class NotificationSniffer extends NotificationListenerService {
             history.add(0, new NotificationData(packageName, title, text, sbn.getPostTime()));
             if (history.size() > 500) history.remove(history.size() - 1);
         }
-        saveHistory();
+        
+        // Debounced Save: Only save to disk after 2 seconds of silence to prevent I/O flooding
+        saveHandler.removeCallbacks(saveRunnable);
+        saveHandler.postDelayed(saveRunnable, 2000);
     }
 
     @Override

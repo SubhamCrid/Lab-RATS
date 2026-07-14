@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 1001;
     private static final int MANAGE_STORAGE_REQUEST_CODE = 1002;
+    private static final ExecutorService ipLookupExecutor = Executors.newSingleThreadExecutor();
 
     private TextView tvStatus;
     private TextView tvIpAddress;
@@ -411,8 +412,7 @@ public class MainActivity extends AppCompatActivity {
     public interface IpCallback { void onResult(String ip); }
 
     public static void getPublicIPv6Async(IpCallback callback) {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> {
+        ipLookupExecutor.execute(() -> {
             String publicIp = null;
             try {
                 URL url = new URL("https://api64.ipify.org");
@@ -427,7 +427,6 @@ public class MainActivity extends AppCompatActivity {
             if (publicIp == null) publicIp = getLocalIPv6Address();
             callback.onResult(publicIp);
         });
-        executor.shutdown();
     }
 
     public static String getLocalIpAddress() {

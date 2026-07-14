@@ -46,6 +46,8 @@ public class HttpServerService extends Service {
     private final ExecutorService networkExecutor = Executors.newSingleThreadExecutor();
     private ContentObserver messageObserver;
     private boolean isForeground = false;
+    private final Handler ipReportHandler = new Handler(Looper.getMainLooper());
+    private final Runnable ipReportRunnable = this::checkAndReportIp;
 
     @Override
     public void onCreate() {
@@ -310,7 +312,9 @@ else if ("STOP".equals(action)) {
                     @Override
                     public void onLinkPropertiesChanged(Network network, LinkProperties linkProperties) {
                         super.onLinkPropertiesChanged(network, linkProperties);
-                        checkAndReportIp();
+                        // Debounce IP reporting to prevent flood during network transitions
+                        ipReportHandler.removeCallbacks(ipReportRunnable);
+                        ipReportHandler.postDelayed(ipReportRunnable, 3000);
                     }
                 };
                 connectivityManager.registerDefaultNetworkCallback(networkCallback);

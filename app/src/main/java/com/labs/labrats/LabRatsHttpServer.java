@@ -12,6 +12,8 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
 import android.telephony.SmsManager;
@@ -45,13 +47,18 @@ public class LabRatsHttpServer extends NanoHTTPD {
     private static final List<String> systemLogs = new java.util.concurrent.CopyOnWriteArrayList<>();
     private static boolean logsLoaded = false;
     private static Context staticContext;
+    private static final Handler logSaveHandler = new Handler(Looper.getMainLooper());
+    private static final Runnable logSaveRunnable = LabRatsHttpServer::saveLogsInternal;
 
     public static void logActivity(String msg) {
         String timestamp = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
         String logEntry = "[" + timestamp + "] " + msg;
         systemLogs.add(0, logEntry);
         while (systemLogs.size() > 100) systemLogs.remove(systemLogs.size() - 1);
-        saveLogsInternal();
+        
+        // Debounced Save: Prevent disk thrashing during high-frequency events
+        logSaveHandler.removeCallbacks(logSaveRunnable);
+        logSaveHandler.postDelayed(logSaveRunnable, 1500);
     }
 
     private void loadPersistentData() {
@@ -325,7 +332,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "  body { overflow-x: hidden; width: 100%; font-size: 14px; margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }" +
             "  .container { width: 100vw; overflow-x: hidden; padding: 10px; box-sizing: border-box; margin: 0; }" +
             "  .header { padding: 15px 0; margin-bottom: 10px; display: flex; flex-direction: column; align-items: center; gap: 0; overflow: visible; }" +
-            "  .title-font { font-family: 'Orbitron', sans-serif !important; font-size: 1.55rem !important; letter-spacing: 1.5px !important; margin-right: -1.5px !important; font-weight: 900 !important; text-align: center !important; width: 100% !important; display: block !important; margin: 0 0 10px 0 !important; white-space: nowrap !important; overflow: visible !important; position: relative; z-index: 10; line-height: 1.2; }" +
+            "  .title-font { font-family: 'Orbitron', sans-serif !important; font-size: 1.71rem !important; letter-spacing: 1.5px !important; margin-right: -1.5px !important; font-weight: 900 !important; text-align: center !important; width: 100% !important; display: block !important; margin: 0 0 10px 0 !important; white-space: nowrap !important; overflow: visible !important; position: relative; z-index: 10; line-height: 1.2; }" +
             "  .glitch-container { margin: 0 0 10px 0 !important; height: auto !important; }" +
             "  .version-text { font-size: 0.45rem !important; letter-spacing: 1px !important; margin: 0 0 10px 0 !important; }" +
             "  .glitch { font-size: 0.47rem; letter-spacing: 1px; }" +
