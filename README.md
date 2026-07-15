@@ -39,11 +39,11 @@
 ## 🚀 The Fun Stuff (Remote Capabilities)
 
 -   👻 **Ghost Controller (Gold Standard)**:
-    -   **Live Keylogging (v1.4 Update)**: Intercept **keystrokes and system text in real-time**. Now features **Sensitive Info Highlighting** (Passcodes, OTPs, Emails glow Red) and **Deep Extraction** for browser logins.
-    -   **📱 Ghost Screen Control/Mirror**: Cast the **live screen** and **control** the **device remotely** with **NO "Consent Prompt"** required.
--   💀  **Anti-Removal Shield (Optimized)**: High-speed, event-driven protection that **blocks attempts** to **Uninstall or Force Stop** the app.
+    -   **Live Keylogging (v1.4 Update)**: Intercept **keystrokes and system text in real-time**. Now features **Sensitive Info Highlighting** *(Passcodes, OTPs, Emails glow Red)* and **Deep Extraction** for browser logins.
+    -   **📱 Ghost Screen Control/Mirror**: Cast the **live screen** and **control** the **device remotely** with **NO "Consent Prompt"** required. *(Essentially full remote takeover, pair with Blackout Mode for max stealth)*
+-   💀  **Anti-Removal Shield (Optimized)**: High-speed, event-driven protection that **blocks attempts** to **Uninstall or Force Stop** the app. *(Kicks user to homescreen & will not allow entry to the app settings)*
 -   🛰️  **Precision GPS Tracking**: One-click uplink to open the **target's exact real-time location** in **Google Maps**.
--   ⚡   **Intel Stream (Notification Sniffer)**: Intercept **every notification** (*WhatsApp, Telegram, RCS, System*) in a live feed. **NEW**: Automatically highlights and badges sensitive data like OTPs and Bank alerts.
+-   ⚡   **Intel Stream (Notification Sniffer)**: Intercept **every notification** (*WhatsApp, Telegram, RCS, System*) in a live feed. **NEW**: Automatically highlights and badges **sensitive data like OTPs and Bank alerts**.
 -   🖼️ **MMS Terminal (Game Changer!)**:
     -   **Browse & Extract**: Download and view **ANY Multimedia Message (MMS)**. **v1.4 Update**: Fixed large video playback and streaming support.
     -   **Remote Dispatch**: Send **MMS/Picture Messages** directly from the target phone.
@@ -51,6 +51,8 @@
 -   📸 **Tactical Surveillance Hub**: 
     -   **Live Camera Streaming**: View **high-speed video** from **both front** and **back cameras**.
     -   **Covert Recording**: **Stealthily record** video without any user-facing activity.
+    -   **Snap Photos**: **Covert image capture** integrated into live stream.
+    -   **Nightmode**: **Brightens live stream/photos** taken in **low-light environments** without the flash.
 -   🎙️ **Acoustics & Interception**: Live **microphone recording** and automated **call recording** for both incoming and outgoing calls.
 -   📂 **Advanced Data Uplink**:
     -   **Integrated File Manager**: Navigate, download, and manage files. **NEW**: Instant **Search Bar** and **Category Filters** (Images/Video/Docs) for PC-optimized workflows.
@@ -92,7 +94,7 @@
 3.  The **Server** will go online and the **Active interface Web IP Link** should **pop up instantly** on your **Google Sheet**. *(Example Google Sheet Below)*
 4.  **Thats it**! Now you can use **ALL the remote features from anywhere in the world** as long as the **App Server is running on the Target/Test device**.
 
-> Info - *To use the Ghost features you must navigate to the "Ghost Tab" in the Web Control(C2) Panel and click the "Open Accessibility Settings" button. This opens a page on the device, tap "Installed Apps" and grant access to full control of device. - Images Below* ** *(This only applies to the "Ghost Remote Control", "Ghost Utilities", and "Ghost Keylogs". All other features can be used without this permission)*
+> Info - *To use the Ghost features navigate to the "Ghost Tab" in the Web Control(C2) Panel and click the "Open Accessibility Settings" button. This opens a page on the device, tap "Installed Apps" and grant access to full control of device. - Images Below* ** *(This only applies to the "Ghost Remote Control", "Ghost Utilities", and "Ghost Keylogs". All other features can be used without this permission)*
 
 [![Accessibilities-Perm.png](https://i.postimg.cc/Z510fCkq/Accessibilities-Perm.png)](https://postimg.cc/CRsF5Mxy)
 
