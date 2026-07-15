@@ -193,7 +193,7 @@ https://github.com/user-attachments/assets/5d8f33c7-f4a6-4df5-ab55-69e317ca7874
 
 ### **Terminal/Homepage Tab:**
 
-[![01-Terminal-Tab.png](https://i.postimg.cc/1zpTZ03K/01-Terminal-Tab.png)](https://postimg.cc/rdwg1rWd)
+[![01-Terminal-Tab.png](https://i.postimg.cc/jjwCKz5t/01-Terminal-Tab.png)](https://postimg.cc/McwzmfVF)
 
 ---
 
@@ -205,7 +205,11 @@ https://github.com/user-attachments/assets/5d8f33c7-f4a6-4df5-ab55-69e317ca7874
 
 ### **Ghost Ops.Tab Remote/Stealth:** *(Bottom half)*
 
-[![03-Ghost-Tab-Bottom.png](https://i.postimg.cc/4yCQ4q2f/03-Ghost-Tab-Bottom.png)](https://postimg.cc/mzwH8XGJ)
+<p align="center">
+  <a href="https://postimg.cc/mzwH8XGJ">
+    <img src="https://i.postimg.cc/4yCQ4q2f/03-Ghost-Tab-Bottom.png" alt="03-Ghost-Tab-Bottom.png" />
+  </a>
+</p>
 
 ---
 
