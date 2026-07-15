@@ -133,6 +133,8 @@ public class CallRecordService extends Service {
     }
 
     private void ensureForeground() {
+        if (isForeground) return;
+        
         boolean stealth = isStealthMode();
         Intent notificationIntent = new Intent(this, stealth ? DecoyActivity.class : MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent,
@@ -149,34 +151,23 @@ public class CallRecordService extends Service {
 
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // Use most compatible type for background start
                 int serviceType = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
-                
-                // Check for microphone permission before adding the type to avoid crash on Android 14+
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
-                    serviceType |= ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE;
+                try {
+                    startForeground(NOTIFICATION_ID, notification, serviceType);
+                    isForeground = true;
+                } catch (Exception e) {
+                    Log.w(TAG, "Standard FGS start failed: " + e.getMessage());
+                    startForeground(NOTIFICATION_ID, notification);
+                    isForeground = true;
                 }
-                
-                startForeground(NOTIFICATION_ID, notification, serviceType);
-                isForeground = true;
             } else {
                 startForeground(NOTIFICATION_ID, notification);
                 isForeground = true;
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error starting foreground: " + e.getMessage());
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                try {
-                    startForeground(NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC);
-                    isForeground = true;
-                } catch (Exception e2) {
-                    Log.e(TAG, "Critical failure starting foreground", e2);
-                    isForeground = false;
-                }
-            } else {
-                isForeground = false;
-            }
+            Log.e(TAG, "Critical FGS failure: " + e.getMessage());
         }
-
         Log.d(TAG, "CallRecordService ensured in foreground: " + isForeground);
     }
 

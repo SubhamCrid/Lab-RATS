@@ -39,7 +39,7 @@
                 <TextView
                     android:id="@+id/tvAppTitle"
                     android:layout_width="wrap_content"
-                    android:layout_height="48dp"
+                    android:layout_height="50dp"
                     android:fontFamily="@font/orbitron"
                     android:letterSpacing="0.4"
                     android:shadowColor="@color/neon_cyan"
@@ -67,7 +67,7 @@
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="15dp"
+                    android:layout_height="17dp"
                     android:layout_marginTop="4dp"
                     android:alpha="0.6"
                     android:letterSpacing="0.3"
@@ -97,7 +97,7 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="222dp"
+                        android:layout_height="218dp"
                         android:orientation="vertical"
                         android:padding="20dp">
 
@@ -153,7 +153,7 @@
                         <TextView
                             android:id="@+id/tvServerUrl"
                             android:layout_width="match_parent"
-                            android:layout_height="48dp"
+                            android:layout_height="41dp"
                             android:layout_marginTop="8dp"
                             android:background="#0D00f2ff"
                             android:fontFamily="monospace"
@@ -170,7 +170,7 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnStartStop"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="51dp"
                 android:layout_marginBottom="12dp"
                 android:backgroundTint="@color/neon_cyan"
                 android:fontFamily="@font/orbitron"
@@ -186,7 +186,7 @@
                 android:id="@+id/btnCopyUrl"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="42dp"
                 android:layout_marginBottom="12dp"
                 android:fontFamily="@font/orbitron"
                 android:insetTop="0dp"
@@ -202,7 +202,7 @@
                 android:id="@+id/btnBatteryOptimization"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
-                android:layout_height="68dp"
+                android:layout_height="53dp"
                 android:layout_marginBottom="24dp"
                 android:fontFamily="@font/orbitron"
                 android:text="BYPASS_POWER_LIMITS"
@@ -212,18 +212,23 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:layout_height="31dp"
+                android:layout_marginTop="24dp"
+                android:background="#0D00f2ff"
                 android:gravity="center"
-                android:layout_marginTop="24dp">
+                android:orientation="vertical"
+                android:padding="8dp">
 
                 <TextView
+                    android:id="@+id/tvTerminalFeedback"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:gravity="center"
                     android:text="[ SECURE CONNECTION ESTABLISHED ]"
-                    android:textSize="10sp"
-                    android:textColor="#333333"
-                    android:layout_marginTop="8dp"/>
+                    android:textColor="@color/neon_cyan"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
 
             </LinearLayout>
 

