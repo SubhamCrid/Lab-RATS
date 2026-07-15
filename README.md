@@ -204,7 +204,7 @@ https://github.com/user-attachments/assets/5d8f33c7-f4a6-4df5-ab55-69e317ca7874
 
 ### **Live Camera Stream Example:**
 
-[![05-Live-Cam-stream.png](https://i.postimg.cc/ZRPC3QKH/05-Live-Cam-stream.png)](https://postimg.cc/xJCfVtmN)
+[![05-Live-Cam-Stream.png](https://i.postimg.cc/x8Dh4Skw/05-Live-Cam-Stream.png)](https://postimg.cc/phCsm4JC)
 
 ---
 
