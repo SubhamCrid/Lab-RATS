@@ -174,7 +174,7 @@ bc1q6lmkuju3kf7f8624fwt5qs7k5mf63mekgcnzf4
 
 ### **C2 Panel Video Clip:**
 
-https://github.com/user-attachments/assets/20bd6663-0b6b-4fc7-86b2-973d97763f66
+https://github.com/user-attachments/assets/5d8f33c7-f4a6-4df5-ab55-69e317ca7874
 
 ---
 
