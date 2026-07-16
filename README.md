@@ -213,7 +213,7 @@ https://github.com/user-attachments/assets/5d8f33c7-f4a6-4df5-ab55-69e317ca7874
 
 ---
 
-### **Optics/Camera Tab:**
+### **Optics/Live Camera Stream Tab:**
 
 [![04-Optics-Tab.png](https://i.postimg.cc/W3Z0ySpq/04-Optics-Tab.png)](https://postimg.cc/R6M367Hv)
 
