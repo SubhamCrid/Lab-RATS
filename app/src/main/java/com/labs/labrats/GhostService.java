@@ -405,10 +405,20 @@ public class GhostService extends AccessibilityService {
                     try {
                         android.graphics.Bitmap bitmap = android.graphics.Bitmap.wrapHardwareBuffer(hardwareBuffer, screenshotResult.getColorSpace());
                         if (bitmap != null) {
+                            // --- REFINED OPTIMIZATION: SCALE DOWN ---
+                            // Increased to 720px for better clarity on PC while maintaining speed
+                            int targetWidth = 720;
+                            int targetHeight = (int) (bitmap.getHeight() * (targetWidth / (float) bitmap.getWidth()));
+                            android.graphics.Bitmap scaledBitmap = android.graphics.Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, true);
+                            
                             java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
-                            bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 70, out);
+                            // --- REFINED OPTIMIZATION: QUALITY ---
+                            // 60% provides a sharper image with fewer artifacts around text
+                            scaledBitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 60, out);
                             callback.onSuccess(out.toByteArray());
+                            
                             bitmap.recycle();
+                            scaledBitmap.recycle();
                         } else { callback.onFailure("Buffer wrap failed"); }
                     } catch (Exception e) { callback.onFailure(e.getMessage()); } 
                     finally { if (hardwareBuffer != null) hardwareBuffer.close(); }

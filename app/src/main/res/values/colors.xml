@@ -10,6 +10,7 @@
     <color name="surface_dark">#0f0f19</color>
     <color name="neon_cyan">#00f2ff</color>
     <color name="neon_green">#39ff14</color>
+    <color name="neon_yellow">#ffff00</color>
     <color name="neon_red">#ff3131</color>
     <color name="text_primary">#e0e0e0</color>
     <color name="text_secondary">#888888</color>

@@ -22,24 +22,37 @@
             <!-- Header -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="286dp"
+                android:layout_height="300dp"
                 android:layout_marginBottom="32dp"
                 android:gravity="center"
                 android:orientation="vertical">
 
-                <ImageView
-                    android:layout_width="250dp"
-                    android:layout_height="150dp"
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="152dp"
                     android:layout_marginTop="40dp"
-                    android:layout_marginBottom="16dp"
-                    android:contentDescription="@string/content_desc_logo"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/app_logo" />
+                    android:layout_marginBottom="16dp">
+
+                    <!-- Tight Hugging Glow Effect -->
+                    <View
+                        android:layout_width="207dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:background="@drawable/logo_glow" />
+
+                    <ImageView
+                        android:layout_width="240dp"
+                        android:layout_height="142dp"
+                        android:contentDescription="@string/content_desc_logo"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/app_logo" />
+
+                </FrameLayout>
 
                 <TextView
                     android:id="@+id/tvAppTitle"
                     android:layout_width="wrap_content"
-                    android:layout_height="50dp"
+                    android:layout_height="55dp"
                     android:fontFamily="@font/orbitron"
                     android:letterSpacing="0.4"
                     android:shadowColor="@color/neon_cyan"
@@ -67,11 +80,11 @@
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="17dp"
+                    android:layout_height="18dp"
                     android:layout_marginTop="4dp"
                     android:alpha="0.6"
                     android:letterSpacing="0.3"
-                    android:text="v1.3.5"
+                    android:text="v1.4.5"
                     android:textColor="@color/neon_cyan"
                     android:textSize="8sp" />
 
@@ -92,19 +105,19 @@
 
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="2dp"
-                        android:background="@color/neon_cyan"/>
+                        android:layout_height="4dp"
+                        android:background="@color/neon_cyan" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="218dp"
+                        android:layout_height="223dp"
                         android:orientation="vertical"
                         android:padding="20dp">
 
                         <TextView
                             android:id="@+id/tvStatus"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="26dp"
                             android:layout_gravity="center"
                             android:layout_marginBottom="16dp"
                             android:fontFamily="@font/orbitron"
@@ -115,7 +128,7 @@
 
                         <View
                             android:layout_width="match_parent"
-                            android:layout_height="1dp"
+                            android:layout_height="0dp"
                             android:layout_marginBottom="16dp"
                             android:background="#1affffff" />
 
@@ -141,7 +154,7 @@
 
                         <TextView
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="17dp"
                             android:layout_marginTop="16dp"
                             android:alpha="0.7"
                             android:letterSpacing="0.1"
@@ -170,7 +183,7 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnStartStop"
                 android:layout_width="match_parent"
-                android:layout_height="51dp"
+                android:layout_height="46dp"
                 android:layout_marginBottom="12dp"
                 android:backgroundTint="@color/neon_cyan"
                 android:fontFamily="@font/orbitron"
@@ -186,7 +199,7 @@
                 android:id="@+id/btnCopyUrl"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="match_parent"
-                android:layout_height="42dp"
+                android:layout_height="37dp"
                 android:layout_marginBottom="12dp"
                 android:fontFamily="@font/orbitron"
                 android:insetTop="0dp"
@@ -202,7 +215,7 @@
                 android:id="@+id/btnBatteryOptimization"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
-                android:layout_height="53dp"
+                android:layout_height="47dp"
                 android:layout_marginBottom="24dp"
                 android:fontFamily="@font/orbitron"
                 android:text="BYPASS_POWER_LIMITS"
@@ -222,7 +235,7 @@
                 <TextView
                     android:id="@+id/tvTerminalFeedback"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="19dp"
                     android:fontFamily="monospace"
                     android:gravity="center"
                     android:text="[ SECURE CONNECTION ESTABLISHED ]"

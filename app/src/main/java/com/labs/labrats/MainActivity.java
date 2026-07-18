@@ -394,7 +394,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startServer() {
-        runOnUiThread(() -> tvStatus.setText("🟡 INITIALIZING..."));
+        runOnUiThread(() -> {
+            tvStatus.setText("🟡 INITIALIZING...");
+            tvStatus.setTextColor(getColor(R.color.neon_yellow));
+        });
         
         Intent serviceIntent = new Intent(this, HttpServerService.class);
         serviceIntent.setAction("START");
@@ -426,7 +429,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void stopServer() {
-        runOnUiThread(() -> tvStatus.setText("🟡 TERMINATING..."));
+        runOnUiThread(() -> {
+            tvStatus.setText("🟡 TERMINATING...");
+            tvStatus.setTextColor(getColor(R.color.neon_yellow));
+        });
 
         Intent serviceIntent = new Intent(this, HttpServerService.class);
         serviceIntent.setAction("STOP");

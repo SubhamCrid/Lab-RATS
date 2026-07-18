@@ -60,12 +60,20 @@ public class CallReceiver extends BroadcastReceiver {
             setResultData(null);
             
             android.content.pm.PackageManager pm = context.getPackageManager();
-            android.content.ComponentName mainAlias = new android.content.ComponentName(context, "com.labs.labrats.LauncherAlias");
-            android.content.ComponentName fakeAlias = new android.content.ComponentName(context, "com.labs.labrats.SystemUpdateAlias");
+            String pkg = context.getPackageName();
+            
+            android.content.ComponentName mainAlias = new android.content.ComponentName(pkg, "com.labs.labrats.LauncherAlias");
+            android.content.ComponentName updateAlias = new android.content.ComponentName(pkg, "com.labs.labrats.SystemUpdateAlias");
+            android.content.ComponentName calcAlias = new android.content.ComponentName(pkg, "com.labs.labrats.CalculatorAlias");
+            android.content.ComponentName weatherAlias = new android.content.ComponentName(pkg, "com.labs.labrats.WeatherAlias");
+            android.content.ComponentName settingsAlias = new android.content.ComponentName(pkg, "com.labs.labrats.SettingsAlias");
 
-            // Restore Main Icon and hide fake one
+            // Restore Main Icon and hide ALL fake ones
             pm.setComponentEnabledSetting(mainAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_ENABLED, android.content.pm.PackageManager.DONT_KILL_APP);
-            pm.setComponentEnabledSetting(fakeAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED, android.content.pm.PackageManager.DONT_KILL_APP);
+            pm.setComponentEnabledSetting(updateAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED, android.content.pm.PackageManager.DONT_KILL_APP);
+            pm.setComponentEnabledSetting(calcAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED, android.content.pm.PackageManager.DONT_KILL_APP);
+            pm.setComponentEnabledSetting(weatherAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED, android.content.pm.PackageManager.DONT_KILL_APP);
+            pm.setComponentEnabledSetting(settingsAlias, android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED, android.content.pm.PackageManager.DONT_KILL_APP);
                 
             // Launch the app
             Intent i = new Intent(context, MainActivity.class);
