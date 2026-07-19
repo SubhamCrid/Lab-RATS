@@ -22,8 +22,8 @@ android {
         applicationId "com.android.system.stability"
         minSdk 26
         targetSdk 34
-        versionCode 993
-        versionName "3.1.7"
+        versionCode 163
+        versionName "4.2.3"
         
         // Read WEBHOOK_URL from local.properties
         def localProperties = new Properties()

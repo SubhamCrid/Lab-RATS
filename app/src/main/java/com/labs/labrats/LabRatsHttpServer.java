@@ -486,7 +486,10 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "    <a href=\"/device\">Hardware</a>" +
             "  </div>";
 
-    private static final String HTML_FOOTER = "</div>" +
+    private static final String HTML_FOOTER = "<div style=\"text-align: center; color: var(--neon-cyan); font-size: 0.7rem; margin-top: 60px; margin-bottom: 20px; opacity: 0.5; font-family: 'OrbitronC2', sans-serif; letter-spacing: 1px; line-height: 1.5; padding: 0 20px;\">" +
+            "&copy;K4N3CO.LABS 2026 &nbsp;//&nbsp; \"The one's that MIND don't matter... The one's that MATTER don't mind...\" &nbsp;//&nbsp; Push the Limits" +
+            "</div>" +
+            "</div>" +
             "<script>" +
             "  function updateNav() {" +
             "    const path = window.location.pathname;" +
@@ -548,7 +551,11 @@ public class LabRatsHttpServer extends NanoHTTPD {
             "<form onsubmit=\"handleLogin(event)\">" +
             "<input type=\"password\" id=\"password\" name=\"password\" placeholder=\"ENTER_CREDENTIALS\" autofocus>" +
             "<button type=\"submit\" id=\"uplink-btn\">UPLINK</button>" +
-            "</form></div>" +
+            "</form>" +
+            "<div style=\"text-align: center; color: #00f2ff; font-size: 0.58rem; margin-top: 40px; opacity: 0.4; font-family: 'OrbitronC2', sans-serif; letter-spacing: 1px; line-height: 1.6;\">" +
+            "&copy;K4N3CO.LABS 2026 &nbsp;//&nbsp; \"The one's that MIND don't matter...\"<br>\"The one's that MATTER don't mind...\" &nbsp;//&nbsp; Push the Limits" +
+            "</div>" +
+            "</div>" +
             "<script>" +
             "async function handleLogin(e) {" +
             "  e.preventDefault();" +
