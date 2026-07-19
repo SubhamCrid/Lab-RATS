@@ -191,8 +191,8 @@ bc1q6lmkuju3kf7f8624fwt5qs7k5mf63mekgcnzf4
 
 ### **The APK Builder Tool in Terminal** (Advanced v1.4)
 > This build excludes my Google Sheet Webhook URL for security. For private builds, you must add your own Google webhook URL to correctly receive the IPv6 address from the app after installation.
-  
-https://github.com/user-attachments/assets/8e4ccb39-3fd5-400f-befa-f499d5ee54f9
+
+https://github.com/user-attachments/assets/366df760-df71-455e-aae9-3acf3ef6ed26
 
 ---
 
